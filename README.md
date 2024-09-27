@@ -1,4 +1,4 @@
-# SFWE403-Project: Pharmacy Management System
+# SFWE403/503-Project: Pharmacy Management System
 ## Team 16: Masterful Execution Software Community Coalition
 - Cougar Bellinger
 - Eden Geyer
