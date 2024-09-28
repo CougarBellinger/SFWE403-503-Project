@@ -1,0 +1,93 @@
+######################################################################
+
+Creating virtual environment in python: 
+
+    
+Install python in your computer check with the command if installed:
+         python
+Create a virtual environment
+  a.installing venv in computer
+      cmd- pip intall pipenv (This as admin in cmd)
+  b.create a venv
+      cmd- virtualenv . (this didnt worked for me so have to use python -m venv D:\projectloacation\where\you\want\the\venv)
+  c.activate the virtaulEnv.\scripts\activate   (for windows)./bin/activate    (for max/linux)
+      Note : when activated the (DirctoryName) is seen in the cmd
+  d.to check the package installed in the virtaulEnv
+      cmd - pip freeze
+
+
+###########################################################################
+
+Installing the Postgres
+    https://www.postgresql.org/download/windows/
+
+    When Installing the psotgres server make sure to note the details below:
+      "USER": "postgres",
+      "PASSWORD": "l",
+      "PORT": 5432
+
+Install pgadimn
+    https://www.pgadmin.org/download/
+
+    
+###########################################################################
+
+Install django
+
+  cmd - pip install django 
+###########################################################################
+
+Creating a Django Project
+   
+   cmd - django-sdmin startproject MyPharma
+
+###########################################################################
+Adding packages in requirement.txt
+ 
+  cmd - pip3 freeze > requirements.txt 
+
+###########################################################################
+
+
+Create a super admin
+ cmd - python manage.py createsuperuser
+
+
+ ###########################################################################
+
+To make migration and migrate in the db
+
+ cmd - python manage.py makemigrations
+
+ cmd - python manage.py migrate   
+
+
+#############################################################################
+
+To install dependencies from the requirement file
+
+ cmd - pip install -r requirement.txt
+
+#############################################################################
+
+Database Setup 
+Note: for creating the Db for the first time run the pgAdmin and sign in to the server with you credentials.
+ Then create the database with the name. Make sure to add the details in the config.json.
+    
+    cmd - python manage.py migrate
+
+
+Whenever someone adds a table or adds or edits the column of a table they also need to create migration 
+
+    cmd - python manage.py makemigrations
+
+Then who ever is fetching the 
+
+#############################################################################
+
+Run The development server
+
+    cmd - python manage.py runserver
+
+##############################################################################
+
