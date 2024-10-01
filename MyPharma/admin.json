@@ -1,0 +1,11 @@
+{
+    "model": "users.CustomUser",
+    "pk": 1,
+    "fields": {
+        "username": "admin",
+        "email": "admin@admin.com",
+        "password": "l",
+        "is_superuser": true,
+        "is_staff": true
+    }
+}
