@@ -10,18 +10,35 @@
     <link rel="stylesheet" href="{% static 'login.css' %}">
 </head>
 <body>
-    <div class="container mt-4">
-        <h1>MyPharma Login</h1>
-      
-        <form method="post">
-            {% csrf_token %}
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <p>Contact <a href="{% url 'contact_view' %}">Admin</a>.</p>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center mb-4">MyPharma Login</h1>
+
+                <!-- Display any error messages -->
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Login form -->
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" required><br><br>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required><br><br>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+
+                <p class="text-center mt-3">Need help? <a href="{% url 'contact_view' %}">Contact Admin</a></p>
+            </div>
+        </div>
     </div>
 
     <!-- Add Bootstrap JS and Popper.js scripts -->
