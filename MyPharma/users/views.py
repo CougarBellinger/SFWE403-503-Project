@@ -1,16 +1,37 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
 from .models import PharmacyStaff,PharmacyManager,GeneralUser
 from .forms import CustomUser
+from .forms import LoginForm
 
 def home_view(request):
     return render(request, 'home.html')
 
 def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+      
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Welcome back, {user.username}!')
+            return redirect('home_view')  
+        else:
+            #print(f"Failed login attempt: Username: {email}, Password: {password}")
+            messages.error(request, 'Invalid username or password.')
+    else:
+        form = LoginForm()
+
     return render(request, 'login.html')
 
 def logout_view(request):
+    logout(request)
     return render(request, 'login.html')
 
 def contact_view(request):
