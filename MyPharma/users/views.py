@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import UserRegistrationForm
 from .models import PharmacyStaff,PharmacyManager,GeneralUser
 from .forms import CustomUser
+from .forms import PasswordChangeForm
 
 def home_view(request):
     return render(request, 'home.html')
@@ -15,6 +16,12 @@ def logout_view(request):
 
 def contact_view(request):
     return render(request, 'contact.html')
+
+def first_password_view(request):
+    if not request.user.is_first_login:
+        return redirect('home_view') 
+    return render(request, '.html') # FIX html part
+
 
 def User_registration_view(request):
     if request.method == 'POST':
