@@ -3,7 +3,9 @@ from django.contrib import messages
 from .forms import UserRegistrationForm
 from .models import PharmacyStaff,PharmacyManager,GeneralUser
 from .forms import CustomUser
-from .forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
 
 def home_view(request):
     return render(request, 'home.html')
@@ -18,8 +20,18 @@ def contact_view(request):
     return render(request, 'contact.html')
 
 def first_password_view(request):
-    if not request.user.is_first_login:
-        return redirect('home_view') 
+    if request.user.is_first_login == 1:
+        return redirect('home_view')
+    
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():  # checks to see if current password is correct, new password and confirming it is correct
+            user = form.save()  # hashes new password and saves it to the database
+            user.is_first_login = 0
+            update_session_auth_hash(request, user)  # keeps the user logged in after changing the password
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('home_view')  
+        
     return render(request, '.html') # FIX html part
 
 
