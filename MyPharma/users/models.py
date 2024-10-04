@@ -31,6 +31,8 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     
+    # Add the unsuccessful login count field
+    unsuccessful_login_count = models.IntegerField(default=0)
 
     # Fields for password reset
     reset_token = models.CharField(max_length=255, null=True, blank=True)
