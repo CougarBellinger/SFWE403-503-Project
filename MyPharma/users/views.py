@@ -93,30 +93,20 @@ def User_registration_view(request):
             user.save()
 
             # Create role-specific profiles
-            match user_type:
-                case CustomUser.PharmacyManager:
-                    PharmacyManager.objects.create(admin=user)
+            if user_type == CustomUser.PharmacyManager:
+                PharmacyManager.objects.create(admin=user)
 
-                case CustomUser.PharmacyTechnician:
-                    PharmacyTechnician.objects.create(admin=user)
+            elif user_type == CustomUser.PharmacyTechnician:
+                PharmacyTechnician.objects.create(admin=user)
 
-                case CustomUser.Pharmicist:
-                    Pharmacist.objects.create(admin=user)
+            elif user_type == CustomUser.Pharmicist:
+                Pharmacist.objects.create(admin=user)
 
-                case CustomUser.Cashier:
-                    Cashier.objects.create(admin=user)
+            elif user_type == CustomUser.Cashier:
+                Cashier.objects.create(admin=user)
 
-                case _:
-                    GeneralUser.objects.create(admin=user)
-
-
-            # PREVIOIUS CODE, DELETE WHEN UPDATED CODE IS FUNCTIONAL
-                # if user_type == CustomUser.PharmacyManager:
-                #     PharmacyManager.objects.create(admin=user)
-                # elif user_type == CustomUser.GeneralUser:
-                #     PharmacyStaff.objects.create(admin=user)
-                # else:
-                #     GeneralUser.objects.create(admin=user)
+            else:
+                GeneralUser.objects.create(admin=user)
 
             #log the user creation and redirect to register page
             messages.success(request, 'Registration successful.')
