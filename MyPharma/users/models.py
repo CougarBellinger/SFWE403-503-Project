@@ -30,7 +30,7 @@ class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
-    
+    is_first_login = models.BooleanField(default=True)
 
     # Fields for password reset
     reset_token = models.CharField(max_length=255, null=True, blank=True)
