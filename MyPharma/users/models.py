@@ -6,15 +6,20 @@ from users.manage import CustomUserManager
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
-    PharmacyStaff = '2'
-    GeneralUser = '3'
+    PharmacyTechnician = '2'
+    Pharmicist = '3'
+    Cashier = '4'
+    GeneralUser = '5'
 
 
     user_type_choices = (
         (PharmacyManager, "PharmacyManager"),
-        (PharmacyStaff, "PharmacyStaff"),
+        (PharmacyTechnician, "PharmacyTechnician"),
+        (Pharmicist, "Pharmacist"),
+        (Cashier, "Cashier"),
         (GeneralUser, "GeneralUser")
     )
+
     user_type = models.CharField(
         max_length=10,
         choices=user_type_choices,
@@ -45,13 +50,14 @@ class CustomUser(AbstractUser):
 
     # Set username to not none
     username = models.CharField(max_length=255, blank=False, null=False)
+    
     # Add any additional fields you need
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name',]
 
     objects = CustomUserManager()
 
-     # Add related_name to avoid clashes
+    # Add related_name to avoid clashes
     groups = models.ManyToManyField(Group, related_name='users_groups')
     user_permissions = models.ManyToManyField(Permission, related_name='users_permissions')
 
@@ -65,11 +71,20 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.email
     
+    
 class PharmacyManager(models.Model):
     id = models.AutoField(primary_key=True)
     admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
 
-class PharmacyStaff(models.Model):
+class PharmacyTechnician(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
+
+class Pharmacist(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
+
+class Cashier(models.Model):
     id = models.AutoField(primary_key=True)
     admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
 
