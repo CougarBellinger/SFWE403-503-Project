@@ -117,9 +117,8 @@ def recover_account_view(request):
             return redirect('home_view')  # Redirect to a safe page
 
         email = request.POST.get('email')  # Get the email from the form
-        new_password = request.POST.get('password')  # Get the new password from the form
 
-        if not email or not new_password:  # Validate the inputs
+        if not email:  # Validate the inputs
             messages.error(request, 'Please fill out both fields.')
             return render(request, 'recover.html')  # Re-render the form
 
@@ -128,7 +127,7 @@ def recover_account_view(request):
             user = CustomUser.objects.get(email=email)
 
             # If user is found, reset the password
-            user.password = make_password(new_password)  # Hash the new password
+            #user.password = make_password(new_password)  # Hash the new password
             user.reset_token = None  # Clear the reset token
             user.reset_token_expiry = None  # Clear the expiry
             user.unsuccessful_login_count = 0  # Resets login count
