@@ -37,6 +37,10 @@ def login_view(request):
             user.unsuccessful_login_count = 0  # Reset the count on successful login
             user.save()  # Save the user object
             login(request, user)
+
+            if user.is_first_login:
+                return redirect('first_password_view')
+
             messages.success(request, f'Welcome back, {user.username}!')
             return redirect('home_view')
         else:
@@ -68,8 +72,6 @@ def contact_view(request):
     return render(request, 'contact.html')
 
 def first_password_view(request):
-    if request.user.is_first_login == 1:
-        return redirect('home_view')
     
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
