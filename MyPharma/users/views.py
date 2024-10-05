@@ -1,19 +1,67 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
-from .models import PharmacyStaff,PharmacyManager,GeneralUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
 from .forms import CustomUser
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
+from .forms import LoginForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 
+@login_required
 def home_view(request):
-    return render(request, 'home.html')
+    user = CustomUser.objects.get(id=request.user.id)
+    return render(request, 'home.html', {'user_type': user.user_type})
 
 def login_view(request):
-    return render(request, 'login.html')
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Attempt to authenticate the user
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            if not user.is_active:
+                # User's account is locked
+                messages.error(request, 'Your account is locked. Please contact an admin for assistance.')
+                return render(request, 'login.html', {'form': form})
+            
+            # Successful login
+            user.unsuccessful_login_count = 0  # Reset the count on successful login
+            user.save()  # Save the user object
+            login(request, user)
+            messages.success(request, f'Welcome back, {user.username}!')
+            return redirect('home_view')
+        else:
+            # Failed login attempt
+            try:
+                user = CustomUser.objects.get(email=email)  # Get the user object by email
+                user.unsuccessful_login_count += 1  # Increment the count
+
+                if user.unsuccessful_login_count >= 3:
+                    user.is_active = False  # Lock the account after 3 failed attempts
+                    messages.error(request, 'Your account has been locked due to multiple unsuccessful login attempts. Please contact an admin.')
+                else:
+                    messages.error(request, 'Invalid username or password. Please try again.')
+
+                user.save()  # Save the updated user object
+            except CustomUser.DoesNotExist:
+                messages.error(request, 'Invalid username or password.')
+
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
 
 def logout_view(request):
+    logout(request)
     return render(request, 'login.html')
 
 def contact_view(request):
@@ -66,8 +114,16 @@ def User_registration_view(request):
             # Create role-specific profiles
             if user_type == CustomUser.PharmacyManager:
                 PharmacyManager.objects.create(admin=user)
-            elif user_type == CustomUser.GeneralUser:
-                PharmacyStaff.objects.create(admin=user)
+
+            elif user_type == CustomUser.PharmacyTechnician:
+                PharmacyTechnician.objects.create(admin=user)
+
+            elif user_type == CustomUser.Pharmicist:
+                Pharmacist.objects.create(admin=user)
+
+            elif user_type == CustomUser.Cashier:
+                Cashier.objects.create(admin=user)
+
             else:
                 GeneralUser.objects.create(admin=user)
 
@@ -79,5 +135,38 @@ def User_registration_view(request):
     else:
         form = UserRegistrationForm()
     return render(request, 'register.html', {'form': form})
- 
+
+def recover_account_view(request):
+    if request.method == 'POST':
+        # Check if the logged-in user is a Pharmacy Manager
+        if request.user.user_type != '1':
+            messages.error(request, 'You do not have permission to reset passwords.')
+            return redirect('home_view')  # Redirect to a safe page
+
+        email = request.POST.get('email')  # Get the email from the form
+
+        if not email:  # Validate the inputs
+            messages.error(request, 'Please fill out both fields.')
+            return render(request, 'recover.html')  # Re-render the form
+
+        try:
+            # Retrieve the user using the email
+            user = CustomUser.objects.get(email=email)
+
+            # If user is found, reset the password
+            #user.password = make_password(new_password)  # Hash the new password
+            user.reset_token = None  # Clear the reset token
+            user.reset_token_expiry = None  # Clear the expiry
+            user.unsuccessful_login_count = 0  # Resets login count
+            user.is_active = True  # Ensure the account is active
+            user.save()
+            messages.success(request, 'Your password has been reset successfully!')
+            return redirect('login_view')
+
+        except CustomUser.DoesNotExist:
+            # Handle the case where the user does not exist
+            messages.error(request, 'No account found with that email address.')
+
+    # Render the recovery form for GET requests
+    return render(request, 'recover.html')
 

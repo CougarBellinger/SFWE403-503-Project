@@ -9,5 +9,6 @@ class UserRegistrationForm(UserCreationForm):
         fields = ['email', 'password1', 'password2', 'first_name', 'last_name', 'username', 'user_type'
                   ]
 
-
-    
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput)
