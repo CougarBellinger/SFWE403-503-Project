@@ -1,18 +1,23 @@
+from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
 from .forms import CustomUser
 from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from .forms import UserCreationForm, UserRegistrationForm
 
 @login_required
 def home_view(request):
     user = CustomUser.objects.get(id=request.user.id)
-    return render(request, 'home.html', {'user_type': user.user_type})
+    if user.user_type == CustomUser.PharmacyManager:
+        return redirect('manager_home')
+    else:
+        return redirect('customer_home')
 
 def login_view(request):
     if request.method == 'POST':
@@ -151,3 +156,46 @@ def recover_account_view(request):
     # Render the recovery form for GET requests
     return render(request, 'recover.html')
 
+
+def create_user(request):
+    if request.user.user_type != CustomUser.PharmacyManager:
+        messages.error(request, 'You do not have permission to create new users.')
+        return redirect('home_view')  # Redirect to a safe page
+
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])  # Set the password
+            user.save()
+            messages.success(request, 'User created successfully. Please set your password.')
+            return redirect('user_list')  # Redirect to a user list or another page
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'create_user.html', {'form': form})
+
+@login_required
+def manager_home(request):
+    return render(request, 'manager_home.html')
+
+@login_required
+def customer_home(request):
+    return render(request, 'customer_home.html')
+
+@login_required
+def password_change(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important to keep the user logged in
+            messages.success(request, 'Your password has been changed successfully!')
+            return redirect('home_view')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'password_change.html', {'form': form})
+
+@login_required
+def user_list(request):
+    users = CustomUser.objects.all()
+    return render(request, 'user_list.html', {'users': users})
