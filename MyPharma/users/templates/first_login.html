@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update your password</title>
+    {% load static %}
+    <!-- Add Bootstrap CSS link --> 
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center mb-4">Update your password</h1>
+
+                <!-- Display any error messages -->
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Password Change form -->
+                <form method="post" action="{% url 'first_password_view' %}">
+                    {% csrf_token %}
+                    <label for="new_password1">New password:</label>
+                    <input type="password" id="new_password1" name="new_password1" required><br><br>
+                    <label for="new_password2">Confirm new password:</label>
+                    <input type="password" id="new_password2" name="new_password2" required><br><br>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+                <p class="text-center mt-3">Need help? <a href="{% url 'contact_view' %}">Contact Admin</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

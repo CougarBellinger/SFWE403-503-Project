@@ -6,6 +6,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
 from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
 from .forms import CustomUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
+from .forms import CustomUser, FirstPasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
 from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -39,6 +43,10 @@ def login_view(request):
             user.unsuccessful_login_count = 0  # Reset the count on successful login
             user.save()  # Save the user object
             login(request, user)
+
+            if user.is_first_login:
+                return redirect('first_password_view')
+
             messages.success(request, f'Welcome back, {user.username}!')
             return redirect('home_view')
         else:
@@ -68,6 +76,26 @@ def logout_view(request):
 
 def contact_view(request):
     return render(request, 'contact.html')
+
+def first_password_view(request):
+    user = request.user
+   
+    print(f"password line #77: {str(user)}")
+    if request.method == 'POST':
+        form = FirstPasswordChangeForm(user, request.POST)
+        print(f"password line #80: {str(user)}")
+
+        if form.is_valid():  # checks to see if current password is correct, new password and confirming it is correct
+            form.user.is_first_login = False
+            print(f"password line #84: {str(user)}")
+            form.save()  # hashes new password and saves it to the database
+            print(f"password line #86: {str(user)}")
+            update_session_auth_hash(request, user)  # keeps the user logged in after changing the password
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('home_view')  
+        
+    return render(request, 'first_login.html')
+
 
 def User_registration_view(request):
     if request.method == 'POST':
