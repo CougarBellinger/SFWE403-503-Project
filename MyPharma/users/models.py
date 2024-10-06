@@ -61,6 +61,10 @@ class CustomUser(AbstractUser):
     groups = models.ManyToManyField(Group, related_name='users_groups')
     user_permissions = models.ManyToManyField(Permission, related_name='users_permissions')
 
+    #track first login
+    first_login = models.BooleanField(default=True)
+
+
     def __str__(self):
         return self.email
 
