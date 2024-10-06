@@ -72,17 +72,19 @@ def contact_view(request):
     return render(request, 'contact.html')
 
 def first_password_view(request):
+    user = request.user
     
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(user, request.POST)
+        
         if form.is_valid():  # checks to see if current password is correct, new password and confirming it is correct
-            user = form.save()  # hashes new password and saves it to the database
-            user.is_first_login = 0
+            form.user.is_first_login = False
+            form.save()  # hashes new password and saves it to the database
             update_session_auth_hash(request, user)  # keeps the user logged in after changing the password
             messages.success(request, 'Your password was successfully updated!')
             return redirect('home_view')  
         
-    return render(request, '.html') # FIX html part
+    return render(request, 'first_login.html')
 
 
 def User_registration_view(request):
