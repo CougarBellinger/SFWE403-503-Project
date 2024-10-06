@@ -35,7 +35,7 @@ class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
-    
+    is_first_login = models.BooleanField(default=True)
     # Add the unsuccessful login count field
     unsuccessful_login_count = models.IntegerField(default=0)
 
