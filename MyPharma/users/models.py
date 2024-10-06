@@ -35,7 +35,9 @@ class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
-    is_first_login = models.BooleanField(default=True)
+
+    #first_login = models.BooleanField(default=True)
+
     # Add the unsuccessful login count field
     unsuccessful_login_count = models.IntegerField(default=0)
 
@@ -62,7 +64,7 @@ class CustomUser(AbstractUser):
     user_permissions = models.ManyToManyField(Permission, related_name='users_permissions')
 
     #track first login
-    first_login = models.BooleanField(default=True)
+    is_first_login = models.BooleanField(default=True)
 
 
     def __str__(self):
