@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import User_registration_view, home_view, login_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list
-=======
+
 from .views import User_registration_view, home_view, login_view, contact_view, recover_account_view, first_password_view
 
 urlpatterns = [
