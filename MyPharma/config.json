@@ -1,9 +1,0 @@
-{
-    "DATABASE": {
-      "NAME": "MyPharma",
-      "USER": "postgres",
-      "PASSWORD": "2134",
-      "HOST": "localhost",
-      "PORT": 5432
-    }
-  }
