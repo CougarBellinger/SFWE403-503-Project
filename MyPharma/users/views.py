@@ -127,22 +127,7 @@ def User_registration_view(request):
             user.set_password(password)  # Hash password
             user.save()
 
-            # # Create role-specific profiles
-            # if user_type == CustomUser.PharmacyManager:
-            #     PharmacyManager.objects.create(admin=user)
-
-            # elif user_type == CustomUser.PharmacyTechnician:
-            #     PharmacyTechnician.objects.create(admin=user)
-
-            # elif user_type == CustomUser.Pharmicist:
-            #     Pharmacist.objects.create(admin=user)
-
-            # elif user_type == CustomUser.Cashier:
-            #     Cashier.objects.create(admin=user)
-
-            # else:
-            #     GeneralUser.objects.create(admin=user)
-
+           
             #log the user creation and redirect to register page
             messages.success(request, 'Registration successful.')
             return redirect('home_view')
