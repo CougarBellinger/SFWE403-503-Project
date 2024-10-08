@@ -24,15 +24,12 @@
                             {% endfor %}
                         </ul>
                     </div>
-                {% endif %}
-
+                {% endif %} 
+                
                 <!-- Login form -->
                 <form method="post">
                     {% csrf_token %}
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" required><br><br>
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required><br><br>
+                    {{ form.as_p }}
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
 

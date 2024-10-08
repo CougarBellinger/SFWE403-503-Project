@@ -20,7 +20,8 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             {% if user.is_authenticated %}
-                {% if user.user_type == '1' %}
+            {{user.is_authenticated}}
+               <li> {% if user.user_type == '1' %}
                     <!-- Nav link for user_type 1 -->
                     <a class="nav-link" href="{% url 'recover_account_view' %}">Recover Account (Admin)</a>
                 {% endif %}
@@ -28,7 +29,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout_view' %}">Logout</a>
             </li>
-        {% endif %}
+            {% endif %}
         
         
 
