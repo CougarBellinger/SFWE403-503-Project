@@ -70,13 +70,16 @@ def login_view(request):
 
     return render(request, 'login.html', {'form': form})
 
+
+
+@login_required
 def logout_view(request):
     logout(request)
-    return render(request, 'login.html')
+    return redirect('login_view')
 
 def contact_view(request):
     return render(request, 'contact.html')
-
+@login_required
 def first_password_view(request):
     user = request.user
    
@@ -95,7 +98,6 @@ def first_password_view(request):
             return redirect('home_view')  
         
     return render(request, 'first_login.html')
-
 
 def User_registration_view(request):
     if request.method == 'POST':
@@ -125,22 +127,7 @@ def User_registration_view(request):
             user.set_password(password)  # Hash password
             user.save()
 
-            # Create role-specific profiles
-            if user_type == CustomUser.PharmacyManager:
-                PharmacyManager.objects.create(admin=user)
-
-            elif user_type == CustomUser.PharmacyTechnician:
-                PharmacyTechnician.objects.create(admin=user)
-
-            elif user_type == CustomUser.Pharmicist:
-                Pharmacist.objects.create(admin=user)
-
-            elif user_type == CustomUser.Cashier:
-                Cashier.objects.create(admin=user)
-
-            else:
-                GeneralUser.objects.create(admin=user)
-
+           
             #log the user creation and redirect to register page
             messages.success(request, 'Registration successful.')
             return redirect('home_view')
@@ -150,6 +137,7 @@ def User_registration_view(request):
         form = UserRegistrationForm()
     return render(request, 'register.html', {'form': form})
 
+@login_required
 def recover_account_view(request):
     if request.method == 'POST':
         # Check if the logged-in user is a Pharmacy Manager
