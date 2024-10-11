@@ -1,5 +1,20 @@
 ######################################################################
 
+Template to create config.json file
+
+{
+  "DATABASE": {
+    "NAME": "MyPharma",
+    "USER": "postgres",
+    "PASSWORD": "l",
+    "HOST": "localhost",
+    "PORT": 5432
+  }
+}
+
+
+######################################################################
+
 Creating virtual environment in python: 
 
     

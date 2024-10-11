@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyPharma Login</title>
+    <title>Update your password</title>
     {% load static %}
-    <!-- Add Bootstrap CSS link -->
+    <!-- Add Bootstrap CSS link --> 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'login.css' %}">
 </head>
@@ -13,7 +13,7 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <h1 class="text-center mb-4">MyPharma Login</h1>
+                <h1 class="text-center mb-4">Update your password</h1>
 
                 <!-- Display any error messages -->
                 {% if messages %}
@@ -24,13 +24,16 @@
                             {% endfor %}
                         </ul>
                     </div>
-                {% endif %} 
-                
-                <!-- Login form -->
-                <form method="post">
+                {% endif %}
+
+                <!-- Password Change form -->
+                <form method="post" action="{% url 'first_password_view' %}">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <label for="new_password1">New password:</label>
+                    <input type="password" id="new_password1" name="new_password1" required><br><br>
+                    <label for="new_password2">Confirm new password:</label>
+                    <input type="password" id="new_password2" name="new_password2" required><br><br>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
                 <p class="text-center mt-3">Need help? <a href="{% url 'contact_view' %}">Contact Admin</a></p>
