@@ -79,6 +79,7 @@ def logout_view(request):
 
 def contact_view(request):
     return render(request, 'contact.html')
+    
 @login_required
 def first_password_view(request):
     user = request.user
