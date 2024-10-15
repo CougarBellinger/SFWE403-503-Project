@@ -22,4 +22,5 @@ urlpatterns = [
     path('', RedirectView.as_view(pattern_name='login_view', permanent=False)),
     path('home/', RedirectView.as_view(pattern_name='login_view', permanent=False)),
     path('users/', include('users.urls')),
+    path('pharmacymanager/', include('pharmacy_manager.urls'))
 ]
