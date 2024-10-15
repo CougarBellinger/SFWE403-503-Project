@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('expiration_date', models.DateField()),
+                ('tablet_count', models.IntegerField(default= 0)),
+                ('expiration_date', models.DateField())
             ],
         ),
     ]

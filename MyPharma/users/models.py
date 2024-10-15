@@ -109,3 +109,4 @@ class GeneralUser(models.Model):
 class Medications(models.Model):
     name = models.CharField(max_length= 100)
     expiration_date = models.DateField()
+    tablet_count = models.IntegerField(default= 0)
