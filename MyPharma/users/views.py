@@ -203,15 +203,26 @@ def manager_home(request):
             reader = csv.DictReader(csv_file)
 
             for row in reader:
+                # Check for missing fields
+                name = row.get('Name')
+                amount = row.get('Amount')
+                exp_date = row.get('ExpDate')
+
+                if not name or not amount or not exp_date:
+                    messages.error(request, f"Error: Missing required field(s) in row: {row}")
+                    continue
+
                 try:
-                    expiration_date = datetime.strptime(row['ExpDate'], '%m/%d/%Y').date()
+                    expiration_date = datetime.strptime(exp_date, '%m/%d/%Y').date()
                     
-                    # Create Medications entry, ignoring the "Ignore" column
+                    # Create Medications entry
                     Medications.objects.create(
-                        name=row['Name'],
+                        name=name,
                         expiration_date=expiration_date,
-                        tablet_count=row['Amount']
+                        tablet_count=int(amount)  # Convert amount to integer
                     )
+                except ValueError as ve:
+                    messages.error(request, f"Error processing row {row}: {ve}")
                 except Exception as e:
                     messages.error(request, f"Error processing row {row}: {e}")
                     continue
