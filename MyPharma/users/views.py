@@ -6,16 +6,17 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 
-from pharmacy_manager.views import *
 from .forms import UserRegistrationForm, UserCreationForm, FirstPasswordChangeForm, LoginForm
 from .forms import CustomUser
 from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
+
+from pharmacy_manager.views import *
 
 @login_required
 def home_view(request):
     user = CustomUser.objects.get(id=request.user.id)
     if user.user_type == CustomUser.PharmacyManager:
-        return redirect('pharmacymanager/manager_home')
+        return redirect('manager_home') #Goes to manager home view in pharmacy_manager app
     else:
         return redirect('customer_home')
 

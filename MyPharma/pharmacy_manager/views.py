@@ -19,7 +19,7 @@ from django.contrib.auth import update_session_auth_hash
 
 @login_required
 def manager_home(request):
-    render(request, 'manager_home.html')
+    return render(request, 'manager_home.html')
     
 
 
