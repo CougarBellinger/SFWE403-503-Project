@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser, Medications
 from .forms import CustomUser
 from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
 from .forms import CustomUser, FirstPasswordChangeForm
@@ -14,6 +14,10 @@ from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm
+import csv
+from .forms import CSVUploadForm
+from io import TextIOWrapper
+from datetime import datetime
 
 @login_required
 def home_view(request):
@@ -192,7 +196,32 @@ def create_user(request):
 
 @login_required
 def manager_home(request):
-    return render(request, 'manager_home.html')
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
+            reader = csv.DictReader(csv_file)
+
+            for row in reader:
+                try:
+                    expiration_date = datetime.strptime(row['ExpDate'], '%m/%d/%Y').date()
+                    
+                    # Create Medications entry, ignoring the "Ignore" column
+                    Medications.objects.create(
+                        name=row['Name'],
+                        expiration_date=expiration_date,
+                        tablet_count=row['Amount']
+                    )
+                except Exception as e:
+                    messages.error(request, f"Error processing row {row}: {e}")
+                    continue
+
+            messages.success(request, "Medications successfully uploaded.")
+            return redirect('manager_home')
+    else:
+        form = CSVUploadForm()
+
+    return render(request, 'manager_home.html', {'form': form})
 
 @login_required
 def customer_home(request):
