@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">Confirm account activation</div>
+            <div class="card-body">
+        <p>This account is locked due to mulptile unsuccessful login attempts. Are you sure you want to recover user "{{ user.username }}"?</p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary">Recover</button>
+                <a href="{% url 'user_management' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+        </form>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}
