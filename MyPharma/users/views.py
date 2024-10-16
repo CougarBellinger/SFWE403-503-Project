@@ -22,7 +22,7 @@ def home_view(request):
         return redirect('/users/manager_home')
     else:
         return redirect('/users/customer_home')
-#======
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
