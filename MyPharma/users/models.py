@@ -123,3 +123,8 @@ class Patient(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+class Medications(models.Model):
+    name = models.CharField(max_length= 100)
+    expiration_date = models.DateField()
+    tablet_count = models.IntegerField(default= 0)
