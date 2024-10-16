@@ -85,10 +85,8 @@ def logout_view(request):
     logout(request)
     return redirect('login_view')
 
-def contact_view(request):
-    return render(request, 'contact.html')
-    
 @login_required
+def contact_view(request):
     return render(request, 'users/contact.html')
 
 @login_required 
