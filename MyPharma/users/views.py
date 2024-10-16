@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
 from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
 from .forms import CustomUser
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser, Medications
 from .forms import CustomUser, FirstPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
@@ -14,6 +14,8 @@ from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm
+
+import datetime
 
 @login_required
 def home_view(request):
@@ -79,6 +81,7 @@ def logout_view(request):
 
 def contact_view(request):
     return render(request, 'contact.html')
+
 @login_required
 def first_password_view(request):
     user = request.user
@@ -192,6 +195,20 @@ def create_user(request):
 
 @login_required
 def manager_home(request):
+    # list of low stock medications
+    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+    
+    
+    #list of expiring and expiring soon medications
+    #current_date = datetime.date.today()
+
+   # if (current_date - expiration_date)
+
+    expired_medications = Medications.objects.filter(is_expired=True)
+    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+
+    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
+
     return render(request, 'manager_home.html')
 
 @login_required
@@ -215,3 +232,4 @@ def password_change(request):
 def user_list(request):
     users = CustomUser.objects.all()
     return render(request, 'user_list.html', {'users': users})
+
