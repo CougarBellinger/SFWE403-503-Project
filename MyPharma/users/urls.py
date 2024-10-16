@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import User_registration_view, home_view, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view
+from .views import User_registration_view, home_view, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient
 
 
 urlpatterns = [
@@ -16,5 +16,13 @@ urlpatterns = [
     path('password_change/', password_change, name='password_change'),
     path('user_list/', user_list, name='user_list'),
     path('contact/', contact_view, name='contact_view'), 
-    path('updatepassword/', first_password_view, name='first_password_view')
+    path('updatepassword/', first_password_view, name='first_password_view'),
+    path('user-management/', user_list, name='user_management'),
+    path('<int:user_id>/recover/', recover_user, name='recover_user'),
+    path('<int:user_id>/edit/', edit_user, name='edit_user'),
+    path('<int:user_id>/delete/', delete_user, name='delete_user'),
+    path('create_patient/', create_patient, name='create_patient'),
+    path('patient_management/', patient_management, name='patient_management'),
+    path('edit/<int:pk>/', edit_patient, name='edit_patient'),
+    path('delete/<int:pk>/', delete_patient, name='delete_patient'),
 ]
