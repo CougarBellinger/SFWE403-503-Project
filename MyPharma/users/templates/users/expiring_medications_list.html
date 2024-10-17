@@ -6,6 +6,9 @@
     <div class="col-md-6">
       <h2>Low Stock Management</h2>
     </div>
+    <div class="col-md-6 text-end">
+      <a class="btn btn-primary" href="{% url 'order_view' %}">Order Medication</a> <!-- need to add order view -->
+    </div>
   </div>
 
   <table class="table table-striped mt-4">
@@ -23,6 +26,9 @@
         <td>{{ medication.id }}</td>
         <td>{{ medication.name }}</td>
         <td>{{ medication.tablet_count }}</td>
+       <!-- <td>
+          <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-warning">Order</a>
+        </td> -->
       </tr>
       {% endfor %}
     </tbody>
