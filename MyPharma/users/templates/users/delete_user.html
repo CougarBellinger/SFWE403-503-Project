@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header">Confirm Delete</div>
+            <div class="card-body">
+        <p>Are you sure you want to delete user "{{ user.first_name }} {{ user.last_name }}"?</p>
+        <form method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'user_management' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+        </form>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}
