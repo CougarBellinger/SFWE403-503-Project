@@ -21,5 +21,7 @@ from django.contrib.auth import update_session_auth_hash
 def manager_home(request):
     return render(request, 'manager_home.html')
     
-
+@login_required
+def order_page(request):
+    return render(request, 'order_page.html')
 
