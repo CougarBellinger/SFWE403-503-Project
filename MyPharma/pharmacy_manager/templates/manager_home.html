@@ -3,6 +3,20 @@
 {% block content %}
 <h1>Welcome, {{ user.username }}</h1>
 <p>This is your pharmacy manager dashboard</p>
-<a href="{% url 'order_page' %}"> Inventory Management </a>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="csv_file">Upload CSV:</label>
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit">Upload CSV</button>
+</form>
+
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}

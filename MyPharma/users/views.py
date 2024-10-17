@@ -202,59 +202,59 @@ def create_user(request):
         form = UserRegistrationForm()
     return render(request, 'create_user.html', {'form': form})
 
-@login_required
-def manager_home(request):
-    # list of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+# @login_required
+# def manager_home(request):
+#     # list of low stock medications
+#     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
     
     
-    #list of expiring and expiring soon medications
-    #current_date = datetime.date.today()
+#     #list of expiring and expiring soon medications
+#     #current_date = datetime.date.today()
 
-   # if (current_date - expiration_date)
+#    # if (current_date - expiration_date)
 
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
 
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
 
-    if request.method == 'POST':
-        form = CSVUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
-            reader = csv.DictReader(csv_file)
+#     if request.method == 'POST':
+#         form = CSVUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
+#             reader = csv.DictReader(csv_file)
 
-            for row in reader:
-                # Check for missing fields
-                name = row.get('Name')
-                amount = row.get('Amount')
-                exp_date = row.get('ExpDate')
+#             for row in reader:
+#                 # Check for missing fields
+#                 name = row.get('Name')
+#                 amount = row.get('Amount')
+#                 exp_date = row.get('ExpDate')
 
-                if not name or not amount or not exp_date:
-                    messages.error(request, f"Error: Missing required field(s) in row: {row}")
-                    continue
+#                 if not name or not amount or not exp_date:
+#                     messages.error(request, f"Error: Missing required field(s) in row: {row}")
+#                     continue
 
-                try:
-                    expiration_date = datetime.strptime(exp_date, '%m/%d/%Y').date()
+#                 try:
+#                     expiration_date = datetime.strptime(exp_date, '%m/%d/%Y').date()
                     
-                    # Create Medications entry
-                    Medications.objects.create(
-                        name=name,
-                        expiration_date=expiration_date,
-                        tablet_count=int(amount)  # Convert amount to integer
-                    )
-                except ValueError as ve:
-                    messages.error(request, f"Error processing row {row}: {ve}")
-                except Exception as e:
-                    messages.error(request, f"Error processing row {row}: {e}")
-                    continue
+#                     # Create Medications entry
+#                     Medications.objects.create(
+#                         name=name,
+#                         expiration_date=expiration_date,
+#                         tablet_count=int(amount)  # Convert amount to integer
+#                     )
+#                 except ValueError as ve:
+#                     messages.error(request, f"Error processing row {row}: {ve}")
+#                 except Exception as e:
+#                     messages.error(request, f"Error processing row {row}: {e}")
+#                     continue
 
-            messages.success(request, "Medications successfully uploaded.")
-            return redirect('manager_home')
-    else:
-        form = CSVUploadForm()
+#             messages.success(request, "Medications successfully uploaded.")
+#             return redirect('manager_home')
+#     else:
+#         form = CSVUploadForm()
 
-    return render(request, 'manager_home.html', {'form': form})
+#     return render(request, 'manager_home.html', {'form': form})
 
 @login_required
 def customer_home(request):
