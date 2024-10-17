@@ -1,16 +1,16 @@
 from django.contrib.auth.forms import PasswordChangeForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser ,Patient
 from .forms import CustomUser
 from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser, Medications
 from .forms import CustomUser, FirstPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-
-from .forms import LoginForm
+from users.decorators import pharmacy_manager_required
+from .forms import LoginForm, UserEditForm,PatientCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm
@@ -21,9 +21,9 @@ import datetime
 def home_view(request):
     user = CustomUser.objects.get(id=request.user.id)
     if user.user_type == CustomUser.PharmacyManager:
-        return redirect('manager_home')
+        return redirect('/users/manager_home')
     else:
-        return redirect('customer_home')
+        return redirect('/users/customer_home')
 
 def login_view(request):
     if request.method == 'POST':
@@ -39,7 +39,7 @@ def login_view(request):
             if not user.is_active:
                 # User's account is locked
                 messages.error(request, 'Your account is locked. Please contact an admin for assistance.')
-                return render(request, 'login.html', {'form': form})
+                return render(request, 'users/login.html', {'form': form})
             
             # Successful login
             user.unsuccessful_login_count = 0  # Reset the count on successful login
@@ -70,7 +70,7 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'users/login.html', {'form': form})
 
 
 
@@ -100,8 +100,9 @@ def first_password_view(request):
             messages.success(request, 'Your password was successfully updated!')
             return redirect('home_view')  
         
-    return render(request, 'first_login.html')
+    return render(request, 'users/first_login.html')
 
+@pharmacy_manager_required
 def User_registration_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -138,7 +139,7 @@ def User_registration_view(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = UserRegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form})
 
 @login_required
 def recover_account_view(request):
@@ -151,7 +152,7 @@ def recover_account_view(request):
         email = request.POST.get('email')  # Get the email from the form
 
         if not email:  # Validate the inputs
-            messages.error(request, 'Please fill out both fields.')
+            messages.error(request, 'The user d')
             return render(request, 'recover.html')  # Re-render the form
 
         try:
@@ -165,7 +166,7 @@ def recover_account_view(request):
             user.unsuccessful_login_count = 0  # Resets login count
             user.is_active = True  # Ensure the account is active
             user.save()
-            messages.success(request, 'Your password has been reset successfully!')
+            messages.success(request, 'Your Account has been activated successfully!')
             return redirect('login_view')
 
         except CustomUser.DoesNotExist:
@@ -173,7 +174,7 @@ def recover_account_view(request):
             messages.error(request, 'No account found with that email address.')
 
     # Render the recovery form for GET requests
-    return render(request, 'recover.html')
+    return render(request, 'users/recover.html')
 
 
 def create_user(request):
@@ -213,7 +214,7 @@ def manager_home(request):
 
 @login_required
 def customer_home(request):
-    return render(request, 'customer_home.html')
+    return render(request, 'users/customer_home.html')
 
 @login_required
 def password_change(request):
@@ -231,5 +232,79 @@ def password_change(request):
 @login_required
 def user_list(request):
     users = CustomUser.objects.all()
+
     return render(request, 'user_list.html', {'users': users})
+
+
+
+
+def edit_user(request, user_id):
+    user = get_object_or_404(CustomUser, pk=user_id)
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('/users/user-management/')  
+        else:
+            print(form.errors)
+    else:
+        form = UserEditForm(instance=user)
+    return render(request, 'users/edit_user.html', {'form': form, 'user': user})
+
+
+def delete_user(request, user_id):
+    user = get_object_or_404(CustomUser, pk=user_id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('/users/user-management/')  
+    return render(request, 'users/delete_user.html', {'user': user})
+
+def recover_user(request, user_id):
+    user = get_object_or_404(CustomUser, pk=user_id)
+    if request.method == 'POST':
+        user.reset_token = None  # Clear the reset token
+        user.reset_token_expiry = None  # Clear the expiry
+        user.unsuccessful_login_count = 0  # Resets login count
+        user.is_active = True  # Ensure the account is active
+        user.save()
+        return redirect('/users/user-management/')  
+    return render(request, 'users/recover_user.html', {'user': user})
+
+def create_patient(request):
+    if request.method == 'POST':
+        form = PatientCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('patient_management')  
+    else:
+        form = PatientCreationForm()
+
+    return render(request, 'users/create_patient.html', {'form': form})
+
+# List of patients
+def patient_management(request):
+    patients = Patient.objects.all()
+    return render(request, 'users/patient_management.html', {'patients': patients})
+
+
+def edit_patient(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)
+    if request.method == 'POST':
+        form = PatientCreationForm(request.POST, instance=patient)  # Bind the form to the existing patient
+        if form.is_valid():
+            form.save()
+            return redirect('patient_management')  # Redirect to patient management after saving changes
+    else:
+        form = PatientCreationForm(instance=patient)  # Prepopulate the form with patient data
+
+    return render(request, 'users/edit_patient.html', {'form': form, 'patient': patient})
+
+
+def delete_patient(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)
+    if request.method == 'POST':
+        patient.delete()  # Delete the patient from the database
+        return redirect('patient_management')  # Redirect to patient management after deletion
+
+    return render(request, 'users/delete_patient.html', {'patient': patient})
 

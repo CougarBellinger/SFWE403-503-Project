@@ -2,14 +2,14 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Per
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from users.manage import CustomUserManager
-
+from datetime import datetime, timedelta
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
     PharmacyTechnician = '2'
     Pharmicist = '3'
     Cashier = '4'
-    Patient = '5'
+    #Patient = '5'
     GeneralUser = '6'
     
 
@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
         (PharmacyTechnician, "PharmacyTechnician"),
         (Pharmicist, "Pharmacist"),
         (Cashier, "Cashier"),
-        (Patient, "Patient"),
+        #(Patient, "Patient"),
         (GeneralUser, "GeneralUser")
     )
 
@@ -98,13 +98,31 @@ class Cashier(models.Model):
     id = models.AutoField(primary_key=True)
     admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
 
-class Patient(models.Model):
-    id = models.AutoField(primary_key=True)
-    admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
+# class Patient(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
 
 class GeneralUser(models.Model):
     id = models.AutoField(primary_key=True)
     admin = models.OneToOneField(CustomUser, on_delete = models.CASCADE)
+
+class Patient(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    default_birthdate = datetime.now() - timedelta(days=18*365)
+    date_of_birth = models.DateField(default=default_birthdate)
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')])
+    emergency_contact_name = models.CharField(max_length=100, blank=True, null=True)
+    emergency_contact_phone = models.CharField(max_length=15, blank=True, null=True)
+    medical_history = models.TextField(blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 class Medications(models.Model):
     name = models.CharField(max_length= 100)
