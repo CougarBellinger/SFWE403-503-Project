@@ -25,7 +25,7 @@
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                 <li> {% if user.user_type == '1' %}
-                    <!-- Nav link for Pharmay Manager (user_type 1) -->
+                    <!-- Nav link for Pharmacy Manager (user_type 1) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
                         
@@ -38,6 +38,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'low_medications_management' %}">Low Stock</a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'expiring_medications_management' %}"> Expiring Medications</a>
+                    </li>
+                    
                 {% endif %}
                 </li>
                 <li class="nav-item">

@@ -1,5 +1,6 @@
 from io import TextIOWrapper
 from datetime import datetime
+from django.utils import timezone
 import csv
 
 from django.shortcuts import render, redirect
@@ -78,13 +79,21 @@ def low_medications_management(request):
 def orderable_medications_management(request):
     orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
     context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
-    return render(request, 'orderable_medications_list.html', {'orderable_medications': orderable_medications})
+    return render(request, 'orderable_medications_list.html', context)
 
 # list of expired and expiring soon medications
 def expiring_medications_management(request):
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
-    return render(request, 'expiring_medications_list.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
+    meds = Medications.objects.all()
+
+    for m in meds:
+        if m.expiration_date <= timezone.now().date():
+            m.is_expired = True
+        
+        if m.expiration_date < timezone.now().date() + timedelta(days= 30):
+            m.is_expiring_soon = True
+            
+    expiring_medications = Medications.objects.filter(is_expiring_soon=True)
+    context = {'expiring_medications': expiring_medications} # passes dynamic data to template  
+    return render(request, 'expiring_medications_list.html', context)
 
 
