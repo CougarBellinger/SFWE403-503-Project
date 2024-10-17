@@ -1,30 +1,24 @@
+# General imports
+from io import TextIOWrapper
+from datetime import datetime
+import csv
+
+# Django imports
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordChangeForm
+
+# Decorator imports
 from django.contrib.auth.decorators import login_required
-
-from .forms import UserRegistrationForm, UserCreationForm, FirstPasswordChangeForm, LoginForm
-from .forms import CustomUser
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser
-
-from pharmacy_manager.views import *
-from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser, Medications, Patient
-from .forms import CustomUser, FirstPasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
 from users.decorators import pharmacy_manager_required
-from .forms import LoginForm, UserEditForm,PatientCreationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import make_password
-from .forms import UserCreationForm, UserRegistrationForm
-import csv
-from .forms import CSVUploadForm
-from io import TextIOWrapper
-from datetime import datetime
 
+# App imports
+from pharmacy_manager.views import *
+from .forms import *
+from .models import *
 
 @login_required
 def home_view(request):
@@ -256,16 +250,16 @@ def create_user(request):
 
 #     return render(request, 'manager_home.html', {'form': form})
 
-def manager_low_medications():
-    # list of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
-    context = {'low_medications': low_medications} # passes dynamic data to template  
+# def manager_low_medications():
+#     # list of low stock medications
+#     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+#     context = {'low_medications': low_medications} # passes dynamic data to template  
 
-def manager_expiring_medications():
-    #list of expired and expiring soon medications
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+# def manager_expiring_medications():
+#     #list of expired and expiring soon medications
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
 
 @login_required
 def customer_home(request):

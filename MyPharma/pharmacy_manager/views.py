@@ -1,7 +1,6 @@
-import csv
-
 from io import TextIOWrapper
 from datetime import datetime
+import csv
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -72,4 +71,16 @@ def manager_home(request):
 @login_required
 def order_page(request):
     return render(request, 'order_page.html')
+
+def manager_low_medications():
+    # list of low stock medications
+    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+    context = {'low_medications': low_medications} # passes dynamic data to template  
+
+def manager_expiring_medications():
+    #list of expired and expiring soon medications
+    expired_medications = Medications.objects.filter(is_expired=True)
+    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+
 
