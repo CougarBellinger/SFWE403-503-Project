@@ -292,24 +292,25 @@ def delete_patient(request, pk):
 
     return render(request, 'users/delete_patient.html', {'patient': patient})
 
-    def changePassword_view(request):
-        if request.user.is_authenticated:
-            currentUser = request.user
-            if request.method == 'POST':
-                form = ChangePasswordForm(request.user, request.POST)
-                if form.is_valid():
-                    form.save()
-                    update_session_auth_hash(request, currentUser)
-                    messages.success(request, 'Your password was successfully updated!')
-                    return redirect('profile_view')
-                else:
-                    messages.error(request, 'Please correct the error below.')
-                    return render(request, 'users/password_change.html')
+
+def changePassword_view(request):
+    if request.user.is_authenticated:
+        currentUser = request.user
+        if request.method == 'POST':
+            form = ChangePasswordForm(request.user, request.POST)
+            if form.is_valid():
+                form.save()
+                update_session_auth_hash(request, currentUser)
+                messages.success(request, 'Your password was successfully updated!')
+                return redirect('home_view')
             else:
-                form = ChangePasswordForm(currentUser)
                 messages.error(request, 'Please correct the error below.')
-                return render(request, 'users/password_change.html', {'form': form})
+                return render(request, 'users/password_change.html')
         else:
             form = ChangePasswordForm(currentUser)
             messages.error(request, 'Please correct the error below.')
             return render(request, 'users/password_change.html', {'form': form})
+    else:
+        form = ChangePasswordForm(currentUser)
+        messages.error(request, 'Please correct the error below.')
+        return render(request, 'users/password_change.html', {'form': form})
