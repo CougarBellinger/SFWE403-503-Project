@@ -4,9 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser ,Patient
-from .forms import CustomUser
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser, Medications
+from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser, Medications, Patient
 from .forms import CustomUser, FirstPasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from users.decorators import pharmacy_manager_required
@@ -14,8 +12,11 @@ from .forms import LoginForm, UserEditForm,PatientCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm
+import csv
+from .forms import CSVUploadForm
+from io import TextIOWrapper
+from datetime import datetime
 
-import datetime
 
 @login_required
 def home_view(request):
@@ -210,7 +211,43 @@ def manager_home(request):
 
     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
 
-    return render(request, 'manager_home.html')
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
+            reader = csv.DictReader(csv_file)
+
+            for row in reader:
+                # Check for missing fields
+                name = row.get('Name')
+                amount = row.get('Amount')
+                exp_date = row.get('ExpDate')
+
+                if not name or not amount or not exp_date:
+                    messages.error(request, f"Error: Missing required field(s) in row: {row}")
+                    continue
+
+                try:
+                    expiration_date = datetime.strptime(exp_date, '%m/%d/%Y').date()
+                    
+                    # Create Medications entry
+                    Medications.objects.create(
+                        name=name,
+                        expiration_date=expiration_date,
+                        tablet_count=int(amount)  # Convert amount to integer
+                    )
+                except ValueError as ve:
+                    messages.error(request, f"Error processing row {row}: {ve}")
+                except Exception as e:
+                    messages.error(request, f"Error processing row {row}: {e}")
+                    continue
+
+            messages.success(request, "Medications successfully uploaded.")
+            return redirect('manager_home')
+    else:
+        form = CSVUploadForm()
+
+    return render(request, 'manager_home.html', {'form': form})
 
 def manager_low_medications():
     # list of low stock medications
