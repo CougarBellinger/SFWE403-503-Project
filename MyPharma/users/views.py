@@ -13,7 +13,7 @@ from users.decorators import pharmacy_manager_required
 from .forms import LoginForm, UserEditForm,PatientCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .forms import UserCreationForm, UserRegistrationForm
+from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
 
 @login_required
 def home_view(request):
@@ -291,3 +291,25 @@ def delete_patient(request, pk):
         return redirect('patient_management')  # Redirect to patient management after deletion
 
     return render(request, 'users/delete_patient.html', {'patient': patient})
+
+    def changePassword_view(request):
+        if request.user.is_authenticated:
+            currentUser = request.user
+            if request.method == 'POST':
+                form = ChangePasswordForm(request.user, request.POST)
+                if form.is_valid():
+                    form.save()
+                    update_session_auth_hash(request, currentUser)
+                    messages.success(request, 'Your password was successfully updated!')
+                    return redirect('profile_view')
+                else:
+                    messages.error(request, 'Please correct the error below.')
+                    return render(request, 'users/password_change.html')
+            else:
+                form = ChangePasswordForm(currentUser)
+                messages.error(request, 'Please correct the error below.')
+                return render(request, 'users/password_change.html', {'form': form})
+        else:
+            form = ChangePasswordForm(currentUser)
+            messages.error(request, 'Please correct the error below.')
+            return render(request, 'users/password_change.html', {'form': form})

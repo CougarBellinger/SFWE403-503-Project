@@ -26,5 +26,6 @@ urlpatterns = [
     path('patient_management/', patient_management, name='patient_management'),
     path('edit/<int:pk>/', edit_patient, name='edit_patient'),
     path('delete/<int:pk>/', delete_patient, name='delete_patient'),
+    path('changePassword/', changePassword_view, name='changePassword_view'),
 
 ]

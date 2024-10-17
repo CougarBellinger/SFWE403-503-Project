@@ -30,3 +30,8 @@ class FirstPasswordChangeForm(SetPasswordForm):
         model = CustomUser
         fields = [ 'new_password1', 'new_password2']
 
+
+class ChangePasswordForm(PasswordChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ['old_password', 'new_password1', 'new_password2']
