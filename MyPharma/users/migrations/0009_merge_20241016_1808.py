@@ -7,8 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0007_medications_is_expired_medications_is_expiring_soon_and_more'),
-        ('users', '0008_delete_csvfile'),
-        ('users', '0008_merge_0006_medications_0007_patient'),
+        ('users', '0008_delete_csvfile')
     ]
 
     operations = [

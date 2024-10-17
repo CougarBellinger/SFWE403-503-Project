@@ -4,18 +4,18 @@
 <h1>Manager Home Page</h1>
 
 <form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="csv_file">Upload CSV:</label>
-    <input type="file" name="csv_file" accept=".csv" required>
-    <button type="submit">Upload CSV</button>
+  {% csrf_token %}
+  <label for="csv_file">Upload CSV:</label>
+  <input type="file" name="csv_file" accept=".csv" required>
+  <button type="submit">Upload CSV</button>
 </form>
 
 {% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
+<ul>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
 {% endif %}
 
 {% endblock %}
