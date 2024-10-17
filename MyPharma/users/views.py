@@ -78,8 +78,6 @@ def login_view(request):
 
     return render(request, 'users/login.html', {'form': form})
 
-
-
 @login_required
 def logout_view(request):
     logout(request)
@@ -226,7 +224,6 @@ def password_change(request):
 def user_list(request):
     users = CustomUser.objects.all()
     return render(request, 'users/user-management.html', {'users':users})
-
 
 
 def edit_user(request, user_id):
