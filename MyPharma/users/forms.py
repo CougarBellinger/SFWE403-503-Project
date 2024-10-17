@@ -28,7 +28,9 @@ class PatientCreationForm(forms.ModelForm):
 class FirstPasswordChangeForm(SetPasswordForm):
      class Meta:
         model = CustomUser
-        fields = [ 'new_password1', 'new_password2']
+        fields = [ 'new_password1', 'new_password2']   
+class CSVUploadForm(forms.Form):
+    csv_file = forms.FileField()
 
 
 class ChangePasswordForm(PasswordChangeForm):

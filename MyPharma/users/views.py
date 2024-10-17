@@ -1,25 +1,33 @@
-from django.contrib.auth.forms import PasswordChangeForm
+# General imports
+from io import TextIOWrapper
+from datetime import datetime
+import csv
+
+# Django imports
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import UserRegistrationForm
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser,CustomUser ,Patient
-from .forms import CustomUser
-from .models import PharmacyManager,PharmacyTechnician,Pharmacist,Cashier,GeneralUser
-from .forms import CustomUser, FirstPasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
-from users.decorators import pharmacy_manager_required
-from .forms import LoginForm, UserEditForm,PatientCreationForm
+from django.contrib.auth.forms import PasswordChangeForm
+
+# Decorator imports
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
+from users.decorators import pharmacy_manager_required
+
+# App imports
+from pharmacy_manager.views import *
+from .forms import *
+from .models import *
+
 
 @login_required
 def home_view(request):
     user = CustomUser.objects.get(id=request.user.id)
     if user.user_type == CustomUser.PharmacyManager:
-        return redirect('/users/manager_home')
+        return redirect('manager_home') #Goes to manager home view in pharmacy_manager app
     else:
         return redirect('/users/customer_home')
 
@@ -70,17 +78,16 @@ def login_view(request):
 
     return render(request, 'users/login.html', {'form': form})
 
-
-
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login_view')
 
+@login_required
 def contact_view(request):
-    return render(request, 'users/contact.html')
+    return render(request, 'contact.html')
 
-@login_required 
+@login_required
 def first_password_view(request):
     user = request.user
    
@@ -192,9 +199,70 @@ def create_user(request):
         form = UserRegistrationForm()
     return render(request, 'create_user.html', {'form': form})
 
-@login_required
-def manager_home(request):
-    return render(request, 'users/manager_home.html')
+# @login_required
+# def manager_home(request):
+#     # list of low stock medications
+#     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+    
+    
+#     #list of expiring and expiring soon medications
+#     #current_date = datetime.date.today()
+
+#    # if (current_date - expiration_date)
+
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
+
+#     if request.method == 'POST':
+#         form = CSVUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
+#             reader = csv.DictReader(csv_file)
+
+#             for row in reader:
+#                 # Check for missing fields
+#                 name = row.get('Name')
+#                 amount = row.get('Amount')
+#                 exp_date = row.get('ExpDate')
+
+#                 if not name or not amount or not exp_date:
+#                     messages.error(request, f"Error: Missing required field(s) in row: {row}")
+#                     continue
+
+#                 try:
+#                     expiration_date = datetime.strptime(exp_date, '%m/%d/%Y').date()
+                    
+#                     # Create Medications entry
+#                     Medications.objects.create(
+#                         name=name,
+#                         expiration_date=expiration_date,
+#                         tablet_count=int(amount)  # Convert amount to integer
+#                     )
+#                 except ValueError as ve:
+#                     messages.error(request, f"Error processing row {row}: {ve}")
+#                 except Exception as e:
+#                     messages.error(request, f"Error processing row {row}: {e}")
+#                     continue
+
+#             messages.success(request, "Medications successfully uploaded.")
+#             return redirect('manager_home')
+#     else:
+#         form = CSVUploadForm()
+
+#     return render(request, 'manager_home.html', {'form': form})
+
+# def manager_low_medications():
+#     # list of low stock medications
+#     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+#     context = {'low_medications': low_medications} # passes dynamic data to template  
+
+# def manager_expiring_medications():
+#     #list of expired and expiring soon medications
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
 
 @login_required
 def customer_home(request):
@@ -216,7 +284,9 @@ def password_change(request):
 @login_required
 def user_list(request):
     users = CustomUser.objects.all()
-    return render(request, 'users/user-management.html', {'users':users})
+
+    return render(request, 'user_list.html', {'users': users})
+
 
 
 
@@ -232,8 +302,6 @@ def edit_user(request, user_id):
     else:
         form = UserEditForm(instance=user)
     return render(request, 'users/edit_user.html', {'form': form, 'user': user})
-
-
 
 
 def delete_user(request, user_id):
@@ -314,3 +382,4 @@ def changePassword_view(request):
         form = ChangePasswordForm(currentUser)
         messages.error(request, 'Please correct the error below.')
         return render(request, 'users/password_change.html', {'form': form})
+
