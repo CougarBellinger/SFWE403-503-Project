@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "users"
+    "users",
+    "pharmacy_manager"
 ]
 
 MIDDLEWARE = [
@@ -169,3 +170,6 @@ LOGGING = {
         },
     },
 }
+# Redirects
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'

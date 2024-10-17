@@ -1,0 +1,18 @@
+import datetime
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('users', '0008_merge_0006_medications_0007_patient'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='patient',
+            name='date_of_birth',
+            field=models.DateField(default=datetime.datetime(2006, 10, 21, 14, 49, 8, 410887)),
+
+        ),
+    ]
