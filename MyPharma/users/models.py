@@ -126,5 +126,17 @@ class Patient(models.Model):
 
 class Medications(models.Model):
     name = models.CharField(max_length= 100)
-    expiration_date = models.DateField()
+    expiration_date = models.DateField() # must follow format YYYY - MM - DD
     tablet_count = models.IntegerField(default= 0)
+
+    # true when tablet_count < 50
+    is_orderable = models.BooleanField(default=False)
+
+    # true when tablet_count < 120
+    is_low = models.BooleanField(default=False)
+
+    # true when (current date - expiration date) <= 0
+    is_expired = models.BooleanField(default=False)
+
+    # true when (current date - expiration date) < 30
+    is_expiring_soon = models.BooleanField(default=False)
