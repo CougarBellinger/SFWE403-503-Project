@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from users.models import CustomUser, Patient
-from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -32,3 +32,8 @@ class FirstPasswordChangeForm(SetPasswordForm):
 class CSVUploadForm(forms.Form):
     csv_file = forms.FileField()
 
+
+class ChangePasswordForm(PasswordChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ['old_password', 'new_password1', 'new_password2']
