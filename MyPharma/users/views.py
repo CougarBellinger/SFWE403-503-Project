@@ -347,24 +347,24 @@ def delete_patient(request, pk):
 
     return render(request, 'users/delete_patient.html', {'patient': patient})
 
-# list of low stock (< 120) medications
-def low_medications_management(request):
-    low_medications = Medications.objects.filter(is_low= True) # filter DB for tablet_count < 120
-    context = {'low_medications': low_medications} # passes dynamic data to template  
-    return render(request, 'users/low_medications_management.html', {'low_medications': low_medications})
+# # list of low stock (< 120) medications
+# def low_medications_management(request):
+#     low_medications = Medications.objects.filter(is_low= True) # filter DB for tablet_count < 120
+#     context = {'low_medications': low_medications} # passes dynamic data to template  
+#     return render(request, 'users/low_medications_management.html', {'low_medications': low_medications})
 
-# list of orderable (< 50) medications
-def orderable_medications_management(request):
-    orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
-    context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
-    return render(request, 'users/orderale_medications_management.html', {'orderable_medications': orderable_medications})
+# # list of orderable (< 50) medications
+# def orderable_medications_management(request):
+#     orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
+#     context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
+#     return render(request, 'users/orderale_medications_management.html', {'orderable_medications': orderable_medications})
 
-# list of expired and expiring soon medications
-def expiring_medications_management(request):
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
-    return render(request, 'users/expiring_medications_management.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
+# # list of expired and expiring soon medications
+# def expiring_medications_management(request):
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+#     return render(request, 'users/expiring_medications_management.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
 def changePassword_view(request):
     if request.user.is_authenticated:

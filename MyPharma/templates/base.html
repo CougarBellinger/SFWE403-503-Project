@@ -26,14 +26,18 @@
                 {% if user.is_authenticated %}
                 <li> {% if user.user_type == '1' %}
                     <!-- Nav link for Pharmay Manager (user_type 1) -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
-                        <a class="nav-link" href="{% url 'changePassword_view' %}">Change Password</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
+                        
+                    </li>
 
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'low_stock' %}">Low Stock</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'changePassword_view' %}">Change Password</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'low_medications_management' %}">Low Stock</a>
+                    </li>
                 {% endif %}
                 </li>
                 <li class="nav-item">

@@ -68,15 +68,23 @@ def manager_home(request):
     return render(request, 'manager_home.html', {'form': form})
 
 
-def manager_low_medications():
-    # list of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+# list of low stock (< 120) medications
+def low_medications_management(request):
+    low_medications = Medications.objects.filter(is_low= True) # filter DB for tablet_count < 120
     context = {'low_medications': low_medications} # passes dynamic data to template  
+    return render(request, 'low_medications_list.html', {'low_medications': low_medications})
 
-def manager_expiring_medications():
-    #list of expired and expiring soon medications
+# list of orderable (< 50) medications
+def orderable_medications_management(request):
+    orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
+    context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
+    return render(request, 'orderable_medications_list.html', {'orderable_medications': orderable_medications})
+
+# list of expired and expiring soon medications
+def expiring_medications_management(request):
     expired_medications = Medications.objects.filter(is_expired=True)
     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+    return render(request, 'expiring_medications_list.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
 
