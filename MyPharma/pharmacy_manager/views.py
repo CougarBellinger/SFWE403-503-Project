@@ -89,9 +89,8 @@ def expiring_medications_management(request):
     return render(request, 'expiring_medications_list.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
 def all_medications_view(request):
-    all_medications = Medications.objects.all()
-    ordered_medications = all_medications.order_by('tablet_count')
+    ordered_medications = Medications.objects.all().order_by('tablet_count')
     context = {'ordered_medications':ordered_medications} 
-    return render(request, 'all_medications_list.html', context)
+    return render(request, 'all_medications_list.html', {'ordered_medications' : ordered_medications})
 
 
