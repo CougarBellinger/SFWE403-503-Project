@@ -67,10 +67,6 @@ def manager_home(request):
 
     return render(request, 'manager_home.html', {'form': form})
 
-    
-@login_required
-def order_page(request):
-    return render(request, 'order_page.html')
 
 def manager_low_medications():
     # list of low stock medications
