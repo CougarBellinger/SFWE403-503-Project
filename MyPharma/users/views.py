@@ -6,6 +6,7 @@ import csv
 # Django imports
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
+from django.db.models import OrderBy
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
@@ -275,8 +276,6 @@ def user_list(request):
     users = CustomUser.objects.all()
 
     return render(request, 'user_list.html', {'users': users})
-
-
 
 
 def edit_user(request, user_id):

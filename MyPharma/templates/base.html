@@ -16,7 +16,7 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">MyPharma</a>
+        <a class="navbar-brand" href="{% url 'home_view' %}">MyPharma</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -24,11 +24,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                <li> {% if user.user_type == '1' %}
+                <li>
+                    {% if user.user_type == '1' %}
                     <!-- Nav link for Pharmay Manager (user_type 1) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
-                        
                     </li>
 
                     <li class="nav-item">
@@ -38,7 +38,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'low_medications_management' %}">Low Stock</a>
                     </li>
-                {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'all_medications_view' %}">All Inventory</a>
+                    </li>
+                    {% endif %}
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout_view' %}">Logout</a>

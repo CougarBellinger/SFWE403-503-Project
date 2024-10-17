@@ -4,6 +4,7 @@ import csv
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db.models import OrderBy
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -86,5 +87,11 @@ def expiring_medications_management(request):
     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
     return render(request, 'expiring_medications_list.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
+
+def all_medications_view(request):
+    all_medications = Medications.objects.all()
+    ordered_medications = all_medications.order_by('tablet_count')
+    context = {'ordered_medications':ordered_medications} 
+    return render(request, 'all_medications_list.html', context)
 
 
