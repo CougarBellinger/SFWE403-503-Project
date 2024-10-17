@@ -249,17 +249,6 @@ def manager_home(request):
 
     return render(request, 'manager_home.html', {'form': form})
 
-def manager_low_medications():
-    # list of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
-    context = {'low_medications': low_medications} # passes dynamic data to template  
-
-def manager_expiring_medications():
-    #list of expired and expiring soon medications
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
-
 @login_required
 def customer_home(request):
     return render(request, 'users/customer_home.html')
@@ -334,6 +323,18 @@ def patient_management(request):
     patients = Patient.objects.all()
     return render(request, 'users/patient_management.html', {'patients': patients})
 
+# list of low stock medications
+def low_medications_management(request):
+    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+    context = {'low_medications': low_medications} # passes dynamic data to template  
+    return render(request, 'users/low_medications_management.html', {'low_medications': low_medications})
+
+# list of expired and expiring soon medications
+def expiring_medications_management(request):
+    expired_medications = Medications.objects.filter(is_expired=True)
+    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+    return render(request, 'users/expiring_medications_management.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
 def edit_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)

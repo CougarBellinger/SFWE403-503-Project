@@ -7,7 +7,7 @@
       <h2>Low Stock Management</h2>
     </div>
     <div class="col-md-6 text-end">
-      <a class="btn btn-primary" href="{% url 'order_view' %}">Order Medication</a>
+      <a class="btn btn-primary" href="{% url 'order_view' %}">Order Medication</a> <!-- need to add order view -->
     </div>
   </div>
 
@@ -21,15 +21,14 @@
       </tr>
     </thead>
     <tbody>
-      {% for medication in inventory %} <!-- need to add inventory as a variable into a view -->
+      {% for medication in low_medications %} 
       <tr>
-        <td>{{ patient.first_name }}</td>
-        <td>{{ patient.last_name }}</td>
-        <td>{{ patient.email }}</td>
-        <td>{{ patient.date_of_birth }}</td>
-        <td>
+        <td>{{ medication.id }}</td>
+        <td>{{ medication.name }}</td>
+        <td>{{ medication.tablet_count }}</td>
+       <!-- <td>
           <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-warning">Order</a>
-        </td>
+        </td> -->
       </tr>
       {% endfor %}
     </tbody>
