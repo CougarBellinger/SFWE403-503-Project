@@ -28,16 +28,29 @@ def manager_home(request):
         'expired_medications': expired_medications,
         'expiring_soon_medications': expiring_soon_medications,
         'low_medications': low_medications,
-    }  # Passes dynamic data to template
+    }
 
     if request.method == 'POST':
         if 'sell_medication' in request.POST:
             medication_id = request.POST.get('medication_id')
             amount_to_sell = request.POST.get('amount_to_sell')
 
+            # Check if medication_id is a valid integer
+            if not medication_id.isdigit():
+                messages.error(request, "Error: Medication ID must be a positive integer.")
+                return redirect('manager_home')
+
+            # Convert medication_id to integer
+            medication_id = int(medication_id)
+
             try:
                 # Fetch the medication by ID
                 medication = Medications.objects.get(id=medication_id)
+
+                # Check if amount_to_sell is valid
+                if not amount_to_sell.isdigit() or int(amount_to_sell) <= 0:
+                    messages.error(request, "Error: Amount to sell must be a positive integer.")
+                    return redirect('manager_home')
 
                 # Convert amount_to_sell to integer
                 amount_to_sell = int(amount_to_sell)
