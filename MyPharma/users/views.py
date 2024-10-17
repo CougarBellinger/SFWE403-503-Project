@@ -2,6 +2,8 @@
 from io import TextIOWrapper
 from datetime import datetime
 import csv
+import logging
+
 
 # Django imports
 from django.shortcuts import render, redirect,get_object_or_404
@@ -22,6 +24,7 @@ from pharmacy_manager.views import *
 from .forms import *
 from .models import *
 
+logger = logging.getLogger(__name__)
 
 @login_required
 def home_view(request):
@@ -201,6 +204,7 @@ def create_user(request):
 
 @login_required
 def manager_home(request):
+    messages.success("whathhathathahthat")
     # list of low stock medications
     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
     
@@ -214,7 +218,6 @@ def manager_home(request):
     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
 
     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications, 'low_medications': low_medications, } # passes dynamic data to template
-
     if request.method == 'POST': 
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -225,13 +228,12 @@ def manager_home(request):
                 name = row.get('Name')
                 exp_date_str = row.get('ExpDate')
 
-                # Skip the 'Amount' field from the CSV, we hardcode it to 999
+                # Skip the 'Amount' field from the CSV; we hardcode it to 999
                 if not name or not exp_date_str:
                     messages.error(request, f"Error: Missing required field(s) in row: {row}")
                     continue
 
                 try:
-                    # Hardcoded amount value
                     amount = 999  # Force amount to always be 999
                     expiration_date = datetime.strptime(exp_date_str, '%m/%d/%Y').date()
 
@@ -242,20 +244,27 @@ def manager_home(request):
                     is_expiring_soon = expiration_date <= current_date + timedelta(days=30)
 
                     # Create the Medications object with the hardcoded amount
-                 
+                    Medications.objects.create(
+                        name=name,
+                        expiration_date=expiration_date,
+                        tablet_count=amount,
+                        is_low=is_low,
+                        is_expired=is_expired,
+                        is_expiring_soon=is_expiring_soon,
+                        is_orderable=is_orderable
+                    )
 
+                    messages.success(request, f"Medication added: {name} with Expiration Date: {expiration_date}.")
+                    
                 except ValueError as ve:
                     messages.error(request, f"Error processing row {row}: {ve}")
                 except Exception as e:
                     messages.error(request, f"Error processing row {row}: {e}")
-                    continue
 
-            messages.success(request, "Medications successfully uploaded with tablet count set to 999.")
+            messages.success(request, "All medications successfully uploaded with tablet count set to 999.")
             return redirect('manager_home')
-    else:
-        form = CSVUploadForm()
 
-    return render(request, 'manager_home.html', {'form': form})
+    return render(request, 'manager_home.html', context)
 
 # def manager_low_medications():
 #     # list of low stock medications
