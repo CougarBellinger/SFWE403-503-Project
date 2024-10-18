@@ -4,7 +4,7 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-6">
-      <h2>Expiring Stock View</h2>
+      <h2>Expiring Medications Management</h2>
     </div>
   </div>
 
@@ -16,22 +16,32 @@
         <th>Name of Medication</th>
         <th>Expiration Date</th>
         <th>Status</th>
+        <th>Action</th>
       </tr>
     </thead>
 
     <tbody>
-      {% for medication in expiring_soon_medications %} 
+      {% for medication in expiring_medications %} 
       <tr>
         <td>{{ medication.id }}</td>
         <td>{{ medication.name }}</td>
         <td>{{ medication.expiration_date }}</td>
-        <td>
+        
           {% if medication.is_expired %}
-            Expired
+
+          <td>Expired</td>
+          <td>
+            {% comment %} <a href="{% url 'remove_medication' medication.pk %}" class="btn btn-danger">Remove</a> {% endcomment %}
+            FIXME: button needed
+          </td>
+
           {% else %}
-            Expiring soon
-          {%endif%}
-        </td>
+
+          <td>Expiring Soon</td>
+          <td>No Action</td>
+
+          {% endif %}
+        
       </tr>
       {% endfor %}
     </tbody>

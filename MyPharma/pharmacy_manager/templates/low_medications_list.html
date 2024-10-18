@@ -24,13 +24,21 @@
         <td>{{ medication.id }}</td>
         <td>{{ medication.name }}</td>
         <td>{{ medication.tablet_count }}</td>
-        <td>
-          {% if medication.is_orderable %}
-          Critically Low
-          {% else %}
-          Low
-          {% endif %}
-        </td>
+
+        {% if medication.is_orderable %}
+
+          <td>Critically Low</td>
+          <td>
+            {% comment %} <a href="{% url 'remove_medication' medication.pk %}" class="btn btn-danger">Remove</a> {% endcomment %}
+            FIXME: button needed
+          </td>
+
+        {% else %}
+
+          <td>Low</td>
+          <td>No Action</td>
+
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
