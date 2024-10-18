@@ -4,7 +4,7 @@ import csv
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db.models import OrderBy
+from django.db.models import OrderBy, Q
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -133,10 +133,10 @@ def orderable_medications_management(request):
 
 # list of expired and expiring soon medications
 def expiring_medications_management(request):
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
-    return render(request, 'expiring_medications_list.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
+    expiring_soon_medications = Medications.objects.filter(Q(is_expiring_soon=True) | Q(is_expired=True)) #filter items that are expiring soon or expired
+    expiring_soon_medications = expiring_soon_medications.order_by('expiration_date') #sort items by expiration date
+    context = {'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+    return render(request, 'expiring_medications_list.html', {'expiring_soon_medications': expiring_soon_medications})
 
 def all_medications_view(request):
     ordered_medications = Medications.objects.all().order_by('tablet_count')

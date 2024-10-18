@@ -15,15 +15,23 @@
         <th>Medication ID</th>
         <th>Name of Medication</th>
         <th>Expiration Date</th>
+        <th>Status</th>
       </tr>
     </thead>
 
     <tbody>
-      {% for medication in ordered_medications %} 
+      {% for medication in expiring_soon_medications %} 
       <tr>
         <td>{{ medication.id }}</td>
         <td>{{ medication.name }}</td>
         <td>{{ medication.expiration_date }}</td>
+        <td>
+          {% if medication.is_expired %}
+            Expired
+          {% else %}
+            Expiring soon
+          {%endif%}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
