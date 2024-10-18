@@ -288,29 +288,29 @@ def password_change(request):
 def user_list(request):
     users = CustomUser.objects.all()
 
-    return render(request, 'user/user-management.html', {'users': users})
+    return render(request, 'users/user-management.html', {'users': users})
 
 
 def edit_user(request, user_id):
-    user = get_object_or_404(CustomUser, pk=user_id)
+    edituser = get_object_or_404(CustomUser, pk=user_id)
     if request.method == 'POST':
-        form = UserEditForm(request.POST, instance=user)
+        form = UserEditForm(request.POST, instance=edituser)
         if form.is_valid():
             form.save()
             return redirect('/users/user-management/')  
         else:
             print(form.errors)
     else:
-        form = UserEditForm(instance=user)
-    return render(request, 'users/edit_user.html', {'form': form, 'user': user})
+        form = UserEditForm(instance=edituser)
+    return render(request, 'users/edit_user.html', {'form': form, 'edituser': edituser})
 
 
 def delete_user(request, user_id):
-    user = get_object_or_404(CustomUser, pk=user_id)
+    deluser = get_object_or_404(CustomUser, pk=user_id)
     if request.method == 'POST':
-        user.delete()
+        deluser.delete()
         return redirect('/users/user-management/')  
-    return render(request, 'users/delete_user.html', {'user': user})
+    return render(request, 'users/delete_user.html', {'deluser': deluser})
 
 def recover_user(request, user_id):
     user = get_object_or_404(CustomUser, pk=user_id)

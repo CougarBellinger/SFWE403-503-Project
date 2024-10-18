@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-header">Confirm Delete</div>
             <div class="card-body">
-        <p>Are you sure you want to delete user "{{ user.first_name }} {{ user.last_name }}"?</p>
+        <p>Are you sure you want to delete user "{{ deluser.first_name }} {{ deluser.last_name }}"?</p>
         <form method="post">
           {% csrf_token %}
           <div class="row">

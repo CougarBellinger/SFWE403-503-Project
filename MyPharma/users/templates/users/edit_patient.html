@@ -3,17 +3,25 @@
 {% block content %}
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h4>Edit Patient: {{ patient.first_name }} {{ patient.last_name }}</h4>
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header  ">
+          <h4 class="mb-0">Edit Patient: {{ patient.first_name }} {{ patient.last_name }}</h4>
         </div>
         <div class="card-body">
           <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{% url 'patient_management' %}" class="btn btn-secondary">Back</a>
+            
+            <!-- Render form fields with better spacing -->
+            <div class="mb-3">
+              {{ form.as_p }}
+            </div>
+
+            <!-- Buttons with proper spacing -->
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary">Update</button>
+              <a href="{% url 'patient_management' %}" class="btn btn-secondary">Back</a>
+            </div>
           </form>
         </div>
       </div>
