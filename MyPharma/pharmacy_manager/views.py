@@ -190,7 +190,7 @@ def order_medications(request, pk):
     if request.method == 'POST':
         form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
-            medication.tablet_count = medication.tablet_count + form.cleaned_data['tablet_count']
+            #medication.tablet_count = medication.tablet_count + form.cleaned_data['tablet_count']
             medication.save()
             return redirect('low_medications_management')
     else:
