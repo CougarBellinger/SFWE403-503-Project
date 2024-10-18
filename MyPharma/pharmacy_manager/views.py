@@ -15,6 +15,8 @@ from users.forms import *
 from users.models import *
 from users.decorators import *
 
+from .forms import *
+
 @login_required
 def manager_home(request):
     # List of low stock medications
@@ -160,7 +162,9 @@ def expiring_medications_management(request):
             m.is_expiring_soon = True
         else:
             m.is_expiring_soon = False
-            
+
+        m.save()
+           
     expiring_medications = Medications.objects.filter(Q(is_expiring_soon=True) | Q(is_expired=True)) #filter items that are expiring soon or expired
     expiring_medications = expiring_medications.order_by('expiration_date') #sort items by expiration date
     context = {'expiring_medications': expiring_medications} # passes dynamic data to template  
@@ -179,5 +183,17 @@ def remove_medications(request, pk):
 
     return render(request, 'remove_medications.html', {'medication': medication})
 
-def activity_log(request):
-    return render(request, 'activity_log_view.html')
+def order_medications(request, pk):
+    medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    if request.method == 'POST':
+        form = OrderMedicationForm(request.POST, instance=medication)
+        if form.is_valid():
+            form.save()
+            return redirect('low_medications_management')
+    else:
+        form = OrderMedicationForm(instance=medication)
+
+    return render(request, 'order_medications.html', {'form': form})
+    
+    def activity_log(request):
+        return render(request, 'activity_log_view.html')
