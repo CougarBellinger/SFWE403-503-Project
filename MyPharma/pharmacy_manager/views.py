@@ -193,4 +193,4 @@ def order_medications(request, pk):
     else:
         form = OrderMedicationForm(instance=medication)
 
-    return render(request, 'low_medications_list.html', {'form': form})
+    return render(request, 'order_medications.html', {'form': form})
