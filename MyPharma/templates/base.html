@@ -16,7 +16,7 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">MyPharma</a>
+        <a class="navbar-brand" href="{% url 'home_view' %}">MyPharma</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -24,11 +24,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                <li> {% if user.user_type == '1' %}
-                    <!-- Nav link for Pharmacy Manager (user_type 1) -->
+                <li>
+
+                    <!-- Nav link for Pharmay Manager (user_type 1) -->
+                    {% if user.user_type == '1' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
-                        
                     </li>
 
                     <li class="nav-item">
@@ -36,14 +37,18 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'low_medications_management' %}">Low Stock</a>
+                        <a class="nav-link" href="{% url 'expiring_medications_management' %}">Expiring Inventory</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'expiring_medications_management' %}"> Expiring Medications</a>
+                        <a class="nav-link" href="{% url 'low_medications_management' %}">Low Inventory</a>
                     </li>
-                    
-                {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'all_medications_view' %}">All Inventory</a>
+                    </li>
+                    {% endif %}
+
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout_view' %}">Logout</a>
@@ -63,10 +68,10 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     {% block scripts %}{% endblock %}
+
 </body>
 
 </html>

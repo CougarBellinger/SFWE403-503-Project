@@ -4,6 +4,7 @@
 <h1>Welcome, {{ user.username }}</h1>
 <p>This is your pharmacy manager dashboard</p>
 
+<!-- CSV Upload Form -->
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <label for="csv_file">Upload CSV:</label>
@@ -11,6 +12,20 @@
     <button type="submit">Upload CSV</button>
 </form>
 
+<!-- Sell Medication Form -->
+<form method="POST" action="{% url 'manager_home' %}">
+    {% csrf_token %}
+    <h3>Sell Medication</h3>
+    <label for="medication_id">Medication ID:</label>
+    <input type="text" name="medication_id" required>
+
+    <label for="amount_to_sell">Amount to Sell:</label>
+    <input type="text" name="amount_to_sell" required>
+
+    <button type="submit" name="sell_medication">Sell Medication</button>
+</form>
+
+<!-- Display Messages -->
 {% if messages %}
 <ul>
     {% for message in messages %}
