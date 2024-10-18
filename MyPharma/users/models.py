@@ -1,8 +1,16 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
+
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
+from django.dispatch import receiver
+from django.db import connection
+from django.core.management import call_command
+
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
+
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
@@ -140,3 +148,4 @@ class Medications(models.Model):
 
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
+

@@ -179,3 +179,5 @@ def remove_medications(request, pk):
 
     return render(request, 'remove_medications.html', {'medication': medication})
 
+def activity_log(request):
+    return render(request, 'activity_log_view.html')
