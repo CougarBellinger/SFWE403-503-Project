@@ -3,7 +3,7 @@ from datetime import datetime
 from django.utils import timezone
 import csv
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import OrderBy, Q
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -170,3 +170,12 @@ def all_medications_view(request):
     ordered_medications = Medications.objects.all().order_by('-tablet_count')
     context = {'ordered_medications':ordered_medications} 
     return render(request, 'all_medications_view.html', {'ordered_medications' : ordered_medications})
+
+def remove_medications(request, pk):
+    medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    if request.method == 'POST':
+        medication.delete()  # Delete the medication from the database
+        return redirect('expiring_medications_management')  # Redirect to expired medication management after deletion
+
+    return render(request, 'remove_medications.html', {'medication': medication})
+
