@@ -121,7 +121,8 @@ def manager_home(request):
 
 # list of low stock (< 120) medications
 def low_medications_management(request):
-    low_medications = Medications.objects.filter(is_low= True) # filter DB for tablet_count < 120
+    low_medications = Medications.objects.filter(Q(is_low= True) | Q(is_orderable=True)) # filter DB for tablet_count < 120
+    low_medications = low_medications.order_by('tablet_count')
     context = {'low_medications': low_medications} # passes dynamic data to template  
     return render(request, 'low_medications_list.html', {'low_medications': low_medications})
 
@@ -139,7 +140,7 @@ def expiring_medications_management(request):
     return render(request, 'expiring_medications_list.html', {'expiring_soon_medications': expiring_soon_medications})
 
 def all_medications_view(request):
-    ordered_medications = Medications.objects.all().order_by('tablet_count')
+    ordered_medications = Medications.objects.all().order_by('-tablet_count')
     context = {'ordered_medications':ordered_medications} 
     return render(request, 'all_medications_list.html', {'ordered_medications' : ordered_medications})
 

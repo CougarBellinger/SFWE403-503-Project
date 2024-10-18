@@ -288,7 +288,7 @@ def password_change(request):
 def user_list(request):
     users = CustomUser.objects.all()
 
-    return render(request, 'user_list.html', {'users': users})
+    return render(request, 'user/user-management.html', {'users': users})
 
 
 def edit_user(request, user_id):

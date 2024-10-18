@@ -14,6 +14,7 @@
         <th>Medication ID</th>
         <th>Name of Medication</th>
         <th>Tablet Count</th>
+        <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -23,6 +24,13 @@
         <td>{{ medication.id }}</td>
         <td>{{ medication.name }}</td>
         <td>{{ medication.tablet_count }}</td>
+        <td>
+          {% if medication.is_orderable %}
+          Critically Low
+          {% else %}
+          Low
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
