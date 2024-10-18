@@ -18,64 +18,64 @@ from users.decorators import *
 from .forms import *
 
 @login_required
-def manager_home(request):
-    # List of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt=120)  # filter DB for tablet_count < 120
+def sell_medication_view(request):
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        amount_to_sell = request.POST.get('amount_to_sell')
 
-    # List of expiring and expiring soon medications
-    current_date = datetime.today().date()
+        # Check if medication_id is a valid integer
+        if not medication_id.isdigit():
+            messages.error(request, "Error: Medication ID must be a positive integer.")
+            return redirect('sell_medication')
 
+        medication_id = int(medication_id)
+
+        try:
+            # Fetch the medication by ID
+            medication = Medications.objects.get(id=medication_id)
+
+            # Validate amount_to_sell
+            if not amount_to_sell.isdigit() or int(amount_to_sell) <= 0:
+                messages.error(request, "Error: Amount to sell must be a positive integer.")
+                return redirect('sell_medication')
+
+            amount_to_sell = int(amount_to_sell)
+
+            # Check stock availability
+            if medication.tablet_count >= amount_to_sell:
+                medication.tablet_count -= amount_to_sell
+                medication.save()
+                messages.success(request, f"Successfully sold {amount_to_sell} of {medication.name}.")
+            else:
+                messages.error(request, f"Not enough stock to sell {amount_to_sell} of {medication.name}. Current stock: {medication.tablet_count}")
+
+        except Medications.DoesNotExist:
+            messages.error(request, f"Medication with ID {medication_id} does not exist.")
+        except ValueError:
+            messages.error(request, f"Please enter a valid amount to sell.")
+        except Exception as e:
+            messages.error(request, f"An error occurred while selling medication: {e}")
+
+        return redirect('sell_medication')
+
+    # For GET requests, fetch necessary context data
+    low_medications = Medications.objects.filter(tablet_count__lt=120)
     expired_medications = Medications.objects.filter(is_expired=True)
     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
 
     context = {
+        'low_medications': low_medications,
         'expired_medications': expired_medications,
         'expiring_soon_medications': expiring_soon_medications,
-        'low_medications': low_medications,
     }
 
+    return render(request, 'sell_medication.html', context)
+
+@login_required
+def add_medication_view(request):
+    current_date = datetime.today().date()
+
     if request.method == 'POST':
-        if 'sell_medication' in request.POST:
-            medication_id = request.POST.get('medication_id')
-            amount_to_sell = request.POST.get('amount_to_sell')
-
-            # Check if medication_id is a valid integer
-            if not medication_id.isdigit():
-                messages.error(request, "Error: Medication ID must be a positive integer.")
-                return redirect('manager_home')
-
-            # Convert medication_id to integer
-            medication_id = int(medication_id)
-
-            try:
-                # Fetch the medication by ID
-                medication = Medications.objects.get(id=medication_id)
-
-                # Check if amount_to_sell is valid
-                if not amount_to_sell.isdigit() or int(amount_to_sell) <= 0:
-                    messages.error(request, "Error: Amount to sell must be a positive integer.")
-                    return redirect('manager_home')
-
-                # Convert amount_to_sell to integer
-                amount_to_sell = int(amount_to_sell)
-
-                # Check if there is enough stock to sell
-                if medication.tablet_count >= amount_to_sell:
-                    # Decrease the tablet count
-                    medication.tablet_count -= amount_to_sell
-                    medication.save()
-                    messages.success(request, f"Successfully sold {amount_to_sell} of {medication.name}.")
-                else:
-                    messages.error(request, f"Not enough stock to sell {amount_to_sell} of {medication.name}. Current stock: {medication.tablet_count}")
-
-            except Medications.DoesNotExist:
-                messages.error(request, f"Medication with ID {medication_id} does not exist.")
-            except ValueError:
-                messages.error(request, f"Please enter a valid amount to sell.")
-            except Exception as e:
-                messages.error(request, f"An error occurred while selling medication: {e}")
-
-        # Handle CSV Upload Form
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
@@ -117,7 +117,23 @@ def manager_home(request):
                     messages.error(request, f"Error processing row {row}: {ve}")
                 except Exception as e:
                     messages.error(request, f"Error processing row {row}: {e}")
-            return redirect('manager_home')
+
+            return redirect('add_medication')
+
+    return render(request, 'add_medication.html')
+
+@login_required
+def manager_home(request):
+    # Fetch general information for display
+    low_medications = Medications.objects.filter(tablet_count__lt=120)
+    expired_medications = Medications.objects.filter(is_expired=True)
+    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+
+    context = {
+        'low_medications': low_medications,
+        'expired_medications': expired_medications,
+        'expiring_soon_medications': expiring_soon_medications,
+    }
 
     return render(request, 'manager_home.html', context)
 
