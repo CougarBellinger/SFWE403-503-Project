@@ -136,6 +136,8 @@ def low_medications_management(request):
             m.is_orderable = True
         else:
             m.is_orderable = False
+        
+        m.save()
 
     low_medications = Medications.objects.filter(Q(is_low= True) | Q(is_orderable=True)) # filter DB for tablet_count < 120
     low_medications = low_medications.order_by('tablet_count')
@@ -188,7 +190,8 @@ def order_medications(request, pk):
     if request.method == 'POST':
         form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
-            form.save()
+            medication.tablet_count = medication.tablet_count + form.cleaned_data['tablet_count']
+            medication.save()
             return redirect('low_medications_management')
     else:
         form = OrderMedicationForm(instance=medication)
