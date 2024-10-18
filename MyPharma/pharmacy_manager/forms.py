@@ -5,4 +5,4 @@ from .models import *
 class OrderMedicationForm(forms.ModelForm):
     class Meta:
         model = Medications
-        field = ['tablet_count', 'expiration_date']
+        fields = ['tablet_count', 'expiration_date']

@@ -162,7 +162,9 @@ def expiring_medications_management(request):
             m.is_expiring_soon = True
         else:
             m.is_expiring_soon = False
-            
+
+        m.save()
+           
     expiring_medications = Medications.objects.filter(Q(is_expiring_soon=True) | Q(is_expired=True)) #filter items that are expiring soon or expired
     expiring_medications = expiring_medications.order_by('expiration_date') #sort items by expiration date
     context = {'expiring_medications': expiring_medications} # passes dynamic data to template  
