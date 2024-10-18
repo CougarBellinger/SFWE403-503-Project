@@ -400,3 +400,6 @@ def changePassword_view(request):
         messages.error(request, 'Please correct the error below.')
         return render(request, 'users/password_change.html', {'form': form})
 
+def myprofile_view(request):
+    currentUser = request.user
+    return render(request, 'users/my_profile.html', {'user': currentUser})
