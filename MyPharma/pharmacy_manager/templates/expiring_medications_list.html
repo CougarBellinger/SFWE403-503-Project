@@ -26,8 +26,8 @@
         <td>{{ medication.tablet_count }}</td>
         <td>{{ medication.expiration_date }}</td>
         <td>
-          {% if medication.is_orderable %}
-            <a href="{% url 'remove_medication' medication.pk %}" class="btn btn-danger">Remove</a>
+          {% if medication.is_expired %}
+            <a href="{% url 'remove_medications' medication.pk %}" class="btn btn-danger">Remove</a>
           {% else %}
             Expiring Soon
           {% endif %}

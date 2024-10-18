@@ -3,7 +3,7 @@ from datetime import datetime
 from django.utils import timezone
 import csv
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
@@ -96,4 +96,11 @@ def expiring_medications_management(request):
     context = {'expiring_medications': expiring_medications} # passes dynamic data to template  
     return render(request, 'expiring_medications_list.html', context)
 
+def remove_medications(request, pk):
+    medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    if request.method == 'POST':
+        medication.delete()  # Delete the medication from the database
+        return redirect('expiring_medications_management')  # Redirect to expired medication management after deletion
+
+    return render(request, 'remove_medications.html', {'medication': medication})
 
