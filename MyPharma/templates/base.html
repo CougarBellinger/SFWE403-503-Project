@@ -28,36 +28,38 @@
 
                     <!-- Nav link for Pharmay Manager (user_type 1) -->
                     {% if user.user_type == '1' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_management' %}">User Management</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'changePassword_view' %}">Change Password</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'changePassword_view' %}">Change Password</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'expiring_medications_management' %}">Expiring Inventory</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'expiring_medications_management' %}">Expiring Inventory</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'low_medications_management' %}">Low Inventory</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'low_medications_management' %}">Low Inventory</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'all_medications_view' %}">All Inventory</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'all_medications_view' %}">All Inventory</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'activity_log' %}">Activity Log</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'activity_log' %}">Activity Log</a>
+                        </li>
                     
                     {% endif %}
 
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout_view' %}">Logout</a>
                 </li>
+
                 {% endif %}
 
 
