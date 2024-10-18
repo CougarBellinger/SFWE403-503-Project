@@ -6,6 +6,6 @@ urlpatterns = [
     path('low_medications_management/', low_medications_management, name='low_medications_management'),
     path('expiring_medications_management/', expiring_medications_management, name='expiring_medications_management'),
     path('all_medications_view/', all_medications_view, name='all_medications_view'),
-    path('remove_medications/<int:pk>/', remove_medications, name='remove_medications')
-    
+    path('remove_medications/<int:pk>/', remove_medications, name='remove_medications'),
+    path('order_medications/<int:pk>/', order_medications, name='order_medications')
 ]

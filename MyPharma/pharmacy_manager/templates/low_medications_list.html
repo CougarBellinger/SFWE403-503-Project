@@ -29,8 +29,7 @@
 
           <td>Critically Low</td>
           <td>
-            {% comment %} <a href="{% url 'remove_medication' medication.pk %}" class="btn btn-danger">Remove</a> {% endcomment %}
-            FIXME: Order button needed
+           <a href="{% url 'order_medications' medication.pk %}" class="btn btn-primary">Order</a>
           </td>
 
         {% else %}

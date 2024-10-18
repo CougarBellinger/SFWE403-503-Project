@@ -179,3 +179,13 @@ def remove_medications(request, pk):
 
     return render(request, 'remove_medications.html', {'medication': medication})
 
+def order_medications(request):
+    if request.method == 'POST':
+        form = PatientCreationForm(request.POST) # need to change
+        if form.is_valid():
+            form.save()
+            return redirect('low_medications_management')  
+    else:
+        form = PatientCreationForm()
+
+    return render(request, 'low_medications_list.html', {'form': form})
