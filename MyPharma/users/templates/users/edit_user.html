@@ -4,34 +4,34 @@
     <div class="row">
       <div class="col-md-6 offset-md-3">
         <div class="card">
-            <div class="card-header">Edit User : {{ user.first_name }} {{ user.last_name }}</div>
+            <div class="card-header">Edit User : {{ edituser.first_name }} {{ edituser.last_name }}</div>
             <div class="card-body">
         <form method="post">
           {% csrf_token %}
           <div class="form-group">
             <label for="id_username">Username</label>
-            <input type="text" id="id_username" name="username" class="form-control" value="{{ user.username }}">
+            <input type="text" id="id_username" name="username" class="form-control" value="{{ edituser.username }}">
           </div>
           <div class="form-group">
             <label for="id_first_name">First Name</label>
-            <input type="text" id="id_first_name" name="first_name" class="form-control" value="{{ user.first_name }}">
+            <input type="text" id="id_first_name" name="first_name" class="form-control" value="{{ edituser.first_name }}">
           </div>
           <div class="form-group">
             <label for="id_last_name">Last Name</label>
-            <input type="text" id="id_last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
+            <input type="text" id="id_last_name" name="last_name" class="form-control" value="{{ edituser.last_name }}">
           </div>
           <div class="form-group">
             <label for="id_email">Email</label>
-            <input type="email" id="id_email" name="email" class="form-control" value="{{ user.email }}">
+            <input type="email" id="id_email" name="email" class="form-control" value="{{ edituser.email }}" readonly>
           </div>
           <div class="form-group">
             <label for="id_user_type">User Type</label>
             {% for value, display in form.user_type.field.choices %}
-                {% if value == user.user_type %}
+                {% if value == edituser.user_type %}
                     <input type="text" id="id_user_type0" name="user_type0" class="form-control" value="{{ display }}" readonly>
                 {% endif %}
             {% endfor %}
-            <input type="hidden" id="id_user_type" name="user_type" class="form-control" value="{{ user.user_type }}">
+            <input type="hidden" id="id_user_type" name="user_type" class="form-control" value="{{ edituser.user_type }}">
 
         </div>
         <div class="row">
