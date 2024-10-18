@@ -15,6 +15,8 @@ from users.forms import *
 from users.models import *
 from users.decorators import *
 
+from .forms import *
+
 @login_required
 def manager_home(request):
     # List of low stock medications
@@ -179,13 +181,12 @@ def remove_medications(request, pk):
 
     return render(request, 'remove_medications.html', {'medication': medication})
 
-def order_medications(request):
+def order_medications(request, pk):
+    medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
     if request.method == 'POST':
-        form = PatientCreationForm(request.POST) # need to change
+        form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
             form.save()
-            return redirect('low_medications_management')  
-    else:
-        form = PatientCreationForm()
+            return redirect('low_medications_management')
 
     return render(request, 'low_medications_list.html', {'form': form})
