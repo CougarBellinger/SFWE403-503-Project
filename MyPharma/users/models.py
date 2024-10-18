@@ -8,8 +8,19 @@ from django.dispatch import receiver
 from django.db import connection
 from django.core.management import call_command
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
+
+# Values for activity log
+REMOVED, FILLED = "Removed", "Filled"
+
+ACTION_TYPES = [
+    (REMOVED, REMOVED),
+    (FILLED, FILLED)
+]
 
 # Create your models here.
 class CustomUser(AbstractUser):
@@ -148,4 +159,11 @@ class Medications(models.Model):
 
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
+
+class ActivityLog(models.Model):
+    actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
+    remarks = models.TextField(blank=True, null=True)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey()
 
