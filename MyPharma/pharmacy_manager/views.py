@@ -195,5 +195,5 @@ def order_medications(request, pk):
 
     return render(request, 'order_medications.html', {'form': form})
     
-    def activity_log(request):
-        return render(request, 'activity_log_view.html')
+def activity_log(request):
+    return render(request, 'activity_log_view.html')
