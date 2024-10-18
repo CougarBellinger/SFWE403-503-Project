@@ -109,7 +109,7 @@ class GeneralUser(models.Model):
 class Patient(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    default_birthdate = datetime.now() - timedelta(days=18*365)
+    default_birthdate = datetime(2006, 10, 17)
     date_of_birth = models.DateField(default=default_birthdate)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
