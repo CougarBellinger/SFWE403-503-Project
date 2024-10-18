@@ -122,6 +122,19 @@ def manager_home(request):
 
 # list of low stock (< 120) medications
 def low_medications_management(request):
+    meds = Medications.objects.all()
+
+    for m in meds:
+        if m.tablet_count <= 120:
+            m.is_low = True
+        else:
+            m.is_low = False
+        
+        if m.tablet_count < 50:
+            m.is_orderable = True
+        else:
+            m.is_orderable = False
+
     low_medications = Medications.objects.filter(Q(is_low= True) | Q(is_orderable=True)) # filter DB for tablet_count < 120
     low_medications = low_medications.order_by('tablet_count')
     context = {'low_medications': low_medications} # passes dynamic data to template  
@@ -140,9 +153,13 @@ def expiring_medications_management(request):
     for m in meds:
         if m.expiration_date <= timezone.now().date():
             m.is_expired = True
+        else:
+            m.is_expired = False
         
         if m.expiration_date < timezone.now().date() + timedelta(days= 30):
             m.is_expiring_soon = True
+        else:
+            m.is_expiring_soon = False
             
     expiring_medications = Medications.objects.filter(Q(is_expiring_soon=True) | Q(is_expired=True)) #filter items that are expiring soon or expired
     expiring_medications = expiring_medications.order_by('expiration_date') #sort items by expiration date
