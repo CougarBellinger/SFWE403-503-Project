@@ -8,6 +8,7 @@ import logging
 # Django imports
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
+from django.db.models import OrderBy
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import AuthenticationForm
@@ -266,17 +267,6 @@ def manager_home(request):
 
     return render(request, 'manager_home.html', context)
 
-# def manager_low_medications():
-#     # list of low stock medications
-#     low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
-#     context = {'low_medications': low_medications} # passes dynamic data to template  
-
-# def manager_expiring_medications():
-#     #list of expired and expiring soon medications
-#     expired_medications = Medications.objects.filter(is_expired=True)
-#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
-
 @login_required
 def customer_home(request):
     return render(request, 'users/customer_home.html')
@@ -298,9 +288,7 @@ def password_change(request):
 def user_list(request):
     users = CustomUser.objects.all()
 
-    return render(request, 'user_list.html', {'users': users})
-
-
+    return render(request, 'user/user-management.html', {'users': users})
 
 
 def edit_user(request, user_id):
@@ -351,7 +339,6 @@ def patient_management(request):
     patients = Patient.objects.all()
     return render(request, 'users/patient_management.html', {'patients': patients})
 
-
 def edit_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)
     if request.method == 'POST':
@@ -364,7 +351,6 @@ def edit_patient(request, pk):
 
     return render(request, 'users/edit_patient.html', {'form': form, 'patient': patient})
 
-
 def delete_patient(request, pk):
     patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)
     if request.method == 'POST':
@@ -373,6 +359,24 @@ def delete_patient(request, pk):
 
     return render(request, 'users/delete_patient.html', {'patient': patient})
 
+# # list of low stock (< 120) medications
+# def low_medications_management(request):
+#     low_medications = Medications.objects.filter(is_low= True) # filter DB for tablet_count < 120
+#     context = {'low_medications': low_medications} # passes dynamic data to template  
+#     return render(request, 'users/low_medications_management.html', {'low_medications': low_medications})
+
+# # list of orderable (< 50) medications
+# def orderable_medications_management(request):
+#     orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
+#     context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
+#     return render(request, 'users/orderale_medications_management.html', {'orderable_medications': orderable_medications})
+
+# # list of expired and expiring soon medications
+# def expiring_medications_management(request):
+#     expired_medications = Medications.objects.filter(is_expired=True)
+#     expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
+#     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+#     return render(request, 'users/expiring_medications_management.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
 def changePassword_view(request):
     if request.user.is_authenticated:

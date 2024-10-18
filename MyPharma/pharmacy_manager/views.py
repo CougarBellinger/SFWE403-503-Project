@@ -1,9 +1,11 @@
 from io import TextIOWrapper
 from datetime import datetime
+from django.utils import timezone
 import csv
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db.models import OrderBy, Q
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -117,20 +119,54 @@ def manager_home(request):
 
     return render(request, 'manager_home.html', context)
 
-    
-@login_required
-def order_page(request):
-    return render(request, 'order_page.html')
 
-def manager_low_medications():
-    # list of low stock medications
-    low_medications = Medications.objects.filter(tablet_count__lt= 120) # filter DB for tablet_count < 120
+# list of low stock (< 120) medications
+def low_medications_management(request):
+    meds = Medications.objects.all()
+
+    for m in meds:
+        if m.tablet_count <= 120:
+            m.is_low = True
+        else:
+            m.is_low = False
+        
+        if m.tablet_count < 50:
+            m.is_orderable = True
+        else:
+            m.is_orderable = False
+
+    low_medications = Medications.objects.filter(Q(is_low= True) | Q(is_orderable=True)) # filter DB for tablet_count < 120
+    low_medications = low_medications.order_by('tablet_count')
     context = {'low_medications': low_medications} # passes dynamic data to template  
+    return render(request, 'low_medications_list.html', {'low_medications': low_medications})
 
-def manager_expiring_medications():
-    #list of expired and expiring soon medications
-    expired_medications = Medications.objects.filter(is_expired=True)
-    expiring_soon_medications = Medications.objects.filter(is_expiring_soon=True)
-    context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
+# list of orderable (< 50) medications
+def orderable_medications_management(request):
+    orderable_medications = Medications.objects.filter(is_orderable= True) # filter DB for tablet_count < 50
+    context = {'orderable_medications': orderable_medications} # passes dynamic data to template  
+    return render(request, 'orderable_medications_list.html', context)
 
+# list of expired and expiring soon medications
+def expiring_medications_management(request):
+    meds = Medications.objects.all()
 
+    for m in meds:
+        if m.expiration_date <= timezone.now().date():
+            m.is_expired = True
+        else:
+            m.is_expired = False
+        
+        if m.expiration_date < timezone.now().date() + timedelta(days= 30):
+            m.is_expiring_soon = True
+        else:
+            m.is_expiring_soon = False
+            
+    expiring_medications = Medications.objects.filter(Q(is_expiring_soon=True) | Q(is_expired=True)) #filter items that are expiring soon or expired
+    expiring_medications = expiring_medications.order_by('expiration_date') #sort items by expiration date
+    context = {'expiring_medications': expiring_medications} # passes dynamic data to template  
+    return render(request, 'expiring_medications_list.html', context)
+
+def all_medications_view(request):
+    ordered_medications = Medications.objects.all().order_by('-tablet_count')
+    context = {'ordered_medications':ordered_medications} 
+    return render(request, 'all_medications_view.html', {'ordered_medications' : ordered_medications})
