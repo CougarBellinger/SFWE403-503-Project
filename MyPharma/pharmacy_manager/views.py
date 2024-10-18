@@ -190,5 +190,7 @@ def order_medications(request, pk):
         if form.is_valid():
             form.save()
             return redirect('low_medications_management')
+    else:
+        form = OrderMedicationForm(instance=medication)
 
     return render(request, 'low_medications_list.html', {'form': form})
