@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
-
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -160,10 +159,13 @@ class Medications(models.Model):
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
 
-class ActivityLog(models.Model):
+class Activity(models.Model):
     actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
     remarks = models.TextField(blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
+
     content_object = GenericForeignKey()
+
+    data = models.JSONField(default=dict)
 
