@@ -169,3 +169,7 @@ class Activity(models.Model):
 
     data = models.JSONField(default=dict)
 
+    def record_activity(actor, content_object)
+        #TODO: Logic to populate the rest of activity variables
+        Activity.objects.create(actor=actor, content_object=content_object)
+
