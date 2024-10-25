@@ -160,16 +160,24 @@ class Medications(models.Model):
     is_expiring_soon = models.BooleanField(default=False)
 
 class Activity(models.Model):
+    # User performing action
     actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+
+    # Keys to relevant models
+    medication = models.ForeignKey(Medications, null=True, blank=True, on_delete=models.CASCADE)
+    
+
+    # Action type and time performed
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
-    remarks = models.TextField(blank=True, null=True)
+    action_time = models.DateTimeField(auto_now_add=True)
+
+    # Feild for objectID
     object_id = models.PositiveIntegerField(blank=True, null=True)
 
-    content_object = GenericForeignKey()
-
+    remarks = models.TextField(blank=True, null=True)
     data = models.JSONField(default=dict)
 
-    def record_activity(actor, content_object)
+    def record_activity(actor, content_object):
         #TODO: Logic to populate the rest of activity variables
         Activity.objects.create(actor=actor, content_object=content_object)
 
