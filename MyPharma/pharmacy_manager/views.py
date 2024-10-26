@@ -178,7 +178,7 @@ def all_medications_view(request):
 def remove_medications(request, pk):
     medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
     if request.method == 'POST':
-        medication.delete()  # Delete the medication from the database
+        medication.delete(user=request.user)  # Delete the medication from the database and capture current user
         return redirect('expiring_medications_management')  # Redirect to expired medication management after deletion
 
     return render(request, 'remove_medications.html', {'medication': medication})

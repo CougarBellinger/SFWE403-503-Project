@@ -3,12 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.apps import apps
-from django.dispatch import receiver
 from django.db import connection
 from django.core.management import call_command
-
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
@@ -160,12 +156,13 @@ class Medications(models.Model):
     is_expiring_soon = models.BooleanField(default=False)
 
 class Activity(models.Model):
-    # User performing action
+    # User performing the action
     actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
 
+    #TODO: Add keys for prescriptions when implemented
     # Keys to relevant models
     medication = models.ForeignKey(Medications, null=True, blank=True, on_delete=models.CASCADE)
-    
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     # Action type and time performed
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
@@ -174,10 +171,6 @@ class Activity(models.Model):
     # Feild for objectID
     object_id = models.PositiveIntegerField(blank=True, null=True)
 
+    # Remarks for action and relevant data
     remarks = models.TextField(blank=True, null=True)
     data = models.JSONField(default=dict)
-
-    def record_activity(actor, content_object):
-        #TODO: Logic to populate the rest of activity variables
-        Activity.objects.create(actor=actor, content_object=content_object)
-
