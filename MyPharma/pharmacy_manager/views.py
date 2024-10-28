@@ -196,4 +196,5 @@ def order_medications(request, pk):
     return render(request, 'order_medications.html', {'form': form})
     
 def activity_log(request):
-    return render(request, 'activity_log_view.html')
+    activity_items = Activity.objects.all().order_by('-action_time')
+    return render(request, 'activity_log_view.html', {"activity_items" : activity_items})

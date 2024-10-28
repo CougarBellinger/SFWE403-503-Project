@@ -9,18 +9,23 @@
   </div>
 
   <table class="table table-striped mt-4">
+    
     <thead>
       <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>ID</th>
-        <th></th>
-        <th>Action</th>
+        <th>Action Type</th>
+        <th>Remarks</th>
       </tr>
     </thead>
+
     <tbody>
-      
+      {% for activity in activity_items%}
+      <tr>
+        <td>{{ activity.action_type }} </td>
+        <td>{{ activity.remarks }} </td>
+      </tr>
+      {% endfor %}
     </tbody>
+
   </table>
 </div>
 {% endblock %}
