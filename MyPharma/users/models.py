@@ -168,7 +168,7 @@ class Activity(models.Model):
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
     action_time = models.DateTimeField(auto_now_add=True)
 
-    # Feild for objectID
+    # Field for objectID
     object_id = models.PositiveIntegerField(blank=True, null=True)
 
     # Remarks for action and relevant data

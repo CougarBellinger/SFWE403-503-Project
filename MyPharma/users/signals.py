@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
 
@@ -8,11 +10,19 @@ from .models import REMOVED, FILLED
 def log_medications_deleted(sender, instance, **kwargs):
     user = kwargs('user', None)
 
+    activity_time = datetime.now()
+    
     #TODO: Finish populating creating
     Activity.objects.create(
         actor = user,
         medication = instance,
         action_type = REMOVED,
         object_id = instance.pk,
-        remarks = f"{user.username} deleted {instance.name} on "
+        remarks = f"{user.username} deleted {instance.name} on {activity_time.strftime('%Y-%m-%d %H:%M:%S')}",
+
+        data = {
+            "med_name" : instance.name,
+            "med_expDate" : instance.expiration_date,
+            "med_isExpired" : instance.is_expired,
+        }
     )
