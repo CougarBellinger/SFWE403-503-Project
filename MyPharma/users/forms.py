@@ -36,3 +36,12 @@ class ChangePasswordForm(PasswordChangeForm):
     class Meta:
         model = CustomUser
         fields = ['old_password', 'new_password1', 'new_password2']
+
+class PaymentForm(forms.Form):
+    payment_method_choices = [('Credit/Debit', 'Credit/Debit'), ('Cash', 'Cash')]
+
+    payment_method = forms.ChoiceField(choices=payment_method_choices, widget= forms.Select())
+    name_on_card = forms.CharField(required=False, min_length=1, max_length=100)
+    card_number = forms.CharField(required=False, min_length=16, max_length=16)
+    expiration_date = forms.DateField(required=False, input_formats=['%m%y'])
+    csv_number = forms.CharField(required=False, min_length=3, max_length=3)

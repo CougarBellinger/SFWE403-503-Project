@@ -403,3 +403,7 @@ def changePassword_view(request):
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
+
+# after checkout button is clicked, changes to payment method view
+def payment_method(request):
+    if request.method == 'POST':

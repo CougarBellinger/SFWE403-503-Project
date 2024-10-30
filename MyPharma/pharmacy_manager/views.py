@@ -214,6 +214,5 @@ def order_medications(request, pk):
 
     return render(request, 'order_medications.html', {'form': form})
 
-# after checkout button is clicked, changes to payment method view
-def payment_method():
+
     
