@@ -22,22 +22,22 @@
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for u in users %}
         <tr>
-          <td class="text-center">{{ user.username }}</td>
-          <td class="text-center">{{ user.first_name }}</td>
-          <td class="text-center">{{ user.last_name }}</td>
-          <td class="text-center">{{ user.email }}</td>
-          <td class="text-center">{% if user.is_active %}Yes
+          <td class="text-center">{{ u.username }}</td>
+          <td class="text-center">{{ u.first_name }}</td>
+          <td class="text-center">{{ u.last_name }}</td>
+          <td class="text-center">{{ u.email }}</td>
+          <td class="text-center">{% if u.is_active %}Yes
             {% else %}
-                   <a  class="btn btn-warning btn-md" href="{% url  'recover_user' user.id%}">Activate</a>
+                   <a  class="btn btn-warning btn-md" href="{% url  'recover_user' u.id%}">Activate</a>
             {% endif %}
           </td>
           <td class="text-center">
-            <a href="{% url 'edit_user' user.id %}" class="btn btn-primary btn-md">Edit</a> 
+            <a href="{% url 'edit_user' u.id %}" class="btn btn-primary btn-md">Edit</a> 
           </td>
           <td class="text-center">
-            <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-md">Delete</a>
+            <a href="{% url 'delete_user' u.id %}" class="btn btn-danger btn-md">Delete</a>
           </td>
         </tr>
       {% endfor %}

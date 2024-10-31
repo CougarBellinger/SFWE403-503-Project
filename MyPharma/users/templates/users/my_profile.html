@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Profile Information</h2>
+
+    <!-- User Information Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title"><b>User Information</b></h5>
+            <dl class="row">
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">{{ user.email }}</dd>
+
+                <dt class="col-sm-3">Is Active:</dt>
+                <dd class="col-sm-9">{{ user.is_active }}</dd>
+
+                <dt class="col-sm-3">Is Email Verified:</dt>
+                <dd class="col-sm-9">{{ user.is_email_verified }}</dd>
+            </dl>
+
+            <div class="text-end">
+                <a href="{% url 'changePassword_view' %}" class="btn btn-outline-primary">Change Password</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

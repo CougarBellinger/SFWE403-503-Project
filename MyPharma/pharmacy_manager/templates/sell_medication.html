@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+          <h2 class="mb-4">Sell Medication</h2>
+        </div>
+      </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST" action="{% url 'sell_medication' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="medication_id" class="form-label">Medication ID:</label>
+                    <input type="text" class="form-control" name="medication_id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="amount_to_sell" class="form-label">Amount to Sell:</label>
+                    <input type="text" class="form-control" name="amount_to_sell" required>
+                </div>
+                <button type="submit" class="btn btn-success" name="sell_medication">Sell Medication</button>
+            </form>
+        </div>
+    </div>
+
+   
+    {% if messages %}
+    <div class="alert alert-info">
+        <ul class="mb-0">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

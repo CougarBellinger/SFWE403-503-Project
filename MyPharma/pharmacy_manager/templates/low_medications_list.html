@@ -9,7 +9,7 @@
   </div>
 
   <table class="table table-striped mt-4">
-    <thead>
+    <thead class="thead-dark">
       <tr>
         <th>Medication ID</th>
         <th>Name of Medication</th>
@@ -29,7 +29,9 @@
 
           <td>Critically Low</td>
           <td>
+            
            <a href="{% url 'order_medications' medication.pk %}" class="btn btn-primary">Order</a>
+            
           </td>
 
         {% else %}
