@@ -407,3 +407,22 @@ def myprofile_view(request):
 # after checkout button is clicked, changes to payment method view
 def payment_method(request):
     if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        
+        if form.is_valid():
+            payment_method = form.cleaned_data['payment_method']
+
+            if payment_method == 'Credit/Debit':
+                return redirect('card_info')
+
+            if payment_method == 'Cash':
+                return redirect('cash')
+
+    else:
+        form = PaymentForm()
+        
+    return render(request, 'payment.html', {'form': form})
+
+def card_info():
+
+def cash():
