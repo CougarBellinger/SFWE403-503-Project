@@ -1,28 +1,28 @@
 from datetime import datetime
 
-from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
-from django.dispatch import receiver
+from .models import Activity
+from .models import MED_REMOVED, FILLED
 
-from .models import Activity, Medications, Patient 
-from .models import REMOVED, FILLED
-
-@receiver(pre_delete, sender=Medications)
-def log_medications_deleted(sender, instance, **kwargs):
-    user = kwargs('user', None)
-
-    activity_time = datetime.now()
+# @receiver(post_delete, sender=Medications)
+def log_medications_deleted(sender, instance, user):
+    print(f"log_medications_deleted triggered")
     
-    #TODO: Finish populating creating
-    Activity.objects.create(
+    activity = Activity.objects.create(
         actor = user,
         medication = instance,
-        action_type = REMOVED,
+        action_type = MED_REMOVED,
         object_id = instance.pk,
-        remarks = f"{user.username} deleted {instance.name} on {activity_time.strftime('%Y-%m-%d %H:%M:%S')}",
-
+        remarks = (f"{user.username} deleted {instance.name} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
         data = {
             "med_name" : instance.name,
-            "med_expDate" : instance.expiration_date,
+            "med_expDate" : instance.expiration_date.strftime('%Y-%m-%d %H:%M:%S'),
             "med_isExpired" : instance.is_expired,
         }
     )
+
+    print("activity instantiated before save")
+
+    activity.save()
+
+    print(f"Activity #{activity.pk}: {activity.remarks}")
+    

@@ -10,10 +10,10 @@ from users.manage import CustomUserManager
 from datetime import datetime, timedelta
 
 # Values for activity log
-REMOVED, FILLED = "Removed", "Filled"
+MED_REMOVED, FILLED = "Removed", "Filled"
 
 ACTION_TYPES = [
-    (REMOVED, REMOVED),
+    (MED_REMOVED, MED_REMOVED),
     (FILLED, FILLED)
 ]
 
@@ -162,7 +162,7 @@ class Activity(models.Model):
     #TODO: Add keys for prescriptions when implemented
     # Keys to relevant models
     medication = models.ForeignKey(Medications, null=True, blank=True, on_delete=models.CASCADE)
-    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
+    patient    = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     # Action type and time performed
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
