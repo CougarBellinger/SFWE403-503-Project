@@ -423,6 +423,39 @@ def payment_method(request):
         
     return render(request, 'payment.html', {'form': form})
 
-def card_info():
+def card_info(request):
+    total = request.session.get('total') # shows purchase total
 
-def cash():
+    if request.method == 'POST':
+        form = CardInfoForm(request.POST)
+        
+        if form.is_valid():
+            card_info = form.cleaned_data['card_info'] # is this necessary?
+            return redirect('confirmation_page')
+
+    else:
+        form = CardInfoForm()
+        
+    return render(request, 'card.html', {'form': form})
+
+def cash(request):
+    total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
+    
+    if request.method == 'POST':
+        form = CashForm(request.POST)
+
+        if form.is_valid():
+            cash_given = form.cleaned_data['cash_given']
+            if cash_given < total:
+                return render(request, 'cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
+            
+            change = cash_given - total
+            return render(request, 'cash.html', {'form': form, 'total': total, 'change': change})
+
+    else:
+        form = CashForm()
+
+    return render(request, 'cash.html', {'form': form, 'total': total})
+
+def confirmation_page(request):
+    return render(request, 'confirmation.html')

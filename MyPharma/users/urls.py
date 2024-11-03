@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import User_registration_view, home_view, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view
+from .views import User_registration_view, home_view, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, confirmation_page
 
 
 urlpatterns = [
@@ -27,5 +27,8 @@ urlpatterns = [
     path('delete/<int:pk>/', delete_patient, name='delete_patient'),
     path('changePassword/', changePassword_view, name='changePassword_view'),
     path('myprofile/', myprofile_view, name='myprofile_view'),
-
+    path('payment_method/', payment_method, name='payment_method'),
+    path('card/', card_info, name='card_info'),
+    path('cash/', cash, name='cash'),
+    path('confirmation/', confirmation_page, name='confirmation')
 ]
