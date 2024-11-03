@@ -13,7 +13,6 @@ from django.contrib.auth.hashers import make_password
 
 from users.forms import *
 from users.models import *
-from users.models import ACTION_TYPES
 from users.decorators import *
 from users.signals import log_medications_deleted
 
@@ -197,10 +196,11 @@ def all_medications_view(request):
 
 def remove_medications(request, pk):
     medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    medication.save()
     if request.method == 'POST':
         user = request.user
 
-        log_medications_deleted(sender=Medications, instance=medication, user=user)
+        log_medications_deleted(instance_id=medication.pk, user=user)
         
         medication.delete()  # Delete the medication from the database
         return redirect('expiring_medications_management')  # Redirect to expired medication management after deletion
