@@ -60,7 +60,18 @@ def login_view(request):
                 return redirect('first_password_view')
 
             messages.success(request, f'Welcome back, {user.username}!')
-            return redirect('home_view')
+
+            # Redirect based on user type
+            if user.user_type == CustomUser.Cashier:
+                return redirect('cashier_home')
+            elif user.user_type == CustomUser.PharmacyManager:
+                return redirect('manager_home')
+            elif user.user_type == CustomUser.PharmacyTechnician:
+                return redirect('technician_home')
+            elif user.user_type == CustomUser.Pharmacist:
+                return redirect('pharmacist_home')
+            else:
+                return redirect('home_view')
         else:
             # Failed login attempt
             try:
@@ -270,6 +281,10 @@ def manager_home(request):
 @login_required
 def customer_home(request):
     return render(request, 'users/customer_home.html')
+
+@login_required
+def cashier_home(request):
+    return render(request, 'users/cashier_home.html')
 
 @login_required
 def password_change(request):
