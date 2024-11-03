@@ -8,13 +8,15 @@ from .models import LOGIN, LOGOUT, MED_REMOVED
 
 def log_medications_deleted(instance_id, user):
     print(f"log_medications_deleted triggered")
+    print(f"{user.get_user_type_display()}")
     instance = Medications.objects.get(pk=instance_id)
     
     activity = Activity.objects.create(
         actor = user,
+        actor_type = user.get_user_type_display(),
         action_type = MED_REMOVED,
         object_id = instance.pk,
-        remarks = (f"{user.username} deleted {instance.name} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
+        remarks = (f"{user.username} removed {instance.name} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
         data = {
             "med_name" : instance.name,
             "med_expDate" : instance.expiration_date.strftime('%Y-%m-%d %H:%M:%S'),
@@ -26,7 +28,7 @@ def log_medications_deleted(instance_id, user):
 
     activity.save()
 
-    print(f"Activity #{activity.pk}: {activity.remarks}")
+    print(f"Activity #{activity.pk}: {activity.remarks}\n")
 
 
 @receiver(user_logged_in)
@@ -35,6 +37,7 @@ def log_user_login(sender, request, user, **kwargs):
     
     login = Activity.objects.create(
         actor = user,
+        actor_type = user.get_user_type_display(),
         action_type = LOGIN,
         remarks = (f"{user.username} logged in on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     )
@@ -43,7 +46,7 @@ def log_user_login(sender, request, user, **kwargs):
 
     login.save()
 
-    print(f"Activity #{login.pk}: {login.remarks}")
+    print(f"Activity #{login.pk}: {login.remarks}\n")
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):
@@ -51,7 +54,8 @@ def log_user_logout(sender, request, user, **kwargs):
     
     logout = Activity.objects.create(
         actor = user,
-        action_type = LOGIN,
+        actor_type = user.get_user_type_display(),
+        action_type = LOGOUT,
         remarks = (f"{user.username} logged out on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     )
 
@@ -59,4 +63,4 @@ def log_user_logout(sender, request, user, **kwargs):
 
     logout.save()
 
-    print(f"Activity #{logout.pk}: {logout.remarks}")
+    print(f"Activity #{logout.pk}: {logout.remarks}\n")
