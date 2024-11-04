@@ -3,11 +3,13 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
+from django.conf import settings
+import uuid
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
     PharmacyTechnician = '2'
-    Pharmicist = '3'
+    Pharmacist = '3'
     Cashier = '4'
     #Patient = '5'
     GeneralUser = '6'
@@ -16,7 +18,7 @@ class CustomUser(AbstractUser):
     user_type_choices = (
         (PharmacyManager, "PharmacyManager"),
         (PharmacyTechnician, "PharmacyTechnician"),
-        (Pharmicist, "Pharmacist"),
+        (Pharmacist, "Pharmacist"),
         (Cashier, "Cashier"),
         #(Patient, "Patient"),
         (GeneralUser, "GeneralUser")
@@ -128,6 +130,8 @@ class Medications(models.Model):
     name = models.CharField(max_length= 100)
     expiration_date = models.DateField() # must follow format YYYY - MM - DD
     tablet_count = models.IntegerField(default= 0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # For future use
+
 
     # true when tablet_count < 50
     is_orderable = models.BooleanField(default=False)
@@ -140,3 +144,19 @@ class Medications(models.Model):
 
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
+class Order(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    order_number = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default='pending')
+
+    def __str__(self):
+        return f'Order {self.order_number} by {self.user.email}'
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f'{self.quantity} of {self.medication.name}'

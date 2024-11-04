@@ -20,8 +20,11 @@ from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
 from users.decorators import pharmacy_manager_required
 
+
+
 # App imports
 from pharmacy_manager.views import *
+from .models import Medications, Order, OrderItem
 from .forms import *
 from .models import *
 
@@ -418,3 +421,93 @@ def changePassword_view(request):
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
+
+# views.py
+@login_required
+def pharmacist_home(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+
+    return render(request, 'users/pharmacist_home.html', {'medications': medications})
+
+@login_required
+def medications_view(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+
+    return render(request, 'users/medications_view.html', {'medications': medications})
+
+# views.py
+
+# views.py
+
+# views.py
+
+@login_required
+def create_order(request):
+    if request.method == 'POST':
+        order = Order.objects.create(user=request.user)
+        for key, value in request.POST.items():
+            if key.startswith('medication_'):
+                medication_id = key.split('_')[1]
+                medication = Medications.objects.get(id=medication_id)
+                try:
+                    quantity = int(value)
+                except ValueError:
+                    quantity = 0
+                if quantity > 0:
+                    price = medication.price  # Assuming the Medications model has a price field
+                    OrderItem.objects.create(order=order, medication=medication, quantity=quantity, price=price)
+        return redirect('view_orders')
+
+    medications = Medications.objects.all()
+    return render(request, 'users/create_order.html', {'medications': medications})
+
+@login_required
+def view_orders(request):
+    orders = Order.objects.filter(user=request.user).prefetch_related('items__medication')
+    return render(request, 'users/view_orders.html', {'orders': orders})
+
+@login_required
+def checkout_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if request.method == 'POST':
+        for item in order.items.all():
+            item.price = request.POST.get(f'price_{item.id}', 0)
+            item.save()
+        additional_item_name = request.POST.get('additional_item_name')
+        additional_item_amount = request.POST.get('additional_item_amount', 0)
+        if additional_item_name and additional_item_amount:
+            OrderItem.objects.create(order=order, medication_name=additional_item_name, quantity=1, price=additional_item_amount)
+        order.status = 'checked_out'
+        order.save()
+        return redirect('checkout', order_id=order.id)
+    return render(request, 'users/checkout_order.html', {'order': order})
+
+@login_required
+def checkout(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    total_price = sum(item.price for item in order.items.all())
+    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
