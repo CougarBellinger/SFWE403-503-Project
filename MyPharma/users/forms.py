@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from users.models import CustomUser, Patient
+from users.models import CustomUser, Patient, Medications
 from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 
 
@@ -38,9 +38,8 @@ class ChangePasswordForm(PasswordChangeForm):
         fields = ['old_password', 'new_password1', 'new_password2']
 
 class ManualPrescriptionForm(forms.Form):
-    patient_selection = forms.ChoiceField(choices=payment_method_choices, widget= forms.Select())
-    medication_selection = forms.ChoiceField(choices=payment_method_choices, widget= forms.Select())
-    name_on_card = forms.CharField(required=False, min_length=1, max_length=100)
-    card_number = forms.CharField(required=False, min_length=16, max_length=16)
-    expiration_date = forms.DateField(required=False, input_formats=['%m%y'])
-    csv_number = forms.CharField(required=False, min_length=3, max_length=3)
+    #drop down menus
+    patient = forms.ModelChoiceField(queryset=Patient.objects.all(), label='Select Patient')
+    medication = forms.ModelChoiceField(queryset=Medications.objects.all(), label='Select Medication')
+
+    num_tablets = forms.IntegerField
