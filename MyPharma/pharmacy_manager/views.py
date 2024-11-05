@@ -213,3 +213,15 @@ def order_medications(request, pk):
         form = OrderMedicationForm(instance=medication)
 
     return render(request, 'order_medications.html', {'form': form})
+
+def sign_perscriptions(request):
+    if request.method == 'POST':
+        form = Signature(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            Signature.objects.create(like=cd['Physical'],)
+            return render(request, 'sign_perscriptions.html')
+    else:
+        form = Signature()
+
+    return render(request, 'sign_perscriptions.html')

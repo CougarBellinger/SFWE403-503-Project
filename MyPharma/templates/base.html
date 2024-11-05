@@ -39,6 +39,9 @@
                     <a href="{% url 'low_medications_management' %}" class="list-group-item list-group-item-action py-2 ripple">
                         <i class="fas fa-chart-area fa-fw me-3"></i><span>Low  Inventory</span>
                     </a>
+                    <a href="{% url 'sign_perscriptions' %}" class="list-group-item list-group-item-action py-2 ripple">
+                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Sign Perscriptions</span>
+                    </a>
                     {% endif %}
                     {% if user.user_type == '2' %}
                     <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
