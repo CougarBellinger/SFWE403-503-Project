@@ -7,6 +7,23 @@ class OrderMedicationForm(forms.ModelForm):
         model = Medications
         fields = ['tablet_count', 'expiration_date']
 
-class Signature(forms.Form):
-    CHOICES = [('P','Physical'),('E','Electronic')]
-    like=forms.CharField(label='choice', widget=forms.RadioSelect(choices=CHOICES))
+class SignatureForm(forms.Form):
+    signature_type = forms.ChoiceField(
+        choices=[('physical', 'Physical'), ('digital', 'Digital')],
+        widget=forms.RadioSelect,
+    )
+    DigitalSignature = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        initial=''
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        signature_type = cleaned_data.get('signature_type')
+        digital_signature = cleaned_data.get('DigitalSignature')
+
+        if signature_type == 'digital' and not digital_signature:
+            self.add_error('DigitalSignature', 'A valid signature is required')
+
+        return cleaned_data

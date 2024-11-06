@@ -223,14 +223,18 @@ def activity_log(request):
     activity_items = Activity.objects.all().order_by('-action_time')
     return render(request, 'activity_log_view.html', {"activity_items" : activity_items})
 
-def sign_perscriptions(request):
+def sign_prescriptions(request):
     if request.method == 'POST':
-        form = Signature(request.POST)
+        form = SignatureForm(request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
-            Signature.objects.create(like=cd['Physical'],)
-            return render(request, 'sign_perscriptions.html')
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
     else:
-        form = Signature()
+        form = SignatureForm()
 
-    return render(request, 'sign_perscriptions.html')
+    return render(request, 'sign_prescriptions.html', {'form': form})
