@@ -140,3 +140,6 @@ class Medications(models.Model):
 
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
+
+class Prescription(models.Model):
+    

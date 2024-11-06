@@ -418,3 +418,10 @@ def changePassword_view(request):
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
+
+def manual_prescription(request):
+    if request.method() == 'POST':
+        form = ManualPrescriptionForm(request.POST)
+
+        if form.is_valid():
+            prescription = Prescription(patient= form.cleaned_data['patient'], medication= form.cleaned_data['medication'], num_tablets= form.cleaned_data['num_tablets'], prescriber_name= form.cleaned_data['prescriber_name'])
