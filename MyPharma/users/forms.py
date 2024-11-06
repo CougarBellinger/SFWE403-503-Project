@@ -43,5 +43,5 @@ class ManualPrescriptionForm(forms.Form):
     medication = forms.ModelChoiceField(queryset=Medications.objects.all(), label='Select Medication')
 
     # typed out fields
-    num_tablets = forms.IntegerField(label='Number of Tablets', min= 1, max = 500)
+    num_tablets = forms.IntegerField(label='Number of Tablets', min_value= 1, max_value = 500)
     prescriber_name = forms.CharField(label='Name of Prescriber', min = 1, max = 100)
