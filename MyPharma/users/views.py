@@ -425,3 +425,11 @@ def manual_prescription(request):
 
         if form.is_valid():
             prescription = Prescription(patient= form.cleaned_data['patient'], medication= form.cleaned_data['medication'], num_tablets= form.cleaned_data['num_tablets'], prescriber_name= form.cleaned_data['prescriber_name'])
+            prescription.save()
+        
+            return redirect('prescription_confirmation')
+    
+    else:
+        form = ManualPrescriptionForm()
+    
+    return render(request, 'create_prescription.html', {'form': form})

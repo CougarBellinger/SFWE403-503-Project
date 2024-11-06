@@ -142,4 +142,12 @@ class Medications(models.Model):
     is_expiring_soon = models.BooleanField(default=False)
 
 class Prescription(models.Model):
-    
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
+    num_tablets = models.IntegerField()
+    prescriber_name = models.CharField(max_length=100)
+    date_prescribed = models.DateField(auto_now_add=True)
+    is_filled = models.BooleanField(default=False)
+
+    def __str__(self):
+     return f"Prescription for {self.patient}: {self.num_tablets} tablets of {self.medication}"
