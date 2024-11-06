@@ -23,7 +23,7 @@
                    
                     {% if user.user_type == '1' %}
                     <a href="{%url 'manager_home'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main dashboard </span>
+                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main Dashboard </span>
                     </a>
                     <a href="{% url 'user_management' %}" class="list-group-item list-group-item-action py-2 ripple"><i
                         class="fas fa-users fa-fw me-3"></i><span>Users Management</span></a>
@@ -43,6 +43,11 @@
                     {% if user.user_type == '2' %}
                     <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                         <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Developing</span>
+                    </a>
+                    {% endif %}
+                    {% if user.user_type == '3' %}
+                    <a href="{%url 'manual_prescription'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Manual Prescription </span>
                     </a>
                     {% endif %}
                    
