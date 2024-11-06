@@ -44,4 +44,4 @@ class ManualPrescriptionForm(forms.Form):
 
     # typed out fields
     num_tablets = forms.IntegerField(label='Number of Tablets', min_value=1, max_value=500)
-    prescriber_name = forms.CharField(label='Name of Prescriber', min = 1, max = 100)
+    prescriber_name = forms.CharField(label='Name of Prescriber', min_length=1, max_length=100)
