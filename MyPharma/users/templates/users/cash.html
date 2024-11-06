@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Enter Given Cash Amount</div>
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            {% if change is not None %}
+                <p>Change: ${{ change }}</p>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary">Purchase</button>
+            <a href="{% url 'payment_method' %}" class="btn btn-secondary">Back to Payment Method Selection</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

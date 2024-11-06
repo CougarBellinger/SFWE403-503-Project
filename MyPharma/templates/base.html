@@ -42,7 +42,11 @@
                     <a href="{% url 'sign_perscriptions' %}" class="list-group-item list-group-item-action py-2 ripple">
                         <i class="fas fa-chart-area fa-fw me-3"></i><span>Sign Perscriptions</span>
                     </a>
+                    <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-2 ripple">
+                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Activity Log</span>
+                    </a>
                     {% endif %}
+                    
                     {% if user.user_type == '2' %}
                     <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                         <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Developing</span>
@@ -138,6 +142,15 @@
 
 </body>
 
-
+<script>
+    // Automatically close alert after 2 seconds
+    setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            let bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 2000);
+</script>
 
 </html>
