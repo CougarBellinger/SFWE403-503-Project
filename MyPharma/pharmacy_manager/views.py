@@ -219,6 +219,7 @@ def order_medications(request, pk):
         form = OrderMedicationForm(instance=medication)
 
     return render(request, 'order_medications.html', {'form': form})
+
     
 def activity_log(request):
     activity_items = Activity.objects.all().order_by('-action_time')
