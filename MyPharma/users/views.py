@@ -432,7 +432,7 @@ def manual_prescription(request):
     else:
         form = ManualPrescriptionForm()
     
-    return render(request, 'create_prescription.html', {'form': form})
+    return render(request, 'users/create_prescription.html', {'form': form})
 
 def prescription_confirmation(request):
     return render(request, 'prescription_confirmation.html')
