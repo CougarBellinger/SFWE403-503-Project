@@ -420,7 +420,7 @@ def myprofile_view(request):
     return render(request, 'users/my_profile.html', {'user': currentUser})
 
 def manual_prescription(request):
-    if request.method() == 'POST':
+    if request.method == 'POST':
         form = ManualPrescriptionForm(request.POST)
 
         if form.is_valid():
@@ -435,4 +435,4 @@ def manual_prescription(request):
     return render(request, 'create_prescription.html', {'form': form})
 
 def prescription_confirmation(request):
-    
+    return render(request, 'prescription_confirmation.html')
