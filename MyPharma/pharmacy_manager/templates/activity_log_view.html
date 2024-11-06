@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Activity Log</h2>
+    </div>
+  </div>
+
+  <table class="table table-striped mt-4">
+    
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Remarks</th>
+        <th>User</th>
+        <th>User Type</th>
+        <th>Date and Time</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for activity in activity_items%}
+      <tr>
+        <td>{{ activity.pk }} </td>
+        <td>{{ activity.remarks }} </td>
+        <td>{{ activity.actor }} </td>
+        <td>{{ activity.actor_type }} </td>
+        <td>{{ activity.action_time }} </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+</div>
+{% endblock %}

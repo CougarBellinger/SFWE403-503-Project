@@ -1,8 +1,24 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group, Permission
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.apps import apps
+from django.db import connection
+from django.core.management import call_command
+
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
+
+# Values for activity log
+LOGIN, LOGOUT, MED_REMOVED, FILLED = "User Login", "User Logout", "Medication Removed", "Prescription Filled"
+
+ACTION_TYPES = [
+    (LOGIN, LOGIN),
+    (LOGOUT, LOGOUT),
+    (MED_REMOVED, MED_REMOVED),
+    (FILLED, FILLED)
+]
+
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
@@ -140,3 +156,28 @@ class Medications(models.Model):
 
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
+
+class Activity(models.Model):
+    # User performing the action
+    actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    actor_type = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+    )
+
+    #TODO: Medication assignment breaks the activity log
+    # Keys to relevant models
+        # medication = models.ForeignKey(Medications, on_delete=models.CASCADE, null=True)
+        # patient    = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+
+    # Action type and time performed
+    action_type = models.CharField(choices=ACTION_TYPES, max_length=20)
+    action_time = models.DateTimeField(auto_now_add=True)
+
+    # Field for objectID
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+
+    # Remarks for action and relevant data
+    remarks = models.TextField(blank=True, null=True)
+    data = models.JSONField(default=dict)
