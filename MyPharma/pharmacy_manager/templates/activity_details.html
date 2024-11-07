@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+                <div class="card-header">Activity {{activity.pk}}</div>
+                    <div class="card-body">
+
+                        {% if activity.action != "Prescription Filled"%}
+
+                            <p>Remarks: {{activity.remarks}}</p>
+
+                        {% else %}
+                            <dl>
+                                <dt>Pharmacist Name</dt>
+                                <dt>Prescription Number</dt>
+                                <dt>Patient Name</dt>
+                                <dt>Date and Time</dt>
+                                <dt>Medication</dt>
+                                <dt>Quantity</dt>
+                            </dl>
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-danger">Remove</button>
+                                    <a href="{% url 'expiring_medications_management' %}" class="btn btn-secondary">Back</a>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
