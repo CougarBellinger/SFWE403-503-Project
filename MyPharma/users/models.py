@@ -141,6 +141,10 @@ class Medications(models.Model):
     # true when (current date - expiration date) < 30
     is_expiring_soon = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f'{self.name} ({self.tablet_count} tablets left)'
+
+
 class Prescription(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
