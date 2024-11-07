@@ -445,7 +445,7 @@ def card_info(request):
         form = CardInfoForm(request.POST)
         
         if form.is_valid():
-            card_info = form.cleaned_data['card_info'] # is this necessary?
+            #card_info = form.cleaned_data['name_on_card'] # is this necessary?
             return redirect('confirmation_page')
 
     else:
