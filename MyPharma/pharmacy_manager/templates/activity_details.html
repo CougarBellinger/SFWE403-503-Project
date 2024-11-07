@@ -8,7 +8,7 @@
                 <div class="card-header">Activity {{activity.pk}}</div>
                     <div class="card-body">
 
-                        {% if activity.action != "Prescription Filled"%}
+                        {% if activity.action != "Prescription Filled" %}
 
                             <p>Remarks: {{activity.remarks}}</p>
 
@@ -24,11 +24,9 @@
                         {% endif %}
 
                         <form method="post">
-                            {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
-                                    <button type="submit" class="btn btn-danger">Remove</button>
-                                    <a href="{% url 'expiring_medications_management' %}" class="btn btn-secondary">Back</a>
+                                    <a href="{% url 'activity_log' %}" class="btn btn-secondary">Back</a>
                                 </div>
                             </div>
                         </form>
