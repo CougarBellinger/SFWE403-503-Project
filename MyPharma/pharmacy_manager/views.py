@@ -219,8 +219,22 @@ def order_medications(request, pk):
         form = OrderMedicationForm(instance=medication)
 
     return render(request, 'order_medications.html', {'form': form})
-
-    
 def activity_log(request):
     activity_items = Activity.objects.all().order_by('-action_time')
     return render(request, 'activity_log_view.html', {"activity_items" : activity_items})
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})
