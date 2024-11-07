@@ -33,5 +33,5 @@ urlpatterns = [
     path('payment_method/', payment_method, name='payment_method'),
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
-    path('confirmation/', confirmation_page, name='confirmation')
+    path('confirmation/', confirmation_page, name='confirmation_page')
 ]
