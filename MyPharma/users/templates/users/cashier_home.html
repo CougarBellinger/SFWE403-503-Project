@@ -1,3 +1,4 @@
+<!-- users/templates/users/cashier_home.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -5,5 +6,6 @@
     <h2>Cashier Dashboard</h2>
     <p>Welcome to the cashier dashboard. Here you can add items as needed.</p>
     <!-- Add form or other content for cashier functionality -->
+    <a href="{% url 'view_orders' %}" class="btn btn-primary">View Orders</a>
 </div>
 {% endblock %}

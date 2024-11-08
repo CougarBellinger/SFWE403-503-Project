@@ -478,36 +478,99 @@ def create_order(request):
                 except ValueError:
                     quantity = 0
                 if quantity > 0:
-                    price = medication.price  # Assuming the Medications model has a price field
-                    OrderItem.objects.create(order=order, medication=medication, quantity=quantity, price=price)
+                    if medication.tablet_count >= quantity:
+                        OrderItem.objects.create(order=order, medication=medication, quantity=quantity, price=medication.price)
+                        medication.tablet_count -= quantity
+                        medication.save()
+                    else:
+                        messages.error(request, f'Not enough stock for {medication.name}. Available: {medication.tablet_count}')
+                        order.delete()
+                        return redirect('create_order')
         return redirect('view_orders')
 
     medications = Medications.objects.all()
     return render(request, 'users/create_order.html', {'medications': medications})
-
 @login_required
 def view_orders(request):
-    orders = Order.objects.filter(user=request.user).prefetch_related('items__medication')
+    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician]:
+        orders = Order.objects.all().prefetch_related('items__medication', 'items__generic_item')
+    else:
+        orders = Order.objects.filter(user=request.user).prefetch_related('items__medication', 'items__generic_item')
     return render(request, 'users/view_orders.html', {'orders': orders})
+
 
 @login_required
 def checkout_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
         for item in order.items.all():
-            item.price = request.POST.get(f'price_{item.id}', 0)
-            item.save()
-        additional_item_name = request.POST.get('additional_item_name')
-        additional_item_amount = request.POST.get('additional_item_amount', 0)
-        if additional_item_name and additional_item_amount:
-            OrderItem.objects.create(order=order, medication_name=additional_item_name, quantity=1, price=additional_item_amount)
-        order.status = 'checked_out'
-        order.save()
-        return redirect('checkout', order_id=order.id)
-    return render(request, 'users/checkout_order.html', {'order': order})
+            price_field = f'price_{item.id}'
+            if price_field in request.POST:
+                try:
+                    new_price = float(request.POST[price_field])
+                    item.price = new_price
+                    item.save()
+                except ValueError:
+                    messages.error(request, f'Invalid price for {item.medication.name if item.medication else item.generic_item.name}.')
+                    return redirect('checkout_order', order_id=order_id)
 
+        new_item_name = request.POST.get('new_item_name')
+        new_item_quantity = request.POST.get('new_item_quantity')
+        new_item_price = request.POST.get('new_item_price')
+
+        if new_item_name and new_item_quantity and new_item_price:
+            try:
+                new_item_quantity = int(new_item_quantity)
+                new_item_price = float(new_item_price)
+                new_generic_item = GenericItem.objects.create(name=new_item_name, price=new_item_price)
+                OrderItem.objects.create(order=order, generic_item=new_generic_item, quantity=new_item_quantity, price=new_item_price)
+            except ValueError:
+                messages.error(request, 'Invalid input for new item.')
+                return redirect('checkout_order', order_id=order_id)
+
+        if 'confirm' in request.POST:
+            order.status = 'waiting for payment'
+            order.save()
+            messages.success(request, 'Order status updated to waiting for payment.')
+            return redirect('view_orders')
+
+        total_price = sum(item.quantity * item.price for item in order.items.all())
+        return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
+    return redirect('view_orders')
 @login_required
 def checkout(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     total_price = sum(item.price for item in order.items.all())
     return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
+
+
+def add_medication(request):
+    if request.method == 'POST':
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            expiration_date = form.cleaned_data['expiration_date']
+            tablet_count = form.cleaned_data['tablet_count']
+            price = form.cleaned_data['price']
+
+            # Check if the medication already exists
+            medication, created = Medications.objects.get_or_create(
+                name=name,
+                expiration_date=expiration_date,
+                defaults={'price': price}
+            )
+
+            if created:
+                # If the medication is new, set the tablet count
+                medication.tablet_count = tablet_count
+            else:
+                # If the medication already exists, update the tablet count
+                medication.tablet_count += tablet_count
+
+            medication.save()
+            messages.success(request, f'Medication {name} has been added/updated successfully.')
+            return redirect('medications_view')
+    else:
+        form = MedicationForm()
+
+    return render(request, 'users/add_medication.html', {'form': form})
