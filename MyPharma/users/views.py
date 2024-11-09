@@ -528,28 +528,23 @@ def pharmacist_home(request):
     return render(request, 'users/pharmacist_home.html', {'medications': medications})
 
 def unfilled_prescriptions(request):
-    # Get unfilled prescriptions
     unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
 
-    # Pass the unfilled prescriptions to the template
     context = {'unfilled_prescriptions': unfilled_prescriptions}
     return render(request, 'users/unfilled_prescriptions.html', context)
 
 def fill_prescription(request, pk):
-    # Get the prescription object by primary key (pk)
     prescription = get_object_or_404(Prescription, pk=pk)
     medication = prescription.medication  # Get the related medication
 
     # Check if there are enough tablets available
     if medication.tablet_count >= prescription.num_tablets:
-        # Deduct the tablets from the medication
+        # Deduct the tablets from the medication (not implemented)
 
-        # Mark the prescription as filled
         prescription.is_filled = True
         prescription.save()
 
     
-        # Add an error message if not enough tablets are available
+        # Add an error message if not enough tablets are available (not implemented)
 
-    # Redirect to the unfilled prescriptions list page (or any other page you choose)
     return redirect('unfilled_prescriptions')
