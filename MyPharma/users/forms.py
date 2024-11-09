@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from users.models import CustomUser, Patient
+from users.models import CustomUser, Patient, Medications
 from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 
 
@@ -49,3 +49,12 @@ class CardInfoForm(forms.Form):
 
 class CashForm(forms.Form):
     cash_given = forms.DecimalField(label='Cash Given', max_digits=10, decimal_places=2)
+
+class ManualPrescriptionForm(forms.Form):
+    # drop down menus
+    patient = forms.ModelChoiceField(queryset=Patient.objects.all(), label='Select Patient')
+    medication = forms.ModelChoiceField(queryset=Medications.objects.all(), label='Select Medication')
+
+    # typed out fields
+    num_tablets = forms.IntegerField(label='Number of Tablets', min_value=1, max_value=500)
+    prescriber_name = forms.CharField(label='Name of Prescriber', min_length=1, max_length=100)
