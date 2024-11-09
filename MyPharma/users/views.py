@@ -68,7 +68,7 @@ def login_view(request):
                 return redirect('manager_home')
             elif user.user_type == CustomUser.PharmacyTechnician:
                 return redirect('technician_home')
-            elif user.user_type == CustomUser.Pharmacist:
+            elif user.user_type == CustomUser.Pharmicist:
                 return redirect('pharmacist_home')
             else:
                 return redirect('home_view')
@@ -508,3 +508,48 @@ def sign_prescriptions(request):
         form = SignatureForm()
 
     return render(request, 'sign_prescriptions.html', {'form': form})
+
+@login_required
+def pharmacist_home(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+
+    return render(request, 'users/pharmacist_home.html', {'medications': medications})
+
+def unfilled_prescriptions(request):
+    # Get unfilled prescriptions
+    unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
+
+    # Pass the unfilled prescriptions to the template
+    context = {'unfilled_prescriptions': unfilled_prescriptions}
+    return render(request, 'users/unfilled_prescriptions.html', context)
+
+def fill_prescription(request, pk):
+    # Get the prescription object by primary key (pk)
+    prescription = get_object_or_404(Prescription, pk=pk)
+    medication = prescription.medication  # Get the related medication
+
+    # Check if there are enough tablets available
+    if medication.tablet_count >= prescription.num_tablets:
+        # Deduct the tablets from the medication
+
+        # Mark the prescription as filled
+        prescription.is_filled = True
+        prescription.save()
+
+    
+        # Add an error message if not enough tablets are available
+
+    # Redirect to the unfilled prescriptions list page (or any other page you choose)
+    return redirect('unfilled_prescriptions')
