@@ -492,3 +492,19 @@ def manual_prescription(request):
 
 def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})
