@@ -459,7 +459,7 @@ def payment_method(request):
     else:
         form = PaymentForm()
         
-    return render(request, 'payment.html', {'form': form})
+    return render(request, 'users/payment.html', {'form': form})
 
 def card_info(request):
     total = request.session.get('total') # shows purchase total
@@ -468,13 +468,13 @@ def card_info(request):
         form = CardInfoForm(request.POST)
         
         if form.is_valid():
-            card_info = form.cleaned_data['card_info'] # is this necessary?
+            #card_info = form.cleaned_data['name_on_card'] # is this necessary?
             return redirect('confirmation_page')
 
     else:
         form = CardInfoForm()
         
-    return render(request, 'card.html', {'form': form})
+    return render(request, 'users/card.html', {'form': form})
 
 def cash(request):
     total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
@@ -485,18 +485,19 @@ def cash(request):
         if form.is_valid():
             cash_given = form.cleaned_data['cash_given']
             if cash_given < total:
-                return render(request, 'cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
+                return render(request, 'users/cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
             
             change = cash_given - total
-            return render(request, 'cash.html', {'form': form, 'total': total, 'change': change})
+            return render(request, 'users/cash.html', {'form': form, 'total': total, 'change': change})
 
     else:
         form = CashForm()
 
-    return render(request, 'cash.html', {'form': form, 'total': total})
+    return render(request, 'users/cash.html', {'form': form, 'total': total})
 
 def confirmation_page(request):
-    return render(request, 'confirmation.html')
+    return render(request, 'users/confirmation.html')
+
 
 def manual_prescription(request):
     if request.method == 'POST':

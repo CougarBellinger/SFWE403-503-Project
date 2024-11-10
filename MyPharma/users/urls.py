@@ -42,12 +42,15 @@ urlpatterns = [
     path('payment_method/', payment_method, name='payment_method'),
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
-    path('confirmation/', confirmation_page, name='confirmation'),
+
+    path('confirmation/', confirmation_page, name='confirmation_page')
+
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),
     path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions'),
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
+
 
 ]

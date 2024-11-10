@@ -45,6 +45,9 @@
                     <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-2 ripple">
                         <i class="fas fa-chart-area fa-fw me-3"></i><span>Activity Log</span>
                     </a>
+                    <a href="{% url 'payment_method' %}" class="list-group-item list-group-item-action py-2 ripple">
+                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Payment Method Test</span>
+                    </a>
                     {% endif %}
                     
                     {% if user.user_type == '2' %}
