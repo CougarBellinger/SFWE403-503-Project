@@ -27,6 +27,7 @@ from pharmacy_manager.views import *
 from .models import Medications, Order, OrderItem
 from .forms import *
 from .models import *
+from .signals import log_prescription_filled
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ def login_view(request):
                 return redirect('manager_home')
             elif user.user_type == CustomUser.PharmacyTechnician:
                 return redirect('technician_home')
-            elif user.user_type == CustomUser.Pharmicist:
+            elif user.user_type == CustomUser.Pharmacist:
                 return redirect('pharmacist_home')
             else:
                 return redirect('home_view')
@@ -683,6 +684,9 @@ def fill_prescription(request, pk):
         # Deduct the tablets from the medication (not implemented)
 
         prescription.is_filled = True
+
+        log_prescription_filled(instance_id=prescription.pk, user=request.user)
+
         prescription.save()
 
     
