@@ -71,7 +71,7 @@ def login_view(request):
                 return redirect('manager_home')
             elif user.user_type == CustomUser.PharmacyTechnician:
                 return redirect('technician_home')
-            elif user.user_type == CustomUser.Pharmacist:
+            elif user.user_type == CustomUser.Pharmicist:
                 return redirect('pharmacist_home')
             else:
                 return redirect('home_view')
@@ -441,6 +441,97 @@ def pharmacist_home(request):
 
     return render(request, 'users/pharmacist_home.html', {'medications': medications})
 
+
+# after checkout button is clicked, changes to payment method view
+def payment_method(request):
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        
+        if form.is_valid():
+            payment_method = form.cleaned_data['payment_method']
+
+            if payment_method == 'Credit/Debit':
+                return redirect('card_info')
+
+            if payment_method == 'Cash':
+                return redirect('cash')
+
+    else:
+        form = PaymentForm()
+        
+    return render(request, 'payment.html', {'form': form})
+
+def card_info(request):
+    total = request.session.get('total') # shows purchase total
+
+    if request.method == 'POST':
+        form = CardInfoForm(request.POST)
+        
+        if form.is_valid():
+            card_info = form.cleaned_data['card_info'] # is this necessary?
+            return redirect('confirmation_page')
+
+    else:
+        form = CardInfoForm()
+        
+    return render(request, 'card.html', {'form': form})
+
+def cash(request):
+    total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
+    
+    if request.method == 'POST':
+        form = CashForm(request.POST)
+
+        if form.is_valid():
+            cash_given = form.cleaned_data['cash_given']
+            if cash_given < total:
+                return render(request, 'cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
+            
+            change = cash_given - total
+            return render(request, 'cash.html', {'form': form, 'total': total, 'change': change})
+
+    else:
+        form = CashForm()
+
+    return render(request, 'cash.html', {'form': form, 'total': total})
+
+def confirmation_page(request):
+    return render(request, 'confirmation.html')
+
+def manual_prescription(request):
+    if request.method == 'POST':
+        form = ManualPrescriptionForm(request.POST)
+
+        if form.is_valid():
+            prescription = Prescription(patient= form.cleaned_data['patient'], medication= form.cleaned_data['medication'], num_tablets= form.cleaned_data['num_tablets'], prescriber_name= form.cleaned_data['prescriber_name'])
+            prescription.save()
+        
+            return redirect('prescription_confirmation')
+    
+    else:
+        form = ManualPrescriptionForm()
+    
+    return render(request, 'users/create_prescription.html', {'form': form})
+
+def prescription_confirmation(request):
+    return render(request, 'users/prescription_confirmation.html')
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})
+
 @login_required
 def medications_view(request):
     medications = Medications.objects.all()
@@ -456,7 +547,6 @@ def medications_view(request):
             messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
         else:
             messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
-
     return render(request, 'users/medications_view.html', {'medications': medications})
 
 # views.py
@@ -574,3 +664,28 @@ def add_medication(request):
         form = MedicationForm()
 
     return render(request, 'users/add_medication.html', {'form': form})
+
+
+
+def unfilled_prescriptions(request):
+    unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
+
+    context = {'unfilled_prescriptions': unfilled_prescriptions}
+    return render(request, 'users/unfilled_prescriptions.html', context)
+
+def fill_prescription(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+    medication = prescription.medication  # Get the related medication
+
+    # Check if there are enough tablets available
+    if medication.tablet_count >= prescription.num_tablets:
+        # Deduct the tablets from the medication (not implemented)
+
+        prescription.is_filled = True
+        prescription.save()
+
+    
+        # Add an error message if not enough tablets are available (not implemented)
+
+    return redirect('unfilled_prescriptions')
+

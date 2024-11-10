@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import make_password
 from users.forms import *
 from users.models import *
 from users.decorators import *
+from users.signals import log_medications_deleted
 
 from .forms import *
 
@@ -195,7 +196,12 @@ def all_medications_view(request):
 
 def remove_medications(request, pk):
     medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    medication.save()
     if request.method == 'POST':
+        user = request.user
+
+        log_medications_deleted(instance_id=medication.pk, user=user)
+        
         medication.delete()  # Delete the medication from the database
         return redirect('expiring_medications_management')  # Redirect to expired medication management after deletion
 
@@ -213,3 +219,22 @@ def order_medications(request, pk):
         form = OrderMedicationForm(instance=medication)
 
     return render(request, 'order_medications.html', {'form': form})
+def activity_log(request):
+    activity_items = Activity.objects.all().order_by('-action_time')
+    return render(request, 'activity_log_view.html', {"activity_items" : activity_items})
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})

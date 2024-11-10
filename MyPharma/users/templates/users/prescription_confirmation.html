@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h2>Prescription Creation Confirmed</h2>
+        <p>The creation of this prescription was successfully completed.</p>
+        <a class="btn btn-primary mt-3" href="{% url 'manager_home' %}">Return to Home</a>
+    </div>
+</div>
+{% endblock %}
