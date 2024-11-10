@@ -1,0 +1,66 @@
+<!-- create_order.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Order</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        input[type="number"] {
+            width: 60px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" action="{% url 'create_order' %}">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Medication</th>
+                    <th>Available Quantity</th>
+                    <th>Order Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medication in medications %}
+                <tr>
+                    <td>{{ medication.name }}</td>
+                    <td>{{ medication.tablet_count }}</td>
+                    <td><input type="number" name="medication_{{ medication.id }}" required></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Sell</button>
+    </form>
+</body>
+</html>

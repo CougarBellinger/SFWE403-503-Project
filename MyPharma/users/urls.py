@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import User_registration_view, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions
+from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions
+
 
 
 urlpatterns = [
@@ -30,6 +31,14 @@ urlpatterns = [
     path('delete/<int:pk>/', delete_patient, name='delete_patient'),
     path('changePassword/', changePassword_view, name='changePassword_view'),
     path('myprofile/', myprofile_view, name='myprofile_view'),
+
+    path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
+    path('medications/', medications_view, name='medications_view'),
+    path('create_order/', create_order, name='create_order'),
+    path('view_orders/', view_orders, name='view_orders'),
+    path('checkout_order/<int:order_id>/', checkout_order, name='checkout_order'),
+    path('checkout/<int:order_id>/', checkout, name='checkout'),
+
     path('payment_method/', payment_method, name='payment_method'),
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
@@ -40,4 +49,5 @@ urlpatterns = [
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
+
 ]

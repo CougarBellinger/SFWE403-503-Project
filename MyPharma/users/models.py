@@ -9,6 +9,10 @@ from django.core.management import call_command
 from users.manage import CustomUserManager
 from datetime import datetime, timedelta
 
+from django.conf import settings
+import uuid
+
+
 # Values for activity log
 LOGIN, LOGOUT, MED_REMOVED, FILLED = "User Login", "User Logout", "Medication Removed", "Prescription Filled"
 
@@ -19,11 +23,12 @@ ACTION_TYPES = [
     (FILLED, FILLED)
 ]
 
+
 # Create your models here.
 class CustomUser(AbstractUser):
     PharmacyManager = '1'
     PharmacyTechnician = '2'
-    Pharmicist = '3'
+    Pharmacist = '3'
     Cashier = '4'
     #Patient = '5'
     GeneralUser = '6'
@@ -32,7 +37,7 @@ class CustomUser(AbstractUser):
     user_type_choices = (
         (PharmacyManager, "PharmacyManager"),
         (PharmacyTechnician, "PharmacyTechnician"),
-        (Pharmicist, "Pharmacist"),
+        (Pharmacist, "Pharmacist"),
         (Cashier, "Cashier"),
         #(Patient, "Patient"),
         (GeneralUser, "GeneralUser")
@@ -144,6 +149,8 @@ class Medications(models.Model):
     name = models.CharField(max_length= 100)
     expiration_date = models.DateField() # must follow format YYYY - MM - DD
     tablet_count = models.IntegerField(default= 0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # For future use
+
 
     # true when tablet_count < 50
     is_orderable = models.BooleanField(default=False)
@@ -159,6 +166,41 @@ class Medications(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.tablet_count} tablets left)'
+
+class Order(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    order_number = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default='pending')
+
+    def __str__(self):
+        return f'Order {self.order_number} by {self.user.email}'
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f'{self.quantity} of {self.medication.name}'
+
+class GenericItem(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    medication = models.ForeignKey(Medications, null=True, blank=True, on_delete=models.CASCADE)
+    generic_item = models.ForeignKey(GenericItem, null=True, blank=True, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.medication or self.generic_item} - {self.quantity}'
+
 
 
 class Prescription(models.Model):
@@ -196,3 +238,4 @@ class Activity(models.Model):
     # Remarks for action and relevant data
     remarks = models.TextField(blank=True, null=True)
     data = models.JSONField(default=dict)
+

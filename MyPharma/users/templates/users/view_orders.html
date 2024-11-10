@@ -1,0 +1,35 @@
+<!-- view_orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders</title>
+</head>
+<body>
+    <h1>Your Orders</h1>
+    {% for order in orders %}
+    <h2>Order {{ order.order_number }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Medication</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.medication.name }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form method="POST" action="{% url 'checkout_order' order.id %}">
+        {% csrf_token %}
+        <button type="submit">Checkout</button>
+    </form>
+    {% endfor %}
+</body>
+</html>
