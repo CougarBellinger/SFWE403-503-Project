@@ -17,3 +17,25 @@ have confirmation message: "Are you sure you want to purchase?"
 
 have confirmation message: "Your items have been purchased. Thank you for shopping at MyPharma!"
 -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Payment Method</div>
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Continue</button>
+           </form>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

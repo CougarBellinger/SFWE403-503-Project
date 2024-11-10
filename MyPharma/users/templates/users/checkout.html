@@ -1,0 +1,49 @@
+<!-- users/templates/users/checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout</h1>
+    <form method="POST" action="{% url 'checkout_order' order.id %}">
+        {% csrf_token %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>
+                        {% if item.medication %}
+                            {{ item.medication.name }}
+                        {% else %}
+                            {{ item.generic_item.name }}
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <input type="number" name="price_{{ item.id }}" step="0.01" value="{{ item.price }}" required>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td><input type="text" name="new_item_name" placeholder="New Item Name"></td>
+                    <td><input type="number" name="new_item_quantity" placeholder="Quantity" min="1"></td>
+                    <td><input type="number" name="new_item_price" step="0.01" placeholder="Price"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="submit" name="update" value="update">Update</button>
+        <button type="submit" name="confirm" value="confirm">Confirm</button>
+    </form>
+    <h2>Total: {{ total_price }}</h2>
+</body>
+</html>

@@ -20,8 +20,11 @@ from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
 from users.decorators import pharmacy_manager_required
 
+
+
 # App imports
 from pharmacy_manager.views import *
+from .models import Medications, Order, OrderItem
 from .forms import *
 from .models import *
 
@@ -68,7 +71,7 @@ def login_view(request):
                 return redirect('manager_home')
             elif user.user_type == CustomUser.PharmacyTechnician:
                 return redirect('technician_home')
-            elif user.user_type == CustomUser.Pharmacist:
+            elif user.user_type == CustomUser.Pharmicist:
                 return redirect('pharmacist_home')
             else:
                 return redirect('home_view')
@@ -419,6 +422,26 @@ def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
 
+# views.py
+@login_required
+def pharmacist_home(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+
+    return render(request, 'users/pharmacist_home.html', {'medications': medications})
+
+
 # after checkout button is clicked, changes to payment method view
 def payment_method(request):
     if request.method == 'POST':
@@ -436,7 +459,7 @@ def payment_method(request):
     else:
         form = PaymentForm()
         
-    return render(request, 'payment.html', {'form': form})
+    return render(request, 'users/payment.html', {'form': form})
 
 def card_info(request):
     total = request.session.get('total') # shows purchase total
@@ -445,13 +468,13 @@ def card_info(request):
         form = CardInfoForm(request.POST)
         
         if form.is_valid():
-            card_info = form.cleaned_data['card_info'] # is this necessary?
+            #card_info = form.cleaned_data['name_on_card'] # is this necessary?
             return redirect('confirmation_page')
 
     else:
         form = CardInfoForm()
         
-    return render(request, 'card.html', {'form': form})
+    return render(request, 'users/card.html', {'form': form})
 
 def cash(request):
     total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
@@ -462,18 +485,19 @@ def cash(request):
         if form.is_valid():
             cash_given = form.cleaned_data['cash_given']
             if cash_given < total:
-                return render(request, 'cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
+                return render(request, 'users/cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
             
             change = cash_given - total
-            return render(request, 'cash.html', {'form': form, 'total': total, 'change': change})
+            return render(request, 'users/cash.html', {'form': form, 'total': total, 'change': change})
 
     else:
         form = CashForm()
 
-    return render(request, 'cash.html', {'form': form, 'total': total})
+    return render(request, 'users/cash.html', {'form': form, 'total': total})
 
 def confirmation_page(request):
-    return render(request, 'confirmation.html')
+    return render(request, 'users/confirmation.html')
+
 
 def manual_prescription(request):
     if request.method == 'POST':
@@ -492,3 +516,177 @@ def manual_prescription(request):
 
 def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})
+
+@login_required
+def medications_view(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+    return render(request, 'users/medications_view.html', {'medications': medications})
+
+# views.py
+
+# views.py
+
+# views.py
+
+@login_required
+def create_order(request):
+    if request.method == 'POST':
+        order = Order.objects.create(user=request.user)
+        for key, value in request.POST.items():
+            if key.startswith('medication_'):
+                medication_id = key.split('_')[1]
+                medication = Medications.objects.get(id=medication_id)
+                try:
+                    quantity = int(value)
+                except ValueError:
+                    quantity = 0
+                if quantity > 0:
+                    if medication.tablet_count >= quantity:
+                        OrderItem.objects.create(order=order, medication=medication, quantity=quantity, price=medication.price)
+                        medication.tablet_count -= quantity
+                        medication.save()
+                    else:
+                        messages.error(request, f'Not enough stock for {medication.name}. Available: {medication.tablet_count}')
+                        order.delete()
+                        return redirect('create_order')
+        return redirect('view_orders')
+
+    medications = Medications.objects.all()
+    return render(request, 'users/create_order.html', {'medications': medications})
+@login_required
+def view_orders(request):
+    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician]:
+        orders = Order.objects.all().prefetch_related('items__medication', 'items__generic_item')
+    else:
+        orders = Order.objects.filter(user=request.user).prefetch_related('items__medication', 'items__generic_item')
+    return render(request, 'users/view_orders.html', {'orders': orders})
+
+
+@login_required
+def checkout_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        for item in order.items.all():
+            price_field = f'price_{item.id}'
+            if price_field in request.POST:
+                try:
+                    new_price = float(request.POST[price_field])
+                    item.price = new_price
+                    item.save()
+                except ValueError:
+                    messages.error(request, f'Invalid price for {item.medication.name if item.medication else item.generic_item.name}.')
+                    return redirect('checkout_order', order_id=order_id)
+
+        new_item_name = request.POST.get('new_item_name')
+        new_item_quantity = request.POST.get('new_item_quantity')
+        new_item_price = request.POST.get('new_item_price')
+
+        if new_item_name and new_item_quantity and new_item_price:
+            try:
+                new_item_quantity = int(new_item_quantity)
+                new_item_price = float(new_item_price)
+                new_generic_item = GenericItem.objects.create(name=new_item_name, price=new_item_price)
+                OrderItem.objects.create(order=order, generic_item=new_generic_item, quantity=new_item_quantity, price=new_item_price)
+            except ValueError:
+                messages.error(request, 'Invalid input for new item.')
+                return redirect('checkout_order', order_id=order_id)
+
+        if 'confirm' in request.POST:
+            order.status = 'waiting for payment'
+            order.save()
+            messages.success(request, 'Order status updated to waiting for payment.')
+            return redirect('view_orders')
+
+        total_price = sum(item.quantity * item.price for item in order.items.all())
+        return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
+    return redirect('view_orders')
+@login_required
+def checkout(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    total_price = sum(item.price for item in order.items.all())
+    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
+
+
+def add_medication(request):
+    if request.method == 'POST':
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            expiration_date = form.cleaned_data['expiration_date']
+            tablet_count = form.cleaned_data['tablet_count']
+            price = form.cleaned_data['price']
+
+            # Check if the medication already exists
+            medication, created = Medications.objects.get_or_create(
+                name=name,
+                expiration_date=expiration_date,
+                defaults={'price': price}
+            )
+
+            if created:
+                # If the medication is new, set the tablet count
+                medication.tablet_count = tablet_count
+            else:
+                # If the medication already exists, update the tablet count
+                medication.tablet_count += tablet_count
+
+            medication.save()
+            messages.success(request, f'Medication {name} has been added/updated successfully.')
+            return redirect('medications_view')
+    else:
+        form = MedicationForm()
+
+    return render(request, 'users/add_medication.html', {'form': form})
+
+
+
+def unfilled_prescriptions(request):
+    unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
+
+    context = {'unfilled_prescriptions': unfilled_prescriptions}
+    return render(request, 'users/unfilled_prescriptions.html', context)
+
+def fill_prescription(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+    medication = prescription.medication  # Get the related medication
+
+    # Check if there are enough tablets available
+    if medication.tablet_count >= prescription.num_tablets:
+        # Deduct the tablets from the medication (not implemented)
+
+        prescription.is_filled = True
+        prescription.save()
+
+    
+        # Add an error message if not enough tablets are available (not implemented)
+
+    return redirect('unfilled_prescriptions')
+

@@ -45,6 +45,9 @@
                     <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-2 ripple">
                         <i class="fas fa-chart-area fa-fw me-3"></i><span>Activity Log</span>
                     </a>
+                    <a href="{% url 'payment_method' %}" class="list-group-item list-group-item-action py-2 ripple">
+                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Payment Method Test</span>
+                    </a>
                     {% endif %}
                     
                     {% if user.user_type == '2' %}
@@ -55,6 +58,11 @@
                     {% if user.user_type == '1' or user.user_type == '2' or user.user_type == '3'%}
                     <a href="{%url 'manual_prescription'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                         <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Manual Prescription </span>
+                    </a>
+                    {% endif %}
+                    {% if user.user_type == '3' %}
+                    <a href="{%url 'unfilled_prescriptions'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Fill Prescription</span>
                     </a>
                     {% endif %}
                    
