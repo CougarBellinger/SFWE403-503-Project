@@ -68,7 +68,7 @@ def login_view(request):
                 return redirect('manager_home')
             elif user.user_type == CustomUser.PharmacyTechnician:
                 return redirect('technician_home')
-            elif user.user_type == CustomUser.Pharmacist:
+            elif user.user_type == CustomUser.Pharmicist:
                 return redirect('pharmacist_home')
             else:
                 return redirect('home_view')
@@ -492,3 +492,59 @@ def manual_prescription(request):
 
 def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
+
+def sign_prescriptions(request):
+    if request.method == 'POST':
+        form = SignatureForm(request.POST)
+        if form.is_valid():
+            # Process form data if it's valid (e.g., save it or process further)
+            # After success, redirect to manager_home
+            messages.success(request, "Prescription signed successfully!")
+            return redirect('manager_home')
+        else:
+            # If form is not valid, return with error messages displayed
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = SignatureForm()
+
+    return render(request, 'sign_prescriptions.html', {'form': form})
+
+@login_required
+def pharmacist_home(request):
+    medications = Medications.objects.all()
+
+    if request.method == 'POST':
+        medication_id = request.POST.get('medication_id')
+        quantity = int(request.POST.get('quantity'))
+
+        medication = get_object_or_404(Medications, id=medication_id)
+        if medication.tablet_count >= quantity:
+            medication.tablet_count -= quantity
+            medication.save()
+            messages.success(request, f'Successfully sold {quantity} tablets of {medication.name}.')
+        else:
+            messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
+
+    return render(request, 'users/pharmacist_home.html', {'medications': medications})
+
+def unfilled_prescriptions(request):
+    unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
+
+    context = {'unfilled_prescriptions': unfilled_prescriptions}
+    return render(request, 'users/unfilled_prescriptions.html', context)
+
+def fill_prescription(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+    medication = prescription.medication  # Get the related medication
+
+    # Check if there are enough tablets available
+    if medication.tablet_count >= prescription.num_tablets:
+        # Deduct the tablets from the medication (not implemented)
+
+        prescription.is_filled = True
+        prescription.save()
+
+    
+        # Add an error message if not enough tablets are available (not implemented)
+
+    return redirect('unfilled_prescriptions')

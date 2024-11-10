@@ -58,3 +58,24 @@ class ManualPrescriptionForm(forms.Form):
     # typed out fields
     num_tablets = forms.IntegerField(label='Number of Tablets', min_value=1, max_value=500)
     prescriber_name = forms.CharField(label='Name of Prescriber', min_length=1, max_length=100)
+
+class SignatureForm(forms.Form):
+    signature_type = forms.ChoiceField(
+        choices=[('physical', 'Physical'), ('digital', 'Digital')],
+        widget=forms.RadioSelect,
+    )
+    DigitalSignature = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        initial=''
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        signature_type = cleaned_data.get('signature_type')
+        digital_signature = cleaned_data.get('DigitalSignature')
+
+        if signature_type == 'digital' and not digital_signature:
+            self.add_error('DigitalSignature', 'A valid signature is required')
+
+        return cleaned_data
