@@ -1,7 +1,5 @@
 from django.urls import path
-from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions
-
-
+from .views import *
 
 urlpatterns = [
     path('', home_view, name='home_view'),
@@ -43,7 +41,7 @@ urlpatterns = [
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
 
-    path('confirmation/', confirmation_page, name='confirmation_page')
+    path('confirmation/', confirmation_page, name='confirmation_page'),
 
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),
@@ -51,6 +49,9 @@ urlpatterns = [
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
-
+    path('create_prescription/', create_prescription, name='create_prescription'),
+    path('prescriptions/', prescription_list, name='prescription_list'),
+    path('prescriptions/edit/<int:pk>/', edit_prescription, name='edit_prescription'),
+    path('prescriptions/delete/<int:pk>/', delete_prescription, name='delete_prescription'),
 
 ]

@@ -17,14 +17,12 @@ from django.contrib.auth.forms import PasswordChangeForm
 # Decorator imports
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
+from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm , PrescriptionMedicationFormSet
 from users.decorators import pharmacy_manager_required
-
-
 
 # App imports
 from pharmacy_manager.views import *
-from .models import Medications, Order, OrderItem
+from .models import Medications, Order, OrderItem ,Prescription, PrescriptionMedication
 from .forms import *
 from .models import *
 
@@ -512,7 +510,7 @@ def manual_prescription(request):
     else:
         form = ManualPrescriptionForm()
     
-    return render(request, 'users/create_prescription.html', {'form': form})
+    return render(request, 'users/manual_prescription.html', {'form': form})
 
 def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
@@ -637,7 +635,7 @@ def checkout(request, order_id):
 
 def add_medication(request):
     if request.method == 'POST':
-        form = MedicationForm(request.POST)
+        form = OrderMedicationForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             expiration_date = form.cleaned_data['expiration_date']
@@ -662,7 +660,7 @@ def add_medication(request):
             messages.success(request, f'Medication {name} has been added/updated successfully.')
             return redirect('medications_view')
     else:
-        form = MedicationForm()
+        form = OrderMedicationForm()
 
     return render(request, 'users/add_medication.html', {'form': form})
 
@@ -690,3 +688,89 @@ def fill_prescription(request, pk):
 
     return redirect('unfilled_prescriptions')
 
+
+
+
+from django.shortcuts import render, redirect
+from .models import Prescription
+from .forms import PrescriptionForm, PrescriptionMedicationFormSet
+
+def create_prescription(request):
+    if request.method == 'POST':
+        prescription_form = PrescriptionForm(request.POST)
+        medication_formset = PrescriptionMedicationFormSet(request.POST)
+
+        if prescription_form.is_valid() and medication_formset.is_valid():
+            prescription = prescription_form.save()
+            medications = medication_formset.save(commit=False)
+            for medication in medications:
+                medication.prescription = prescription
+                medication.save()
+            return redirect('prescription_list')
+    else:
+        prescription_form = PrescriptionForm()
+        medication_formset = PrescriptionMedicationFormSet()
+
+    context = {
+        'prescription_form': prescription_form,
+        'medication_formset': medication_formset,
+    }
+    return render(request, 'users/create_prescription.html', context)
+
+
+
+def prescription_list(request):
+    prescriptions = Prescription.objects.prefetch_related('medications').all()
+    return render(request, 'users/prescription_list.html', {'prescriptions': prescriptions})
+
+
+def edit_prescription(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+    PrescriptionMedicationFormSet = modelformset_factory(PrescriptionMedication, form=PrescriptionMedicationForm, extra=0)
+
+    if request.method == 'POST':
+        prescription_form = PrescriptionForm(request.POST, instance=prescription)
+        medication_formset = PrescriptionMedicationFormSet(request.POST, queryset=prescription.medications.all())
+
+        if prescription_form.is_valid() and medication_formset.is_valid():
+            prescription = prescription_form.save()
+            medications = medication_formset.save(commit=False)
+
+            # Save each medication entry
+            for medication in medications:
+                medication.prescription = prescription
+                medication.save()
+
+            # Delete any removed medications
+            for obj in medication_formset.deleted_objects:
+                obj.delete()
+
+            return redirect('prescription_list')
+    else:
+        prescription_form = PrescriptionForm(instance=prescription)
+        medication_formset = PrescriptionMedicationFormSet(queryset=prescription.medications.all())
+
+    context = {
+        'prescription_form': prescription_form,
+        'medication_formset': medication_formset,
+    }
+    return render(request, 'users/edit_prescription.html', context)
+
+def delete_prescription(request, pk):
+    prescription = get_object_or_404(Prescription, pk=pk)
+    print("pk",pk)
+    if request.method == 'POST':
+        print("pk y",pk)
+        prescription.delete()
+        messages.success(request, "Prescription deleted successfully.")
+        return redirect('prescription_list')
+    return render(request, 'users/delete_prescription.html', {'prescription': prescription})
+
+
+def delete_patient(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)  # Get the patient object by its primary key (pk)
+    if request.method == 'POST':
+        patient.delete()  # Delete the patient from the database
+        return redirect('patient_management')  # Redirect to patient management after deletion
+
+    return render(request, 'users/delete_patient.html', {'patient': patient})

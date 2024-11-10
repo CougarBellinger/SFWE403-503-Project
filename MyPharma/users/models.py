@@ -205,14 +205,20 @@ class OrderItem(models.Model):
 
 class Prescription(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
-    num_tablets = models.IntegerField()
     prescriber_name = models.CharField(max_length=100)
     date_prescribed = models.DateField(auto_now_add=True)
     is_filled = models.BooleanField(default=False)
 
     def __str__(self):
-     return f"Prescription for {self.patient}: {self.num_tablets} tablets of {self.medication}"
+        return f"Prescription for {self.patient} by {self.prescriber_name} on {self.date_prescribed}"
+
+class PrescriptionMedication(models.Model):
+    prescription = models.ForeignKey(Prescription, related_name='medications', on_delete=models.CASCADE)
+    medication = models.ForeignKey(Medications, on_delete=models.CASCADE)
+    num_tablets = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.num_tablets} tablets of {self.medication} for {self.prescription.patient}"
 
 class Activity(models.Model):
     # User performing the action

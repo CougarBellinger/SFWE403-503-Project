@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "users",
-    "pharmacy_manager"
+    "pharmacy_manager",
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

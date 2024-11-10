@@ -11,64 +11,102 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>#sidebarMenu {
+        width: 250px;
+        background-color: #f8f9fa;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #sidebarMenu .list-group-item {
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    
+    #sidebarMenu .list-group-item:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+    
+    #sidebarMenu .list-group-item i {
+        font-size: 18px;
+    }
+    
+    #sidebarMenu .list-group-item.active {
+        background-color: #007bff;
+        color: #fff;
+    }
+    </style>
 </head>
 
 <body>
     <!--Main Navigation-->
     <header>
-        <!-- Sidebar -->
-        <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+     <!-- Sidebar -->
+        <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-light">
             <div class="position-sticky">
                 <div class="list-group list-group-flush mx-3 mt-4">
-                   
+
                     {% if user.user_type == '1' %}
-                    <a href="{%url 'manager_home'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main Dashboard </span>
+                    <a href="{% url 'manager_home' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main Dashboard</span>
                     </a>
-                    <a href="{% url 'user_management' %}" class="list-group-item list-group-item-action py-2 ripple"><i
-                        class="fas fa-users fa-fw me-3"></i><span>Users Management</span></a>
-                    <a href="{% url 'patient_management' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Patient Management</span>
+                    <a href="{% url 'user_management' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-users fa-fw me-3"></i><span>Users Management</span>
                     </a>
-                    <a href="{% url 'all_medications_view' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>All Inventory</span>
+                    <a href="{% url 'patient_management' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-user-injured fa-fw me-3"></i><span>Patient Management</span>
                     </a>
-                    <a href="{% url 'expiring_medications_management' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Expiring  Inventory</span>
+                    <a href="{% url 'all_medications_view' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-pills fa-fw me-3"></i><span>All Inventory</span>
                     </a>
-                    <a href="{% url 'low_medications_management' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Low  Inventory</span>
+                    <a href="{% url 'expiring_medications_management' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-exclamation-triangle fa-fw me-3"></i><span>Expiring Inventory</span>
                     </a>
-                    <a href="{% url 'sign_prescriptions' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Sign Perscriptions</span>
+                    <a href="{% url 'low_medications_management' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-boxes fa-fw me-3"></i><span>Low Inventory</span>
                     </a>
-                    <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Activity Log</span>
+                    <a href="{% url 'sign_prescriptions' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-signature fa-fw me-3"></i><span>Sign Prescriptions</span>
                     </a>
-                    <a href="{% url 'payment_method' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Payment Method Test</span>
+                    <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-history fa-fw me-3"></i><span>Activity Log</span>
+                    </a>
+                    <a href="{% url 'payment_method' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-credit-card fa-fw me-3"></i><span>Payment Method Test</span>
                     </a>
                     {% endif %}
-                    
+
                     {% if user.user_type == '2' %}
-                    <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Developing</span>
+                    <a href="#" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-cogs fa-fw me-3"></i><span>Developing</span>
                     </a>
                     {% endif %}
+
                     {% if user.user_type == '1' or user.user_type == '2' or user.user_type == '3'%}
-                    <a href="{%url 'manual_prescription'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Manual Prescription </span>
+                    <a href="{% url 'prescription_list' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-file-prescription fa-fw me-3"></i><span>Prescriptions</span>
                     </a>
                     {% endif %}
-                    {% if user.user_type == '3' %}
-                    <a href="{%url 'unfilled_prescriptions'%}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Fill Prescription</span>
+
+                    {% if user.user_type == '1' %}
+                    <a href="{% url 'unfilled_prescriptions' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-prescription fa-fw me-3"></i><span>Fill Prescription</span>
                     </a>
                     {% endif %}
-                   
+
+                    <a href="{% url 'create_prescription' %}" class="list-group-item list-group-item-action py-3 ripple">
+                        <i class="fas fa-file-medical fa-fw me-3"></i><span>Create Prescription</span>
+                    </a>
                 </div>
             </div>
         </nav>
+<!-- Sidebar -->
+
         <!-- Sidebar -->
 
         <!-- Navbar -->

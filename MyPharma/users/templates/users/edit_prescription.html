@@ -3,9 +3,8 @@
 {% block content %}
 {% load widget_tweaks %}
 
-
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Create Prescription</h2>
+  <h2 class="text-center mb-4">Edit Prescription</h2>
   <div class="row justify-content-center">
     <div class="col-lg-8">
       <div class="card shadow-sm">
@@ -13,7 +12,7 @@
         <div class="card-body">
           <form method="POST">
             {% csrf_token %}
-            
+
             <!-- Prescription Form -->
             <div class="row g-2 mb-3">
               <div class="col-md-6">
@@ -39,13 +38,13 @@
                   <div class="col-md-5">
                     <div class="form-group mb-0">
                       <label class="form-label">Medication:</label>
-                      {{ form.medication|add_class:"form-control form-control-sm" }} 
+                      {{ form.medication|add_class:"form-control form-control-sm" }}
                     </div>
                   </div>
                   <div class="col-md-4">
                     <div class="form-group mb-0">
                       <label class="form-label">Num Tablets:</label>
-                      {{ form.num_tablets|add_class:"form-control form-control-sm" }} 
+                      {{ form.num_tablets|add_class:"form-control form-control-sm" }}
                       {% if form.num_tablets.errors %}
                         <div class="text-danger">
                           {{ form.num_tablets.errors }}
@@ -58,10 +57,6 @@
                     <button type="button" class="btn btn-outline-danger btn-lg rounded-circle remove-row me-2">
                       <i class="fas fa-minus"></i>
                     </button>
-                    <!-- Add Button -->
-                    <button type="button" class="btn btn-outline-primary btn-lg rounded-circle add-medication">
-                      <i class="fas fa-plus"></i>
-                    </button>
                   </div>
                 </div>
               {% empty %}
@@ -69,10 +64,17 @@
               {% endfor %}
             </div>
 
+            <!-- Add Button (Always Available) -->
+            <div class="d-flex justify-content-end mt-3">
+              <button type="button" class="btn btn-outline-primary btn-lg rounded-circle add-medication">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+
             <!-- Submit Button -->
             <div class="text-center mt-3">
-              <button type="submit" class="btn btn-primary btn">Submit Prescription</button>
-              <a href="{% url 'prescription_list' %}" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary btn">Update</button>
+                <a href="{% url 'prescription_list' %}" class="btn btn-secondary">Back</a>
             </div>
           </form>
         </div>
@@ -83,37 +85,56 @@
 
 <!-- JavaScript for Dynamic Formset -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const medicationFormset = document.getElementById('medication-formset');
-    let formCount = {{ medication_formset.total_form_count }};
-    const emptyFormHtml = medicationFormset.querySelector('.medication-form').outerHTML.replace(/-0-/g, `-__prefix__-`);
-
-    // Function to add a new medication form
-    const addMedicationForm = () => {
-      const newFormHtml = emptyFormHtml.replace(/__prefix__/g, formCount);
-      const newFormElement = document.createElement('div');
-      newFormElement.innerHTML = newFormHtml;
-      medicationFormset.appendChild(newFormElement.firstElementChild);
-      formCount++;
-      updateFormsetTotal();
-    };
-
-    // Update the total form count
-    const updateFormsetTotal = () => {
+    document.addEventListener('DOMContentLoaded', () => {
+      const medicationFormset = document.getElementById('medication-formset');
       const totalFormsInput = document.querySelector('#id_medications-TOTAL_FORMS');
-      totalFormsInput.value = formCount;
-    };
-
-    // Event delegation for the "Add" and "Remove" buttons
-    medicationFormset.addEventListener('click', (event) => {
-      if (event.target.closest('.remove-row')) {
-        event.target.closest('.medication-form').remove();
-        formCount--;
+      let formCount = parseInt(totalFormsInput.value, 10) || 0;
+  
+      // Get the HTML for an empty form and update placeholders
+      const emptyFormHtml = medicationFormset.querySelector('.medication-form') 
+        ? medicationFormset.querySelector('.medication-form').outerHTML.replace(/-0-/g, `-__prefix__-`)
+        : ''; // Handle case when formset is initially empty
+  
+      // Function to add a new medication form
+      const addMedicationForm = () => {
+        if (!emptyFormHtml) {
+          console.error("No empty form template found.");
+          return;
+        }
+  
+        const newFormHtml = emptyFormHtml.replace(/__prefix__/g, formCount);
+        const newFormElement = document.createElement('div');
+        newFormElement.innerHTML = newFormHtml;
+        medicationFormset.appendChild(newFormElement.firstElementChild);
+  
+        formCount++;
         updateFormsetTotal();
-      } else if (event.target.closest('.add-medication')) {
+      };
+  
+      // Update the total form count input
+      const updateFormsetTotal = () => {
+        totalFormsInput.value = formCount;
+      };
+  
+      // Event listener for "Add" and "Remove" buttons
+      document.addEventListener('click', (event) => {
+        if (event.target.closest('.remove-row')) {
+          const formElement = event.target.closest('.medication-form');
+          if (formElement) {
+            formElement.remove();
+            formCount--;
+            updateFormsetTotal();
+          }
+        } else if (event.target.closest('.add-medication')) {
+          addMedicationForm();
+        }
+      });
+  
+      // If formset is initially empty, show the first empty form
+      if (formCount === 0) {
         addMedicationForm();
       }
     });
-  });
-</script>
+  </script>
+  
 {% endblock %}

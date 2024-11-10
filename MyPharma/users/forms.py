@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from users.models import CustomUser, Patient, Medications
+from users.models import CustomUser, Patient, Medications,Prescription, PrescriptionMedication
 from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 
+from django.forms import modelformset_factory
 
 class UserRegistrationForm(UserCreationForm):
     class Meta:
@@ -79,3 +80,41 @@ class SignatureForm(forms.Form):
             self.add_error('DigitalSignature', 'A valid signature is required')
 
         return cleaned_data
+    
+
+
+class PrescriptionForm(forms.ModelForm):
+    class Meta:
+        model = Prescription
+        fields = ['patient', 'prescriber_name']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['patient'].widget.attrs.update({'class': 'form-control'})
+        self.fields['prescriber_name'].widget.attrs.update({'class': 'form-control'})
+
+
+class PrescriptionMedicationForm(forms.ModelForm):
+    class Meta:
+        model = PrescriptionMedication
+        fields = ['medication', 'num_tablets']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['medication'].widget.attrs.update({'class': 'form-control'})
+        self.fields['num_tablets'].widget.attrs.update({'class': 'form-control'})
+        
+    def clean_num_tablets(self):
+        num_tablets = self.cleaned_data.get('num_tablets')
+        if num_tablets is not None and num_tablets < 0:
+            raise forms.ValidationError("The number of tablets cannot be negative.")
+        return num_tablets
+
+
+PrescriptionMedicationFormSet = forms.inlineformset_factory(
+    Prescription,
+    PrescriptionMedication,
+    form=PrescriptionMedicationForm,
+    extra=1,
+    can_delete=True
+)
