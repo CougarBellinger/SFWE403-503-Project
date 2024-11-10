@@ -17,14 +17,19 @@
 
                 <!-- Display any error messages -->
                 {% if messages %}
-                    <div class="alert alert-danger">
-                        <ul>
+                <div class="container mt-4">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
                             {% for message in messages %}
-                                <li>{{ message }}</li>
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             {% endfor %}
-                        </ul>
+                        </div>
                     </div>
-                {% endif %}
+                </div>
+                 {% endif %}
 
                 <!-- Password Change form -->
                 <form method="post" action="{% url 'first_password_view' %}">

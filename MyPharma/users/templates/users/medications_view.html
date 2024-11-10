@@ -1,0 +1,28 @@
+<!-- users/templates/users/medications_view.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Medications</h2>
+  <a href="{% url 'create_order' %}" class="btn btn-primary">Create Order</a>
+  <table class="table mt-3">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Expiration Date</th>
+        <th>Tablet Count</th>
+        <th>Price</th> <!-- Add this line if you want to display the price -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for medication in medications %}
+      <tr>
+        <td>{{ medication.name }}</td>
+        <td>{{ medication.expiration_date }}</td>
+        <td>{{ medication.tablet_count }}</td>
+        <td>{{ medication.price }}</td> <!-- Add this line if you want to display the price -->
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
