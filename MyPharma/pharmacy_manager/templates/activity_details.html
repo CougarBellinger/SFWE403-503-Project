@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load filters %}
+{% block content %}
+
+
+<div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card">
+                <div class="card-header">Activity {{activity.pk}}: {{activity.action_type}}</div>
+                    <div class="card-body">
+
+                        <p>Remarks: {{activity.remarks}}</p>
+
+                        {% if activity.action_type == "Prescription Filled" %}
+
+                            <table class="table table-striped mt-4">
+        
+                                <tbody>
+                                    <tr>
+                                        <th>Prescriber Name</th>
+                                        <td>{{ activity.data|get_json_value:"prescriber_name" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <td>{{ activity.data|get_json_value:"patient" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Medication</th>
+                                        <td>{{ activity.data|get_json_value:"medication" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Quantity</th>
+                                        <td>{{ activity.data|get_json_value:"quantity" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Date Prescribed</th>
+                                        <td>{{ activity.data|get_json_value:"date_prescribed" }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Prescription ID</th>
+                                        <td>{{ activity.data|get_json_value:"prescription_number" }}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+
+                        {% endif %}
+
+                        <form method="post">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a href="{% url 'activity_log' %}" class="btn btn-secondary">Back</a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

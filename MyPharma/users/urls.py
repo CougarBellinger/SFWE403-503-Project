@@ -43,7 +43,7 @@ urlpatterns = [
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
 
-    path('confirmation/', confirmation_page, name='confirmation_page')
+    path('confirmation/', confirmation_page, name='confirmation_page'),
 
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),

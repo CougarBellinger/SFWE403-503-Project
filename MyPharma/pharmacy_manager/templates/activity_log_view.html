@@ -13,10 +13,11 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Remarks</th>
+        <th>Action Type</th>
         <th>User</th>
         <th>User Type</th>
         <th>Date and Time</th>
+        <th></th>
       </tr>
     </thead>
 
@@ -24,10 +25,15 @@
       {% for activity in activity_items%}
       <tr>
         <td>{{ activity.pk }} </td>
-        <td>{{ activity.remarks }} </td>
+        <td>{{ activity.action_type }} </td>
         <td>{{ activity.actor }} </td>
         <td>{{ activity.actor_type }} </td>
         <td>{{ activity.action_time }} </td>
+        <td>
+            
+           <a href="{% url 'activity_details' activity.pk %}" class="btn btn-primary">Details</a>
+            
+        </td>
       </tr>
       {% endfor %}
     </tbody>

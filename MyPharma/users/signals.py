@@ -3,8 +3,8 @@ from datetime import datetime
 from django.contrib.auth.signals import user_logged_in, user_login_failed, user_logged_out
 from django.dispatch import receiver
 
-from .models import Activity, Medications
-from .models import LOGIN, LOGOUT, MED_REMOVED 
+from .models import Activity, Medications, Prescription, Patient
+from .models import LOGIN, LOGOUT, MED_REMOVED, FILLED 
 
 def log_medications_deleted(instance_id, user):
     print(f"log_medications_deleted triggered")
@@ -64,3 +64,29 @@ def log_user_logout(sender, request, user, **kwargs):
     logout.save()
 
     print(f"Activity #{logout.pk}: {logout.remarks}\n")
+
+def log_prescription_filled(instance_id, user):
+    print(f"log_prescription_filled triggered")
+    instance = Prescription.objects.get(pk=instance_id)
+    medication = instance.medication
+
+    prescription = Activity.objects.create(
+        actor = user,
+        actor_type = user.get_user_type_display(),
+        action_type = FILLED,
+        remarks = (f"{user.username} filled prescription #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
+        data = {
+            "prescriber_name" : instance.prescriber_name,
+            "prescription_number" : instance.pk,
+            "patient" : str(instance.patient),
+            "date_prescribed" : str(instance.date_prescribed),
+            "quantity" : instance.num_tablets,
+            "medication" : medication.name
+        }
+    )
+
+    print("activity instantiated before save")
+
+    prescription.save()
+
+    print(f"Activity #{prescription.pk}: {prescription.remarks}\n")

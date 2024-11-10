@@ -212,7 +212,6 @@ def order_medications(request, pk):
     if request.method == 'POST':
         form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
-            #medication.tablet_count = medication.tablet_count + form.cleaned_data['tablet_count']
             medication.save()
             return redirect('low_medications_management')
     else:
@@ -222,6 +221,14 @@ def order_medications(request, pk):
 def activity_log(request):
     activity_items = Activity.objects.all().order_by('-action_time')
     return render(request, 'activity_log_view.html', {"activity_items" : activity_items})
+
+def activity_details(request, pk):
+    activity = get_object_or_404(Activity, pk=pk)
+    activity.save()
+    if request.method == 'POST':
+        return redirect('activity_log')  # Redirect to expired medication management after deletion
+
+    return render(request, 'activity_details.html', {'activity': activity})
 
 def sign_prescriptions(request):
     if request.method == 'POST':
