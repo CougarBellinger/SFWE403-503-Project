@@ -23,18 +23,38 @@
 
     <tbody>
       {% for activity in activity_items%}
-      <tr>
-        <td>{{ activity.pk }} </td>
-        <td>{{ activity.action_type }} </td>
-        <td>{{ activity.actor }} </td>
-        <td>{{ activity.actor_type }} </td>
-        <td>{{ activity.action_time }} </td>
-        <td>
-            
-           <a href="{% url 'activity_details' activity.pk %}" class="btn btn-primary">Details</a>
-            
-        </td>
-      </tr>
+
+        {% comment %} If user is not pharmacy manager, only show prescription filled activities {% endcomment %}
+        {% if user.user_type == '1'%}
+            <tr>
+              <td>{{ activity.pk }} </td>
+              <td>{{ activity.action_type }} </td>
+              <td>{{ activity.actor }} </td>
+              <td>{{ activity.actor_type }} </td>
+              <td>{{ activity.action_time }} </td>
+              <td>
+                  
+                <a href="{% url 'activity_details' activity.pk %}" class="btn btn-primary">Details</a>
+                  
+              </td>
+            </tr>
+
+        {% comment %} Show all activity items to the pharamcy manager {% endcomment %}
+        {% elif activity.action_type == "Prescription Filled" %}
+          <tr>
+            <td>{{ activity.pk }} </td>
+            <td>{{ activity.action_type }} </td>
+            <td>{{ activity.actor }} </td>
+            <td>{{ activity.actor_type }} </td>
+            <td>{{ activity.action_time }} </td>
+            <td>
+                
+              <a href="{% url 'activity_details' activity.pk %}" class="btn btn-primary">Details</a>
+                
+            </td>
+          </tr>
+        {% endif %}
+
       {% endfor %}
     </tbody>
 
