@@ -12,4 +12,5 @@ urlpatterns = [
     path('add_medication/', add_medication_view, name='add_medication'),
     path('order_medications/<int:pk>/', order_medications, name='order_medications'),
     path('activity_details/<int:pk>/', activity_details, name='activity_details'),
+    path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions')
 ]

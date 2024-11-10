@@ -474,3 +474,21 @@ def cash(request):
 
 def confirmation_page(request):
     return render(request, 'confirmation.html')
+
+def manual_prescription(request):
+    if request.method == 'POST':
+        form = ManualPrescriptionForm(request.POST)
+
+        if form.is_valid():
+            prescription = Prescription(patient= form.cleaned_data['patient'], medication= form.cleaned_data['medication'], num_tablets= form.cleaned_data['num_tablets'], prescriber_name= form.cleaned_data['prescriber_name'])
+            prescription.save()
+        
+            return redirect('prescription_confirmation')
+    
+    else:
+        form = ManualPrescriptionForm()
+    
+    return render(request, 'users/create_prescription.html', {'form': form})
+
+def prescription_confirmation(request):
+    return render(request, 'users/prescription_confirmation.html')
