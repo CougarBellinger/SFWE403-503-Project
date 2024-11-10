@@ -8,7 +8,7 @@
                 <div class="card-header">Activity {{activity.pk}}</div>
                     <div class="card-body">
 
-                        {% if activity.action != "Prescription Filled" %}
+                        {% if activity.action_type != "Prescription Filled" %}
 
                             <p>Remarks: {{activity.remarks}}</p>
 
