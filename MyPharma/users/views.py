@@ -675,22 +675,27 @@ def unfilled_prescriptions(request):
     context = {'unfilled_prescriptions': unfilled_prescriptions}
     return render(request, 'users/unfilled_prescriptions.html', context)
 
+
 def fill_prescription(request, pk):
     prescription = get_object_or_404(Prescription, pk=pk)
-    medication = prescription.medication  # Get the related medication
+    medication = prescription.medication  
 
-    # Check if there are enough tablets available
+    current_date = datetime.now().date()  
+    if medication.expiration_date and medication.expiration_date < current_date:
+        messages.error(request, "The medicine is expired.")
+        return redirect('unfilled_prescriptions')
+
     if medication.tablet_count >= prescription.num_tablets:
-        # Deduct the tablets from the medication (not implemented)
-
+        medication.tablet_count -= prescription.num_tablets
         prescription.is_filled = True
-
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
-
+        medication.save()
         prescription.save()
-
-    
-        # Add an error message if not enough tablets are available (not implemented)
+        messages.success(request, "Prescription filled successfully!")
+    else:
+        messages.error(
+            request,
+            f"Insufficient stock of {medication.name}. Available: {medication.tablet_count}, Required: {prescription.num_tablets}."
+        )
 
     return redirect('unfilled_prescriptions')
-
