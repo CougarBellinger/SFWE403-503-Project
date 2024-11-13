@@ -584,7 +584,7 @@ def create_order(request):
     return render(request, 'users/create_order.html', {'medications': medications})
 @login_required
 def view_orders(request):
-    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician]:
+    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician, CustomUser.PharmacyManager]:
         orders = Order.objects.all().prefetch_related('items__medication', 'items__generic_item')
     else:
         orders = Order.objects.filter(user=request.user).prefetch_related('items__medication', 'items__generic_item')
@@ -681,16 +681,33 @@ def fill_prescription(request, pk):
 
     # Check if there are enough tablets available
     if medication.tablet_count >= prescription.num_tablets:
-        # Deduct the tablets from the medication (not implemented)
+        # Deduct the tablets from the medication
+        medication.tablet_count -= prescription.num_tablets
+        medication.save()
 
         prescription.is_filled = True
+        prescription.save()
+
+        # Create an order for the filled prescription
+        prescription.create_order(user=request.user)
 
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
 
-        prescription.save()
-
-    
-        # Add an error message if not enough tablets are available (not implemented)
+        messages.success(request, 'Prescription filled and order created successfully.')
+    else:
+        messages.error(request, 'Not enough stock to fill the prescription.')
 
     return redirect('unfilled_prescriptions')
 
+
+
+def manual_prescription(request):
+    if request.method == 'POST':
+        form = ManualPrescriptionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('prescription_confirmation')
+    else:
+        form = ManualPrescriptionForm()
+
+    return render(request, 'users/create_prescription.html', {'form': form})
