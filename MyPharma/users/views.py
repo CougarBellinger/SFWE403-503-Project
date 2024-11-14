@@ -675,39 +675,27 @@ def unfilled_prescriptions(request):
     context = {'unfilled_prescriptions': unfilled_prescriptions}
     return render(request, 'users/unfilled_prescriptions.html', context)
 
+
 def fill_prescription(request, pk):
     prescription = get_object_or_404(Prescription, pk=pk)
-    medication = prescription.medication  # Get the related medication
+    medication = prescription.medication  
 
-    # Check if there are enough tablets available
+    current_date = datetime.now().date()  
+    if medication.expiration_date and medication.expiration_date < current_date:
+        messages.error(request, "The medicine is expired.")
+        return redirect('unfilled_prescriptions')
+
     if medication.tablet_count >= prescription.num_tablets:
-        # Deduct the tablets from the medication
         medication.tablet_count -= prescription.num_tablets
-        medication.save()
-
         prescription.is_filled = True
-        prescription.save()
-
-        # Create an order for the filled prescription
-        prescription.create_order(user=request.user)
-
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
-
-        messages.success(request, 'Prescription filled and order created successfully.')
+        medication.save()
+        prescription.save()
+        messages.success(request, "Prescription filled successfully!")
     else:
-        messages.error(request, 'Not enough stock to fill the prescription.')
+        messages.error(
+            request,
+            f"Insufficient stock of {medication.name}. Available: {medication.tablet_count}, Required: {prescription.num_tablets}."
+        )
 
     return redirect('unfilled_prescriptions')
-
-
-
-def manual_prescription(request):
-    if request.method == 'POST':
-        form = ManualPrescriptionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('prescription_confirmation')
-    else:
-        form = ManualPrescriptionForm()
-
-    return render(request, 'users/create_prescription.html', {'form': form})
