@@ -584,7 +584,7 @@ def create_order(request):
     return render(request, 'users/create_order.html', {'medications': medications})
 @login_required
 def view_orders(request):
-    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician]:
+    if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician, CustomUser.PharmacyManager]:
         orders = Order.objects.all().prefetch_related('items__medication', 'items__generic_item')
     else:
         orders = Order.objects.filter(user=request.user).prefetch_related('items__medication', 'items__generic_item')

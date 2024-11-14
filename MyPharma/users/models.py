@@ -214,6 +214,32 @@ class Prescription(models.Model):
     def __str__(self):
      return f"Prescription for {self.patient}: {self.num_tablets} tablets of {self.medication}"
 
+    def create_order(self):
+        order = Order.objects.create(
+            user=self.patient,
+            order_number=f'ORD-{self.id}',
+            status='pending'
+        )
+        OrderItem.objects.create(
+            order=order,
+            medication=self.medication,
+            quantity=self.num_tablets,
+            price=self.medication.price * self.num_tablets
+        )
+    def create_order(self, user):
+        order = Order.objects.create(
+            user=user,
+            order_number=f'ORD-{self.id}',
+            status='created'
+        )
+        OrderItem.objects.create(
+            order=order,
+            medication=self.medication,
+            quantity=self.num_tablets,
+            price=self.medication.price * self.num_tablets
+        )
+        return order
+
 class Activity(models.Model):
     # User performing the action
     actor =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
