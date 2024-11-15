@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from users.models import CustomUser, Patient, Medications, Prescription
+from users.models import CustomUser, Patient, Medications, Prescription, Order
 from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 
 
@@ -56,17 +56,15 @@ class ManualPrescriptionForm(forms.ModelForm):
         fields = ['patient', 'medication', 'num_tablets', 'prescriber_name']
 
     patient = forms.ModelChoiceField(queryset=Patient.objects.all(), required=True)
-    
+
 class SignatureForm(forms.Form):
     signature_type = forms.ChoiceField(
         choices=[('physical', 'Physical'), ('digital', 'Digital')],
         widget=forms.RadioSelect,
+        required=True
     )
-    DigitalSignature = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        initial=''
-    )
+    DigitalSignature = forms.CharField(max_length=255, required=False)
+    order_id = forms.IntegerField(widget=forms.HiddenInput())
 
     def clean(self):
         cleaned_data = super().clean()

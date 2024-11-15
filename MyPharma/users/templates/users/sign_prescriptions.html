@@ -1,3 +1,5 @@
+<!-- users/templates/users/sign_prescriptions.html -->
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -12,6 +14,8 @@
         <div class="card-body">
             <form method="POST" action="{% url 'sign_prescriptions' %}">
                 {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Confirm</button>
 
                 <!-- Radio buttons for selecting signature type -->
                 <div class="mb-3">
@@ -32,11 +36,9 @@
                     <label for="digital_signature" class="form-label">Digital Signature:</label>
                     <input type="text" class="form-control" name="DigitalSignature" id="digital_signature" value="{{ form.DigitalSignature.value }}">
                     {% if form.DigitalSignature.errors %}
-                        <div class="text-danger">
-                            {% for error in form.DigitalSignature.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {{ form.DigitalSignature.errors }}
+                    </div>
                     {% endif %}
                 </div>
 

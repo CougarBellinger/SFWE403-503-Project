@@ -3,6 +3,7 @@ from io import TextIOWrapper
 from datetime import datetime
 import csv
 import logging
+from django.shortcuts import render, get_object_or_404
 
 
 # Django imports
@@ -19,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
 from users.decorators import pharmacy_manager_required
-
+from django.http import Http404
 
 
 # App imports
@@ -518,24 +519,25 @@ def manual_prescription(request):
 def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
 
-def sign_prescriptions(request):
+def sign_prescriptions(request, order_id):
     if request.method == 'POST':
         form = SignatureForm(request.POST)
         if form.is_valid():
-            # Process form data if it's valid (e.g., save it or process further)
-            # After success, redirect to manager_home
+            order = get_object_or_404(Order, id=order_id)  # Retrieve the existing order
+            order.status = 'signed'  # Update the order status to signed
+            order.save()
             messages.success(request, "Prescription signed successfully!")
-            return redirect('signature_confirmation')
+            return redirect('signature_confirmation', order_id=order.id)
         else:
-            # If form is not valid, return with error messages displayed
             messages.error(request, "Please fix the errors below.")
     else:
         form = SignatureForm()
 
-    return render(request, 'sign_prescriptions.html', {'form': form})
+    return render(request, 'users/sign_prescriptions.html', {'form': form})
 
-def signature_confirmation(request):
-    return render(request, 'users/signature_confirmation.html')
+def signature_confirmation(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'users/signature_confirmation.html', {'order': order})
 
 @login_required
 def medications_view(request):
@@ -554,11 +556,7 @@ def medications_view(request):
             messages.error(request, f'Not enough stock to sell {quantity} tablets of {medication.name}.')
     return render(request, 'users/medications_view.html', {'medications': medications})
 
-# views.py
 
-# views.py
-
-# views.py
 
 @login_required
 def create_order(request):
@@ -707,3 +705,9 @@ def fill_prescription(request, pk):
         )
 
     return redirect('unfilled_prescriptions')
+
+@login_required
+def receipt_view(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    total_price = sum(item.price * item.quantity for item in order.items.all())
+    return render(request, 'users/receipt.html', {'order': order, 'total_price': total_price})
