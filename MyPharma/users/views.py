@@ -707,3 +707,23 @@ def fill_prescription(request, pk):
         )
 
     return redirect('unfilled_prescriptions')
+
+def filled_prescriptions(request):
+    form = FilledPrescriptionsForm(request.GET)
+
+    if form.is_valid():
+        patient = form.cleaned_data['patient']
+        if patient:
+            patient_id = patient.id
+            filled_presciptions = Prescription.objects.filter(patient_id=patient_id, is_filled=True)
+        else:
+            filled_presciptions = Prescription.objects.filter(is_filled=True)
+
+
+    context = {
+        'filled_prescriptions' : filled_presciptions,
+        'form' : form
+    }
+
+    return render(request, 'users/filled_prescriptions.html', context)
+    
