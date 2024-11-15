@@ -56,6 +56,7 @@ class ManualPrescriptionForm(forms.ModelForm):
         fields = ['patient', 'medication', 'num_tablets', 'prescriber_name']
 
     patient = forms.ModelChoiceField(queryset=Patient.objects.all(), required=True)
+    
 class SignatureForm(forms.Form):
     signature_type = forms.ChoiceField(
         choices=[('physical', 'Physical'), ('digital', 'Digital')],

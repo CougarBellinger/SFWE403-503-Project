@@ -635,7 +635,7 @@ def checkout(request, order_id):
     total_price = sum(item.price for item in order.items.all())
     return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
 
-
+"""
 def add_medication(request):
     if request.method == 'POST':
         form = MedicationForm(request.POST)
@@ -667,7 +667,7 @@ def add_medication(request):
 
     return render(request, 'users/add_medication.html', {'form': form})
 
-
+"""
 
 def unfilled_prescriptions(request):
     unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
@@ -678,9 +678,9 @@ def unfilled_prescriptions(request):
 
 def fill_prescription(request, pk):
     prescription = get_object_or_404(Prescription, pk=pk)
-    medication = prescription.medication  
+    medication = prescription.medication
 
-    current_date = datetime.now().date()  
+    current_date = datetime.now().date()
     if medication.expiration_date and medication.expiration_date < current_date:
         messages.error(request, "The medicine is expired.")
         return redirect('unfilled_prescriptions')
@@ -691,7 +691,12 @@ def fill_prescription(request, pk):
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
         medication.save()
         prescription.save()
-        messages.success(request, "Prescription filled successfully!")
+
+        # Create an order for the filled prescription
+        order = Order.objects.create(user=request.user)
+        OrderItem.objects.create(order=order, medication=medication, quantity=prescription.num_tablets, price=medication.price)
+
+        messages.success(request, "Prescription filled successfully and order created!")
     else:
         messages.error(
             request,
