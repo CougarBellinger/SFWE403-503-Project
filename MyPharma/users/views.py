@@ -470,7 +470,7 @@ def card_info(request):
         
         if form.is_valid():
             #card_info = form.cleaned_data['name_on_card'] # is this necessary?
-            return redirect('confirmation_page')
+            return redirect('payment_confirmation_page')
 
     else:
         form = CardInfoForm()
@@ -496,8 +496,8 @@ def cash(request):
 
     return render(request, 'users/cash.html', {'form': form, 'total': total})
 
-def confirmation_page(request):
-    return render(request, 'users/confirmation.html')
+def payment_confirmation_page(request):
+    return render(request, 'users/payment_confirmation.html')
 
 
 def manual_prescription(request):
@@ -525,7 +525,7 @@ def sign_prescriptions(request):
             # Process form data if it's valid (e.g., save it or process further)
             # After success, redirect to manager_home
             messages.success(request, "Prescription signed successfully!")
-            return redirect('manager_home')
+            return redirect('signature_confirmation')
         else:
             # If form is not valid, return with error messages displayed
             messages.error(request, "Please fix the errors below.")
@@ -533,6 +533,9 @@ def sign_prescriptions(request):
         form = SignatureForm()
 
     return render(request, 'sign_prescriptions.html', {'form': form})
+
+def signature_confirmation(request):
+    return render(request, 'users/signature_confirmation.html')
 
 @login_required
 def medications_view(request):

@@ -239,7 +239,7 @@ def sign_prescriptions(request):
             # Process form data if it's valid (e.g., save it or process further)
             # After success, redirect to manager_home
             messages.success(request, "Prescription signed successfully!")
-            return redirect('manager_home')
+            return redirect('signature_confirmation')
         else:
             # If form is not valid, return with error messages displayed
             messages.error(request, "Please fix the errors below.")

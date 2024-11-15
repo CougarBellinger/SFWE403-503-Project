@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h2>Signature Accepted</h2>
+        <p>This order has been successfully been signed for.</p>
+        <a class="btn btn-primary mt-3" href="{% url 'TODO' %}">TODO</a>
+        <a class="btn btn-primary mt-3" href="{% url 'manager_home' %}">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

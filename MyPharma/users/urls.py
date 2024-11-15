@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions
+from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, signature_confirmation
 
 
 
@@ -43,11 +43,12 @@ urlpatterns = [
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
 
-    path('confirmation/', confirmation_page, name='confirmation_page'),
+    path('payment_confirmation/', payment_confirmation_page, name='payment_confirmation_page'),
 
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),
     path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions'),
+    path('signature_confirmation/', signature_confirmation, name='signature_confirmation'),
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
