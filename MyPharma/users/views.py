@@ -398,6 +398,7 @@ def delete_patient(request, pk):
 #     context = {'expired_medications': expired_medications, 'expiring_soon_medications': expiring_soon_medications} # passes dynamic data to template  
 #     return render(request, 'users/expiring_medications_management.html', {'expired_medications': expired_medications}, {'expiring_soon_medications': expiring_soon_medications})
 
+@login_required
 def changePassword_view(request):
     if request.user.is_authenticated:
         currentUser = request.user
@@ -410,16 +411,11 @@ def changePassword_view(request):
                 return redirect('home_view')
             else:
                 messages.error(request, 'Please correct the error below.')
-                return render(request, 'users/password_change.html')
         else:
             form = ChangePasswordForm(currentUser)
-            messages.error(request, 'Please correct the error below.')
-            return render(request, 'users/password_change.html', {'form': form})
     else:
-        form = ChangePasswordForm(currentUser)
-        messages.error(request, 'Please correct the error below.')
-        return render(request, 'users/password_change.html', {'form': form})
-
+        form = ChangePasswordForm(request.user)
+    return render(request, 'users/password_change.html', {'form': form})
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
@@ -520,25 +516,29 @@ def prescription_confirmation(request):
     return render(request, 'users/prescription_confirmation.html')
 
 def sign_prescriptions(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
         form = SignatureForm(request.POST)
         if form.is_valid():
-            order = get_object_or_404(Order, id=order_id)  # Retrieve the existing order
-            order.status = 'signed'  # Update the order status to signed
+            order.status = 'signed'
             order.save()
             messages.success(request, "Prescription signed successfully!")
-            return redirect('signature_confirmation', order_id=order.id)
+            request.session['order_id'] = order.id  # Store order_id in session
+            return redirect('signature_confirmation')
         else:
             messages.error(request, "Please fix the errors below.")
     else:
         form = SignatureForm()
 
-    return render(request, 'users/sign_prescriptions.html', {'form': form})
+    return render(request, 'sign_prescriptions.html', {'form': form, 'order': order})
 
-def signature_confirmation(request, order_id):
+def signature_confirmation(request):
+    order_id = request.session.get('order_id')
+    if not order_id:
+        messages.error(request, "Order ID not found in session.")
+        return redirect('home_view')
     order = get_object_or_404(Order, id=order_id)
-    return render(request, 'users/signature_confirmation.html', {'order': order})
-
+    return render(request, 'users/signature_confirmation.html', {'order_id': order_id})
 @login_required
 def medications_view(request):
     medications = Medications.objects.all()

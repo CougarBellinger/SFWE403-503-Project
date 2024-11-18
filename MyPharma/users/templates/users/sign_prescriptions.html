@@ -12,7 +12,7 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <form method="POST" action="{% url 'sign_prescriptions' %}">
+            <form method="POST" action="{% url 'sign_prescriptions' order.id %}">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-success">Confirm</button>
@@ -30,14 +30,21 @@
 
                 <!-- Input for signature that will be displayed conditionally -->
                 <div id="physical-section" class="mb-3" style="display:none;">
+                    <label for="physical_signature" class="form-label">Physical Signature:</label>
+                    <input type="text" class="form-control" name="physical_signature" id="physical_signature" value="{{ form.physical_signature.value }}">
+                    {% if form.physical_signature.errors %}
+                    <div class="text-danger">
+                        {{ form.physical_signature.errors }}
+                    </div>
+                    {% endif %}
                 </div>
 
                 <div id="digital-section" class="mb-3" style="display:none;">
                     <label for="digital_signature" class="form-label">Digital Signature:</label>
-                    <input type="text" class="form-control" name="DigitalSignature" id="digital_signature" value="{{ form.DigitalSignature.value }}">
-                    {% if form.DigitalSignature.errors %}
+                    <input type="text" class="form-control" name="digital_signature" id="digital_signature" value="{{ form.digital_signature.value }}">
+                    {% if form.digital_signature.errors %}
                     <div class="text-danger">
-                        {{ form.DigitalSignature.errors }}
+                        {{ form.digital_signature.errors }}
                     </div>
                     {% endif %}
                 </div>
