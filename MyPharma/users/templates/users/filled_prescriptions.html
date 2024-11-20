@@ -20,10 +20,12 @@
       <tr>
         <th>ID</th>
         <th>Patient</th>
-        <th>Medication</th>
         <th>Tablet Count</th>
-        <th>Prescriber Name</th>
+        <th>Medication</th>
+        <th>Med ID</th>
+        <th>Prescribed By</th>
         <th>Date Prescribed</th>
+        <th>Status</th>
       </tr>
     </thead>
 
@@ -32,10 +34,12 @@
         <tr>
             <td>{{ prescription.id }}</td>
             <td>{{ prescription.patient }}</td>
-            <td>{{ prescription.medication.name }}</td>
             <td>{{ prescription.num_tablets }}</td>
+            <td>{{ prescription.medication.name }}</td>
+            <td>{{ prescription.medication.pk }}</td>
             <td>{{ prescription.prescriber_name }}</td>
             <td>{{ prescription.date_prescribed }}</td>
+            <td>{{ prescription.status }}</td>
         </tr>
       {% endfor %}
     </tbody>
