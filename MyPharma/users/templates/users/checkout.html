@@ -45,7 +45,7 @@
             </tbody>
         </table>
         <button type="submit" name="update" value="update">Update</button>
-        <a class="btn btn-primary mt-3" href="{% url 'payment_method' %}">Confirm</a>
+        <a class="btn btn-primary mt-3" href="{% url 'sign_prescriptions' order.id %}">Confirm</a>
     </form>
     <h2>Total: {{ total_price }}</h2>
 </body>

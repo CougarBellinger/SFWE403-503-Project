@@ -39,7 +39,7 @@ urlpatterns = [
     path('checkout_order/<int:order_id>/', checkout_order, name='checkout_order'),
     path('checkout/<int:order_id>/', checkout, name='checkout'),
 
-    path('payment_method/', payment_method, name='payment_method'),
+    path('payment_method/<int:order_id>', payment_method, name='payment_method'),
     path('card/', card_info, name='card_info'),
     path('cash/', cash, name='cash'),
 
@@ -52,7 +52,6 @@ urlpatterns = [
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),
-
     path('receipt/<int:order_id>/', receipt_view, name='receipt_view'),
 
 ]

@@ -6,20 +6,20 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
-            <h2 class="mb-4">Sign Prescriptions</h2>
+            <h2 class="mb-4">Sign Prescriptions  dsfdsfsd</h2>
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
-            <form method="POST" action="{% url 'sign_prescriptions' order.id %}">
+            <form method="POST" >
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-success">Confirm</button>
-
+           
                 <!-- Radio buttons for selecting signature type -->
                 <div class="mb-3">
-                    <label class="form-label">Select Signature Type:</label><br>
+                    <label class="form-label">Select Signature Typevgg:</label><br>
                     <label>
                         <input type="radio" name="signature_type" value="physical" {% if form.signature_type.value == 'physical' %}checked{% endif %} onclick="toggleSignatureType(this)"> Physical
                     </label>
@@ -49,7 +49,7 @@
                     {% endif %}
                 </div>
 
-                <button type="submit" class="btn btn-success">Confirm</button>
+                <a class="btn btn-primary mt-3" href="{% url 'payment_method' order.id %}">Confirm</a>
             </form>
         </div>
     </div>

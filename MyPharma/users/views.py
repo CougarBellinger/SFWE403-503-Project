@@ -441,7 +441,7 @@ def pharmacist_home(request):
 
 
 # after checkout button is clicked, changes to payment method view
-def payment_method(request):
+def payment_method(request, order_id):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         
@@ -459,7 +459,7 @@ def payment_method(request):
         
     return render(request, 'users/payment.html', {'form': form})
 
-def card_info(request):
+def card_info(request, order_id):
     total = request.session.get('total') # shows purchase total
 
     if request.method == 'POST':
@@ -474,7 +474,7 @@ def card_info(request):
         
     return render(request, 'users/card.html', {'form': form})
 
-def cash(request):
+def cash(request, order_id):
     total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
     
     if request.method == 'POST':
@@ -530,7 +530,7 @@ def sign_prescriptions(request, order_id):
     else:
         form = SignatureForm()
 
-    return render(request, 'sign_prescriptions.html', {'form': form, 'order': order})
+    return render(request, 'sign_prescriptions.html', {'form': form, 'order_id': order_id})
 
 def signature_confirmation(request):
     order_id = request.session.get('order_id')
@@ -625,7 +625,8 @@ def checkout_order(request, order_id):
             order.status = 'waiting for payment'
             order.save()
             messages.success(request, 'Order status updated to waiting for payment.')
-            return redirect('view_orders')
+            return  render(request, 'users/sign_prescriptions.html', {'order_id': order_id, })
+
 
         total_price = sum(item.quantity * item.price for item in order.items.all())
         return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
