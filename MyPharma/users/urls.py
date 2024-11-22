@@ -1,5 +1,9 @@
 from django.urls import path
+ 
+from .views import User_registration_view,view_orders, receipt_view, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, signature_confirmation
+
 from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, filled_prescriptions, signature_confirmation
+ 
 
 
 
@@ -39,18 +43,22 @@ urlpatterns = [
     path('checkout_order/<int:order_id>/', checkout_order, name='checkout_order'),
     path('checkout/<int:order_id>/', checkout, name='checkout'),
 
-    path('payment_method/', payment_method, name='payment_method'),
-    path('card/', card_info, name='card_info'),
-    path('cash/', cash, name='cash'),
+    path('payment_method/<int:order_id>', payment_method, name='payment_method'),
+    path('card/<int:order_id>/', card_info, name='card_info'),
+    path('cash/<int:order_id>/', cash, name='cash'),
 
-    path('payment_confirmation/', payment_confirmation_page, name='payment_confirmation_page'),
+    path('payment_confirmation/<int:order_id>/', payment_confirmation_page, name='payment_confirmation'),
 
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),
-    path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions'),
-    path('signature_confirmation/', signature_confirmation, name='signature_confirmation'),
+    path('/users/sign_prescriptions/<int:order_id>/', sign_prescriptions, name='sign_prescriptions'),
+    path('signature_confirmation/<int:order_id>/', signature_confirmation, name='signature_confirmation'),
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),
+
+    path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),
+    path('receipt/<int:order_id>/', receipt_view, name='receipt_view'),
+
     path('filled_prescriptions/', filled_prescriptions, name="filled_prescriptions"),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
 

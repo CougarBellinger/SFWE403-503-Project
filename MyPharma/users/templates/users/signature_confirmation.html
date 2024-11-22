@@ -1,12 +1,15 @@
+<!-- users/templates/users/signature_confirmation.html -->
+
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-5">
-    <div class="text-center">
-        <h2>Signature Accepted</h2>
-        <p>This order has been successfully been signed for.</p>
-        <a class="btn btn-primary mt-3" href="{% url 'manager_home' %}">TODO</a>
-        <a class="btn btn-primary mt-3" href="{% url 'manager_home' %}">Return to Home</a>
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="mb-4">Signature Confirmation</h2>
+            <p>Prescription has been signed successfully!</p>
+            <a href="{% url 'receipt_view' order_id = order_id %}" class="btn btn-primary">View Receipt</a>
+        </div>
     </div>
 </div>
 {% endblock %}

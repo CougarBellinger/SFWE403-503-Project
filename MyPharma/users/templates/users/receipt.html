@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-    <h1>Your Orders</h1>
-    {% for order in orders %}
-    <h2>Order {{ order.order_number }}</h2>
+    <h1>Receipt for Order #{{ order.id }}</h1>
     <table>
         <thead>
             <tr>
@@ -30,25 +28,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {% if order.status == 'complete' %}
-    <form method="GET" action="{% url 'receipt_view' order.id %}">
-        <button type="submit">View Receipt</button>
-    </form>
-    {% else %}
-    <form method="POST" action="{% url 'checkout_order' order.id %}">
-        {% csrf_token %}
-        <button type="submit">Checkout</button>
-    </form>
-    {% if order.status == 'sign_ready' %}
-    <form method="GET" action="{% url 'sign_prescriptions' order.id %}">
-        <button type="submit">Sign</button>
-    </form>
-    {% endif %}
-    {% if order.status == 'signed' %}
-    <form method="GET" action="{% url 'payment_method' order.id %}">
-        <button type="submit">Pay Now</button>
-    </form>
-    {% endif %}
-    {% endif %}
-    {% endfor %}
+    <h3>Total: {{ total_price }}</h3>
 {% endblock %}

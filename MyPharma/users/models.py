@@ -180,6 +180,9 @@ class Order(models.Model):
     order_number = models.CharField(max_length=20)
     status = models.CharField(max_length=20, default='pending')
 
+    def get_total_price(self):
+        return sum(item.price * item.quantity for item in self.items.all())
+
     def __str__(self):
         return f'Order {self.order_number} by {self.user.email}'
 
