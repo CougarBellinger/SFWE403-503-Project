@@ -23,6 +23,14 @@ ACTION_TYPES = [
     (FILLED, FILLED)
 ]
 
+# Values for prescription status
+PICKED_UP, NOT_PICKED_UP = "Picked Up", "Awaiting Pickup"
+
+PRESCRIPTION_STATUS = [
+    (PICKED_UP, PICKED_UP),
+    (NOT_PICKED_UP, NOT_PICKED_UP)
+]
+
 
 # Create your models here.
 class CustomUser(AbstractUser):
@@ -205,6 +213,8 @@ class Prescription(models.Model):
     prescriber_name = models.CharField(max_length=100)
     date_prescribed = models.DateField(auto_now_add=True)
     is_filled = models.BooleanField(default=False)
+
+    status = models.CharField(choices=PRESCRIPTION_STATUS, max_length=20, null=True)
 
     def __str__(self):
      return f"Prescription for {self.patient}: {self.num_tablets} tablets of {self.medication}"

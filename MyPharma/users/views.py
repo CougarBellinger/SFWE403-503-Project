@@ -634,6 +634,8 @@ def checkout_order(request, order_id):
     return redirect('view_orders')
 
 
+
+
 @login_required
 def checkout(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -652,6 +654,7 @@ def checkout(request, order_id):
         new_item_name = request.POST.get('new_item_name')
         new_item_quantity = request.POST.get('new_item_quantity')
         new_item_price = request.POST.get('new_item_price')
+
 
         if new_item_name and new_item_quantity and new_item_price:
             try:
@@ -705,6 +708,7 @@ def add_medication(request):
 
 """
 
+
 def unfilled_prescriptions(request):
     unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
 
@@ -724,6 +728,7 @@ def fill_prescription(request, pk):
     if medication.tablet_count >= prescription.num_tablets:
         medication.tablet_count -= prescription.num_tablets
         prescription.is_filled = True
+        prescription.status = NOT_PICKED_UP
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
         medication.save()
         prescription.save()
@@ -741,8 +746,29 @@ def fill_prescription(request, pk):
 
     return redirect('unfilled_prescriptions')
 
+
 @login_required
 def receipt_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     total_price = sum(item.price * item.quantity for item in order.items.all())
     return render(request, 'users/receipt.html', {'order': order, 'total_price': total_price})
+
+def filled_prescriptions(request):
+    form = FilledPrescriptionsForm(request.GET)
+
+    if form.is_valid():
+        patient = form.cleaned_data['patient']
+        if patient:
+            patient_id = patient.id
+            filled_presciptions = Prescription.objects.filter(patient_id=patient_id, is_filled=True)
+        else:
+            filled_presciptions = Prescription.objects.filter(is_filled=True)
+
+    context = {
+        'filled_prescriptions' : filled_presciptions,
+        'form' : form
+    }
+
+    return render(request, 'users/filled_prescriptions.html', context)
+    
+

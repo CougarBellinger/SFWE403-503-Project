@@ -74,3 +74,6 @@ class SignatureForm(forms.Form):
             self.add_error('DigitalSignature', 'A valid digital signature is required')
 
         return cleaned_data
+    
+class FilledPrescriptionsForm(forms.Form):
+    patient = forms.ModelChoiceField(queryset=Patient.objects.all(), required=False)
