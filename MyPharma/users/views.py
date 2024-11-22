@@ -465,7 +465,7 @@ def card_info(request, order_id):
         form = CardInfoForm(request.POST)
         if form.is_valid():
             # Process the form data
-            return redirect('payment_confirmation_page', order_id=order_id)
+            return redirect('payment_confirmation', order_id=order_id)
     else:
         form = CardInfoForm()
 
@@ -632,18 +632,45 @@ def checkout_order(request, order_id):
         total_price = sum(item.quantity * item.price for item in order.items.all())
         return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
     return redirect('view_orders')
+
+
 @login_required
 def checkout(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
-        # Perform checkout logic here
-        order.status = 'sign_ready'
-        order.save()
-        return redirect('view_orders')  # Redirect to the view orders page
+        for item in order.items.all():
+            price_field = f'price_{item.id}'
+            if price_field in request.POST:
+                try:
+                    new_price = float(request.POST[price_field])
+                    item.price = new_price
+                    item.save()
+                except ValueError:
+                    messages.error(request, f'Invalid price for {item.medication.name if item.medication else item.generic_item.name}.')
+                    return redirect('checkout', order_id=order_id)
 
-    total_price = sum(item.price for item in order.items.all())
-    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
+        new_item_name = request.POST.get('new_item_name')
+        new_item_quantity = request.POST.get('new_item_quantity')
+        new_item_price = request.POST.get('new_item_price')
 
+        if new_item_name and new_item_quantity and new_item_price:
+            try:
+                new_item_quantity = int(new_item_quantity)
+                new_item_price = float(new_item_price)
+                new_generic_item = GenericItem.objects.create(name=new_item_name, price=new_item_price)
+                OrderItem.objects.create(order=order, generic_item=new_generic_item, quantity=new_item_quantity, price=new_item_price)
+            except ValueError:
+                messages.error(request, 'Invalid input for new item.')
+                return redirect('checkout', order_id=order_id)
+
+        if 'confirm' in request.POST:
+            order.status = 'sign_ready'
+            order.save()
+            messages.success(request, 'Order status updated to sign ready.')
+            return redirect('view_orders')
+
+    total_price = sum(item.price * item.quantity for item in order.items.all())
+    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price, 'order_number': order.id})
 """
 def add_medication(request):
     if request.method == 'POST':

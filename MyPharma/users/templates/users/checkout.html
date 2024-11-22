@@ -8,7 +8,7 @@
     <title>Checkout</title>
 </head>
 <body>
-    <h1>Checkout</h1>
+    <h1>Checkout Order {{ order_number }}</h1>
     <form method="POST" action="{% url 'checkout' order.id %}">
         {% csrf_token %}
         <table>
