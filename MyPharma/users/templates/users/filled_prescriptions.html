@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Filled Prescriptions</h2>
+        </div>
+    </div>
+
+    <form method="GET">
+        {{ form }}
+        <input type="submit" value="Filter">
+    </form>
+
+  <table class="table table-striped mt-4">
+
+    <thead class="thead-dark">
+      <tr>
+        <th>ID</th>
+        <th>Patient</th>
+        <th>Tablet Count</th>
+        <th>Medication</th>
+        <th>Med ID</th>
+        <th>Prescribed By</th>
+        <th>Date Prescribed</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for prescription in filled_prescriptions %} 
+        <tr>
+            <td>{{ prescription.id }}</td>
+            <td>{{ prescription.patient }}</td>
+            <td>{{ prescription.num_tablets }}</td>
+            <td>{{ prescription.medication.name }}</td>
+            <td>{{ prescription.medication.pk }}</td>
+            <td>{{ prescription.prescriber_name }}</td>
+            <td>{{ prescription.date_prescribed }}</td>
+            <td>{{ prescription.status }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+</div>
+{% endblock %}

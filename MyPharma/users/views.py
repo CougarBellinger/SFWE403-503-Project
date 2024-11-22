@@ -632,45 +632,12 @@ def checkout_order(request, order_id):
         total_price = sum(item.quantity * item.price for item in order.items.all())
         return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
     return redirect('view_orders')
+
 @login_required
 def checkout(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     total_price = sum(item.price for item in order.items.all())
     return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
-
-"""
-def add_medication(request):
-    if request.method == 'POST':
-        form = MedicationForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            expiration_date = form.cleaned_data['expiration_date']
-            tablet_count = form.cleaned_data['tablet_count']
-            price = form.cleaned_data['price']
-
-            # Check if the medication already exists
-            medication, created = Medications.objects.get_or_create(
-                name=name,
-                expiration_date=expiration_date,
-                defaults={'price': price}
-            )
-
-            if created:
-                # If the medication is new, set the tablet count
-                medication.tablet_count = tablet_count
-            else:
-                # If the medication already exists, update the tablet count
-                medication.tablet_count += tablet_count
-
-            medication.save()
-            messages.success(request, f'Medication {name} has been added/updated successfully.')
-            return redirect('medications_view')
-    else:
-        form = MedicationForm()
-
-    return render(request, 'users/add_medication.html', {'form': form})
-
-"""
 
 def unfilled_prescriptions(request):
     unfilled_prescriptions = Prescription.objects.filter(is_filled=False)
@@ -691,6 +658,7 @@ def fill_prescription(request, pk):
     if medication.tablet_count >= prescription.num_tablets:
         medication.tablet_count -= prescription.num_tablets
         prescription.is_filled = True
+        prescription.status = NOT_PICKED_UP
         log_prescription_filled(instance_id=prescription.pk, user=request.user)
         medication.save()
         prescription.save()
@@ -707,3 +675,22 @@ def fill_prescription(request, pk):
         )
 
     return redirect('unfilled_prescriptions')
+
+def filled_prescriptions(request):
+    form = FilledPrescriptionsForm(request.GET)
+
+    if form.is_valid():
+        patient = form.cleaned_data['patient']
+        if patient:
+            patient_id = patient.id
+            filled_presciptions = Prescription.objects.filter(patient_id=patient_id, is_filled=True)
+        else:
+            filled_presciptions = Prescription.objects.filter(is_filled=True)
+
+    context = {
+        'filled_prescriptions' : filled_presciptions,
+        'form' : form
+    }
+
+    return render(request, 'users/filled_prescriptions.html', context)
+    
