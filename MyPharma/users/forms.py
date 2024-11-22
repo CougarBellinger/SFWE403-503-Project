@@ -64,7 +64,6 @@ class SignatureForm(forms.Form):
         required=True
     )
     DigitalSignature = forms.CharField(max_length=255, required=False)
-    order_id = forms.IntegerField(widget=forms.HiddenInput())
 
     def clean(self):
         cleaned_data = super().clean()
@@ -72,6 +71,6 @@ class SignatureForm(forms.Form):
         digital_signature = cleaned_data.get('DigitalSignature')
 
         if signature_type == 'digital' and not digital_signature:
-            self.add_error('DigitalSignature', 'A valid signature is required')
+            self.add_error('DigitalSignature', 'A valid digital signature is required')
 
         return cleaned_data

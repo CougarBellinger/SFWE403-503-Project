@@ -440,61 +440,64 @@ def pharmacist_home(request):
     return render(request, 'users/pharmacist_home.html', {'medications': medications})
 
 
-# after checkout button is clicked, changes to payment method view
 def payment_method(request, order_id):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
-        
+
         if form.is_valid():
             payment_method = form.cleaned_data['payment_method']
 
             if payment_method == 'Credit/Debit':
-                return redirect('card_info')
+                return redirect('card_info', order_id=order_id)
 
             if payment_method == 'Cash':
-                return redirect('cash')
+                return redirect('cash', order_id=order_id)
 
     else:
         form = PaymentForm()
-        
+
     return render(request, 'users/payment.html', {'form': form})
 
 def card_info(request, order_id):
-    total = request.session.get('total') # shows purchase total
+    total = request.session.get('total')
 
     if request.method == 'POST':
         form = CardInfoForm(request.POST)
-        
         if form.is_valid():
-            #card_info = form.cleaned_data['name_on_card'] # is this necessary?
-            return redirect('payment_confirmation_page')
-
+            # Process the form data
+            return redirect('payment_confirmation_page', order_id=order_id)
     else:
         form = CardInfoForm()
-        
-    return render(request, 'users/card.html', {'form': form})
 
+    return render(request, 'users/card.html', {'form': form, 'order_id': order_id})
+
+
+@login_required
 def cash(request, order_id):
-    total = request.session.get('total') # shows purchase total *** might need to change what's in parenthesis depending on variable that matt used ***
-    
+    order = get_object_or_404(Order, id=order_id)
+    form = CashForm(request.POST or None)
+    total = order.get_total_price()
+    change = None
+    error = None
+
     if request.method == 'POST':
-        form = CashForm(request.POST)
-
         if form.is_valid():
-            cash_given = form.cleaned_data['cash_given']
-            if cash_given < total:
-                return render(request, 'users/cash.html', {'form': form, 'total': total, 'error': 'Insufficient cash amount.'})
-            
-            change = cash_given - total
-            return render(request, 'users/cash.html', {'form': form, 'total': total, 'change': change})
+            amount_given = form.cleaned_data['cash_given']
+            if amount_given >= total:
+                change = amount_given - total
+                order.status = 'paid'
+                order.save()
+                return redirect('payment_confirmation', order_id=order_id)
+            else:
+                error = 'Insufficient amount given.'
 
-    else:
-        form = CashForm()
-
-    return render(request, 'users/cash.html', {'form': form, 'total': total})
-
-def payment_confirmation_page(request):
-    return render(request, 'users/payment_confirmation.html')
+    return render(request, 'users/cash.html', {'form': form, 'total': total, 'change': change, 'error': error, 'order': order})
+@login_required
+def payment_confirmation_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order.status = 'complete'
+    order.save()
+    return render(request, 'users/payment_confirmation.html', {'order_id': order_id})
 
 
 def manual_prescription(request):
@@ -520,11 +523,10 @@ def sign_prescriptions(request, order_id):
     if request.method == 'POST':
         form = SignatureForm(request.POST)
         if form.is_valid():
-            order.status = 'signed'
+            order.status = 'signed'  # Update the status to 'payment_ready'
             order.save()
             messages.success(request, "Prescription signed successfully!")
-            request.session['order_id'] = order.id  # Store order_id in session
-            return redirect('signature_confirmation')
+            return redirect('view_orders')  # Redirect to the view orders page
         else:
             messages.error(request, "Please fix the errors below.")
     else:
@@ -625,8 +627,7 @@ def checkout_order(request, order_id):
             order.status = 'waiting for payment'
             order.save()
             messages.success(request, 'Order status updated to waiting for payment.')
-            return  render(request, 'users/sign_prescriptions.html', {'order_id': order_id, })
-
+            return redirect('view_orders')
 
         total_price = sum(item.quantity * item.price for item in order.items.all())
         return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
@@ -634,6 +635,12 @@ def checkout_order(request, order_id):
 @login_required
 def checkout(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
+    if request.method == 'POST':
+        # Perform checkout logic here
+        order.status = 'sign_ready'
+        order.save()
+        return redirect('view_orders')  # Redirect to the view orders page
+
     total_price = sum(item.price for item in order.items.all())
     return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price})
 

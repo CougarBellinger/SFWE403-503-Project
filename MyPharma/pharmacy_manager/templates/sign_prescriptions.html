@@ -4,42 +4,39 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
-            <h2 class="mb-4">Sign Prescriptions  zdxfcx</h2>
+            <h2 class="mb-4">Sign Prescriptions</h2>
         </div>
     </div>
 
     <div class="card mb-4">
         <div class="card-body">
-            <form method="POST" action="{% url 'payment_method' order_id %}">
+            <form method="POST" action="{% url 'sign_prescriptions' order_id %}">
                 {% csrf_token %}
-                <p>Payment Confirmation for Order ID {{order_id}}</p>
+                <p>Payment Confirmation for Order ID {{ order_id }}</p>
+                <!-- Display form errors -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                        {% endfor %}
+                            <li>{{ error }}</li>
+                    </ul>
+                </div>
+                {% endif %}
                 <!-- Radio buttons for selecting signature type -->
                 <div class="mb-3">
                     <label class="form-label">Select Signature Type:</label><br>
-                    <label>
-                        <input type="radio" name="signature_type" value="physical" {% if form.signature_type.value == 'physical' %}checked{% endif %} onclick="toggleSignatureType(this)"> Physical
-                    </label>
-                    <label>
-                        <input type="radio" name="signature_type" value="digital" {% if form.signature_type.value == 'digital' %}checked{% endif %} onclick="toggleSignatureType(this)"> Digital
-                    </label>
+                    {{ form.signature_type }}
                 </div>
-
-                <!-- Input for signature that will be displayed conditionally -->
-                <div id="physical-section" class="mb-3" style="display:none;">
-                </div>
-
                 <div id="digital-section" class="mb-3" style="display:none;">
                     <label for="digital_signature" class="form-label">Digital Signature:</label>
-                    <input type="text" class="form-control" name="DigitalSignature" id="digital_signature" value="{{ form.DigitalSignature.value }}">
-                    {% if form.DigitalSignature.errors %}
-                        <div class="text-danger">
-                            {% for error in form.DigitalSignature.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    {{ form.DigitalSignature }}
                 </div>
-
                 <button type="submit" class="btn btn-success">Confirm</button>
             </form>
         </div>
@@ -58,12 +55,15 @@
 
 <script>
     function toggleSignatureType(radio) {
-        // Show or hide the sections based on the selected radio button
-        document.getElementById('physical-section').style.display = radio.value === 'physical' ? 'block' : 'none';
         document.getElementById('digital-section').style.display = radio.value === 'digital' ? 'block' : 'none';
     }
 
-    // Trigger the initial display logic on page load
+    document.querySelectorAll('input[name="signature_type"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            toggleSignatureType(this);
+        });
+    });
+
     window.onload = function() {
         const selectedType = document.querySelector('input[name="signature_type"]:checked');
         if (selectedType) {
@@ -71,5 +71,4 @@
         }
     };
 </script>
-
 {% endblock %}

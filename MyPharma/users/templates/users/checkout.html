@@ -1,7 +1,5 @@
-<!-- users/templates/users/checkout.html -->
 {% extends 'base.html' %}
 {% block content %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +9,7 @@
 </head>
 <body>
     <h1>Checkout</h1>
-    <form method="POST" action="{% url 'checkout_order' order.id %}">
+    <form method="POST" action="{% url 'checkout' order.id %}">
         {% csrf_token %}
         <table>
             <thead>
@@ -45,7 +43,7 @@
             </tbody>
         </table>
         <button type="submit" name="update" value="update">Update</button>
-        <a class="btn btn-primary mt-3" href="{% url 'sign_prescriptions' order.id %}">Confirm</a>
+        <button type="submit" name="confirm" value="confirm">Confirm</button>
     </form>
     <h2>Total: {{ total_price }}</h2>
 </body>

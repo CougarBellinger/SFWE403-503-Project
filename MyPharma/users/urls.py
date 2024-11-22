@@ -40,14 +40,14 @@ urlpatterns = [
     path('checkout/<int:order_id>/', checkout, name='checkout'),
 
     path('payment_method/<int:order_id>', payment_method, name='payment_method'),
-    path('card/', card_info, name='card_info'),
-    path('cash/', cash, name='cash'),
+    path('card/<int:order_id>/', card_info, name='card_info'),
+    path('cash/<int:order_id>/', cash, name='cash'),
 
-    path('payment_confirmation/', payment_confirmation_page, name='payment_confirmation_page'),
+    path('payment_confirmation/<int:order_id>/', payment_confirmation_page, name='payment_confirmation'),
 
     path('manual_prescription/', manual_prescription, name='manual_prescription'),
     path('prescription_confirmation/', prescription_confirmation, name='prescription_confirmation'),
-    path('sign_prescriptions/<int:order_id>/', sign_prescriptions, name='sign_prescriptions'),
+    path('/users/sign_prescriptions/<int:order_id>/', sign_prescriptions, name='sign_prescriptions'),
     path('signature_confirmation/<int:order_id>/', signature_confirmation, name='signature_confirmation'),
     path('pharmacist_home/', pharmacist_home, name='pharmacist_home'),
     path('unfilled-prescriptions/', unfilled_prescriptions, name='unfilled_prescriptions'),

@@ -11,6 +11,8 @@
             {% csrf_token %}
             {{ form.as_p }}
 
+            <p>Total Amount: ${{ total }}</p>
+
             {% if error %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
@@ -20,7 +22,7 @@
             {% endif %}
 
             <button type="submit" class="btn btn-primary">Purchase</button>
-            <a href="{% url 'payment_method' %}" class="btn btn-secondary">Back to Payment Method Selection</a>
+            <a href="{% url 'payment_method' order.id %}" class="btn btn-secondary">Back to Payment Method Selection</a>
           </form>
         </div>
       </div>
