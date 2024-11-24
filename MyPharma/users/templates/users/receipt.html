@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-    <h1>Receipt for Order #{{ order.id }}</h1>
+    <h1>Receipt for Order #{{ order.order_number }}</h1>
     <table>
         <thead>
             <tr>
@@ -29,4 +29,8 @@
         </tbody>
     </table>
     <h3>Total: {{ total_price }}</h3>
+    <div>
+        <a href="{% url 'download_receipt_pdf' order.id %}" class="btn btn-primary">Print</a>
+        <a href="{% url 'receipt_view' order.id %}" class="btn btn-primary">Order List</a>
+    </div>
 {% endblock %}
