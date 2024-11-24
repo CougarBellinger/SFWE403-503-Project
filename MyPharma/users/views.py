@@ -4,6 +4,8 @@ from datetime import datetime
 import csv
 import logging
 from django.shortcuts import render, get_object_or_404
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 # Django imports
@@ -20,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import UserCreationForm, UserRegistrationForm, ChangePasswordForm
 from users.decorators import pharmacy_manager_required
-from django.http import Http404
+from django.http import Http404, HttpResponse
 
 
 # App imports
@@ -673,7 +675,7 @@ def checkout(request, order_id):
             return redirect('view_orders')
 
     total_price = sum(item.price * item.quantity for item in order.items.all())
-    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price, 'order_number': order.id})
+    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price, 'order_id': order.id})
 """
 def add_medication(request):
     if request.method == 'POST':
@@ -770,5 +772,42 @@ def filled_prescriptions(request):
     }
 
     return render(request, 'users/filled_prescriptions.html', context)
+
+@login_required
+def download_receipt_pdf(request, order_id):
+    # Get the order
+    order = get_object_or_404(Order, id=order_id)
+    total_price = sum(item.price * item.quantity for item in order.items.all())
+
+    # Create an HTTP response with a PDF content type
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="receipt_{order.id}.pdf"'
+
+    # Create the PDF canvas
+    pdf_canvas = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+
+    # Add content to the PDF
+    pdf_canvas.setFont("Helvetica", 16)
+    pdf_canvas.drawString(100, height - 100, f"Receipt for Order #{order.id}")
+    pdf_canvas.setFont("Helvetica", 12)
+    #pdf_canvas.drawString(100, height - 100, f"Point of Sale: {order.user.email}")
+    pdf_canvas.drawString(100, height - 130, "Order Details:")
+
+    y_position = height - 160
+    for item in order.items.all():
+        pdf_canvas.drawString(
+            100, y_position, 
+            f" - {item.medication.name if item.medication else item.generic_item.name}: "
+            f"{item.quantity} x ${item.price:.2f} = ${item.price * item.quantity:.2f}"
+        )
+        y_position -= 20
+
+    pdf_canvas.drawString(100, y_position - 20, f"Total Price: ${total_price:.2f}")
+
+    # Finish the PDF
+    pdf_canvas.save()
+
+    return response
     
 
