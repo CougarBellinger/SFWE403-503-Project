@@ -675,7 +675,7 @@ def checkout(request, order_id):
             return redirect('view_orders')
 
     total_price = sum(item.price * item.quantity for item in order.items.all())
-    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price, 'order_number': order.id})
+    return render(request, 'users/checkout.html', {'order': order, 'total_price': total_price, 'order_id': order.id})
 """
 def add_medication(request):
     if request.method == 'POST':
@@ -781,17 +781,17 @@ def download_receipt_pdf(request, order_id):
 
     # Create an HTTP response with a PDF content type
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="receipt_{order.order_number}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="receipt_{order.id}.pdf"'
 
     # Create the PDF canvas
     pdf_canvas = canvas.Canvas(response, pagesize=letter)
     width, height = letter
 
     # Add content to the PDF
-    pdf_canvas.setFont("Helvetica", 14)
-    pdf_canvas.drawString(100, height - 50, f"Receipt for Order #{order.order_number}")
+    pdf_canvas.setFont("Helvetica", 16)
+    pdf_canvas.drawString(100, height - 100, f"Receipt for Order #{order.id}")
     pdf_canvas.setFont("Helvetica", 12)
-    pdf_canvas.drawString(100, height - 100, f"Customer: {order.user.email}")
+    #pdf_canvas.drawString(100, height - 100, f"Point of Sale: {order.user.email}")
     pdf_canvas.drawString(100, height - 130, "Order Details:")
 
     y_position = height - 160
