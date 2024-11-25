@@ -247,3 +247,31 @@ def sign_prescriptions(request):
         form = SignatureForm()
 
     return render(request, 'sign_prescriptions.html', {'form': form})
+
+def inventory_reports(request):
+    if request.method == 'POST':
+        form = InventoryReportsForm(request.POST)
+
+        if form.is_valid():
+            timeframe = form.cleaned_data['timeframe']
+
+            if timeframe == 'Last 7 days':
+                return redirect('inventory_reports_week') 
+
+            if timeframe == 'Last 30 days':
+                return redirect('inventory_reports_month')
+                    
+            if timeframe == 'Last 12 months':
+                return redirect('inventory_reports_year')
+
+    else:
+        form = InventoryReportsForm()
+
+    return render(request, 'inv_report_timeframe.html', {'form': form})
+
+# def inventory_reports_week(request):
+
+# def inventory_reports_month(request):
+
+# def inventory_reports_year(request):
+    

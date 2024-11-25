@@ -771,24 +771,5 @@ def filled_prescriptions(request):
 
     return render(request, 'users/filled_prescriptions.html', context)
     
-    def inventory_reports(request):
-        if request.method == 'POST':
-            form = InventoryReportsForm(request.POST)
-
-            if form.is_valid():
-                timeframe = form.cleaned_data['timeframe']
-
-                if timeframe == 'Last 7 days':
-                    return redirect('card_info', order_id=order_id) # change
-
-                if timeframe == 'Last 30 days':
-                    return redirect('cash', order_id=order_id) # change
-                
-                if timeframe == 'Last 12 months':
-                    return redirect() # change
-
-        else:
-            form = InventoryReportsForm()
-
-    return render(request, 'users/inv_report_timeframe.html', {'form': form})
+    
 
