@@ -14,24 +14,15 @@
         <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
             <div class="position-sticky">
                 <div class="list-group list-group-flush mx-3 mt-4">
+
+                    {% comment %} Pharmacy Manager {% endcomment %}
                     {% if user.user_type == '1' %}
                         <a href="{% url 'manager_home' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                             <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main Dashboard</span>
                         </a>
-                        
-                        <a href="{% url 'inventory_reports' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Inventory Reports</span>
-                        </a>
-
-                        <!-- Other links for manager -->
-                    {% elif user.user_type == '2' %}
-                  
 
                         <a href="{% url 'user_management' %}" class="list-group-item list-group-item-action py-2 ripple">
                             <i class="fas fa-users fa-fw me-3"></i><span>Users Management</span>
-                        </a>
-                        <a href="{% url 'patient_management' %}" class="list-group-item list-group-item-action py-2 ripple">
-                            <i class="fas fa-chart-area fa-fw me-3"></i><span>Patient Management</span>
                         </a>
 
                         <a href="{% url 'all_medications_view' %}" class="list-group-item list-group-item-action py-2 ripple">
@@ -45,6 +36,18 @@
                         <a href="{% url 'low_medications_management' %}" class="list-group-item list-group-item-action py-2 ripple">
                             <i class="fas fa-chart-area fa-fw me-3"></i><span>Low Inventory</span>
                         </a>
+                        
+                        <a href="{% url 'inventory_reports' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Inventory Reports</span>
+                        </a>
+                        
+                    {% endif %}
+
+                    {% comment %} Pharmacy Technician {% endcomment %}
+                    {% if user.user_type == '2' %}
+                        <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Developing</span>
+                        </a>
 
                         <a href="{% url 'sign_prescriptions' %}" class="list-group-item list-group-item-action py-2 ripple">
                             <i class="fas fa-chart-area fa-fw me-3"></i><span>Sign Prescriptions</span>
@@ -55,25 +58,11 @@
                         </a>
                     {% endif %}
 
-                    {% comment %} Pharmacy Technician {% endcomment %}
-                    {% if user.user_type == '2' %}
-
-                        <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Developing</span>
-                        </a>
-                        <!-- Other links for technician -->
-                    {% elif user.user_type == '3' %}
+                    {% comment %} Pharmacist {% endcomment %}
+                    {% if user.user_type == '3' %}
                         <a href="{% url 'unfilled_prescriptions' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                             <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Fill Prescription</span>
                         </a>
-
-                        <!-- Other links for pharmacist -->
-                    {% elif user.user_type == '4' %}
-                        <a href="{% url 'view_orders' %}" class="list-group-item list-group-item-action py-2 ripple">
-                            <i class="fas fa-box fa-fw me-3"></i><span>View Orders</span>
-                        </a>
-                        <!-- Other links for cashier -->
-
                     {% endif %}
 
                     {% comment %} Cashier {% endcomment %}
@@ -83,6 +72,11 @@
 
                     {% comment %} All Pharmacy Personnel {% endcomment %}
                     {% if user.user_type != '6' %}
+
+                        <a href="{% url 'patient_management' %}" class="list-group-item list-group-item-action py-2 ripple">
+                            <i class="fas fa-chart-area fa-fw me-3"></i><span>Patient Management</span>
+                        </a>
+
                         <a href="{% url 'manual_prescription' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                             <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Manual Prescription</span>
                         </a>
@@ -98,15 +92,9 @@
                         <a href="{% url 'view_orders' %}" class="list-group-item list-group-item-action py-2 ripple">
                             <i class="fas fa-box fa-fw me-3"></i><span>View Orders</span>
                         </a> <!-- Added View Orders button -->
-
                     {% endif %}
-                    <!-- Common links for all users -->
-                    <a href="{% url 'manual_prescription' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
-                        <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Manual Prescription </span>
-                    </a>
-                    <a href="{% url 'activity_log' %}" class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-chart-area fa-fw me-3"></i><span>Activity Log</span>
-                    </a>
+
+
                 </div>
             </div>
         </nav>
