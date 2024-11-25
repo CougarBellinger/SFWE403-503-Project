@@ -98,7 +98,6 @@ def log_order_purchased(instance_id, user):
     instance = Order.objects.get(pk=instance_id)
     items = instance.items.all()
     total = "{:.2f}".format(instance.get_total_price())
-    
 
     order = Activity.objects.create(
         actor = user,
