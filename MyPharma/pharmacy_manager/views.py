@@ -227,10 +227,19 @@ def activity_log(request):
 def activity_details(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
     activity.save()
-    if request.method == 'POST':
-        return redirect('activity_log')  # Redirect to expired medication management after deletion
+    objectPK = activity.object_id
 
-    return render(request, 'activity_details.html', {'activity': activity})
+    context = {'activity' : activity}
+
+    if activity.action_type == "Medication Removed":
+        order = get_object_or_404(Order, objectPK)
+        orderItems = order.items.all()
+        context['OrderItmes'] = orderItems
+
+    if request.method == 'POST':
+        return redirect('activity_log')
+
+    return render(request, 'activity_details.html', context)
 
 def sign_prescriptions(request):
     if request.method == 'POST':

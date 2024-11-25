@@ -17,7 +17,7 @@ def log_medications_deleted(instance_id, user):
         actor = user,
         actor_type = user.get_user_type_display(),
         action_type = MED_REMOVED,
-        object_id = instance.pk,
+        object_id = instance_id,
         remarks = (f"{user.username} removed {instance.name} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
         data = {
             "med_name" : instance.name,
@@ -76,6 +76,7 @@ def log_prescription_filled(instance_id, user):
         actor = user,
         actor_type = user.get_user_type_display(),
         action_type = FILLED,
+        object_id = instance_id,
         remarks = (f"{user.username} filled prescription #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
         data = {
             "prescriber_name" : instance.prescriber_name,
@@ -103,6 +104,7 @@ def log_order_purchased(instance_id, user):
         actor = user,
         actor_type = user.get_user_type_display(),
         action_type = PURCHASED,
+        object_id = instance_id,
         remarks = (f"{user.username} fufilled order #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
         data = serializers.serialize("json", items)
     )

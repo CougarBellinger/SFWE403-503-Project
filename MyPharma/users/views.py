@@ -416,6 +416,7 @@ def changePassword_view(request):
     else:
         form = ChangePasswordForm(request.user)
     return render(request, 'users/password_change.html', {'form': form})
+
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
