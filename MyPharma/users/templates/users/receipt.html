@@ -29,4 +29,8 @@
         </tbody>
     </table>
     <h3>Total: {{ total_price }}</h3>
+    <div>
+        <a href="{% url 'download_receipt_pdf' order.id %}" class="btn btn-primary">Print</a>
+        <a href="{% url 'view_orders'  %}" class="btn btn-primary">Order List</a>
+    </div>
 {% endblock %}
