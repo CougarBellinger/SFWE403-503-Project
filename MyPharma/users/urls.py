@@ -1,6 +1,6 @@
 from django.urls import path
  
-from .views import User_registration_view,view_orders, receipt_view, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, signature_confirmation
+from .views import User_registration_view, download_receipt_pdf,view_orders, receipt_view, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, signature_confirmation
 
 from .views import User_registration_view,view_orders, checkout, checkout_order, create_order, medications_view, pharmacist_home, home_view, cashier_home, login_view,logout_view, contact_view, recover_account_view, create_user, manager_home, customer_home, password_change,user_list, first_password_view, create_patient,delete_user,edit_user,recover_user,patient_management,edit_patient,delete_patient,changePassword_view,myprofile_view, payment_method, card_info, cash, payment_confirmation_page, manual_prescription, prescription_confirmation, sign_prescriptions, pharmacist_home, fill_prescription, unfilled_prescriptions, filled_prescriptions, signature_confirmation
  
@@ -58,6 +58,7 @@ urlpatterns = [
 
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),
     path('receipt/<int:order_id>/', receipt_view, name='receipt_view'),
+    path('orders/<int:order_id>/receipt/pdf/', download_receipt_pdf, name='download_receipt_pdf'),
 
     path('filled_prescriptions/', filled_prescriptions, name="filled_prescriptions"),
     path('fill-prescription/<int:pk>/', fill_prescription, name='fill_prescription'),  
