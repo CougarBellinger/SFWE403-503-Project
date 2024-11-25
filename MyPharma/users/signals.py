@@ -3,8 +3,8 @@ from datetime import datetime
 from django.contrib.auth.signals import user_logged_in, user_login_failed, user_logged_out
 from django.dispatch import receiver
 
-from .models import Activity, Medications, Prescription, Patient
-from .models import LOGIN, LOGOUT, MED_REMOVED, FILLED 
+from .models import Activity, Medications, Prescription, Patient, Order
+from .models import LOGIN, LOGOUT, MED_REMOVED, FILLED, PURCHASED 
 
 def log_medications_deleted(instance_id, user):
     print(f"log_medications_deleted triggered")
@@ -90,3 +90,18 @@ def log_prescription_filled(instance_id, user):
     prescription.save()
 
     print(f"Activity #{prescription.pk}: {prescription.remarks}\n")
+
+def log_order_purchased(instance_id, user):
+    print(f"log_order_purchased triggered")
+    instance = Order.objects.get(pk=instance_id)
+    items = instance.items.all()
+
+    order = Activity.objects.create(
+        actor = user,
+        actor_type = user.get_user_type_display(),
+        action_type = PURCHASED,
+        remarks = (f"{user.usernam} fufilled order #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
+        data = {
+            "total_price" : instance.get_total_price()
+        }
+    )
