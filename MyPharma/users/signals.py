@@ -1,7 +1,9 @@
+import json
 from datetime import datetime
 
 from django.contrib.auth.signals import user_logged_in, user_login_failed, user_logged_out
 from django.dispatch import receiver
+from django.core import serializers
 
 from .models import Activity, Medications, Prescription, Patient, Order
 from .models import LOGIN, LOGOUT, MED_REMOVED, FILLED, PURCHASED 
@@ -95,13 +97,19 @@ def log_order_purchased(instance_id, user):
     print(f"log_order_purchased triggered")
     instance = Order.objects.get(pk=instance_id)
     items = instance.items.all()
+    total = "{:.2f}".format(instance.get_total_price())
+    
 
     order = Activity.objects.create(
         actor = user,
         actor_type = user.get_user_type_display(),
         action_type = PURCHASED,
-        remarks = (f"{user.usernam} fufilled order #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
-        data = {
-            "total_price" : instance.get_total_price()
-        }
+        remarks = (f"{user.username} fufilled order #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
+        data = serializers.serialize("json", items)
     )
+
+    print("activity instantiated before save")
+
+    order.save()
+
+    print(f"Activity #{order.pk}: {order.remarks}\n")
