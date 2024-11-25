@@ -18,7 +18,11 @@
                         <a href="{% url 'manager_home' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
                             <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main Dashboard</span>
                         </a>
-                  
+                        
+                        <a href="{% url 'inventory_reports' %}" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                            <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Inventory Reports</span>
+                        </a>
+
                         <!-- Other links for manager -->
                     {% elif user.user_type == '2' %}
                   

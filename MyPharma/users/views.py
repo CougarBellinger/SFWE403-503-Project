@@ -129,7 +129,7 @@ def first_password_view(request):
         
     return render(request, 'users/first_login.html')
 
-@pharmacy_manager_required
+# @pharmacy_manager_required
 def User_registration_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)

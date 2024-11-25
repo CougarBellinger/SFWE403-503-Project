@@ -13,5 +13,6 @@ urlpatterns = [
     path('order_medications/<int:pk>/', order_medications, name='order_medications'),
     path('activity_details/<int:pk>/', activity_details, name='activity_details'),
     path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions'),
-    path('inventory_reports_timeframe/', inventory_reports, name='inventory_reports')
+    path('inventory_reports_timeframe/', inventory_reports, name='inventory_reports'),
+    path('inventory_reports_week/', inventory_reports_week, name='inventory_reports_week')
 ]

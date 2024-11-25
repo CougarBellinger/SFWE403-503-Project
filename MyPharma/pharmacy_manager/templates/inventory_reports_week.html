@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Inventory Report of Last 7 Days</h2>
+    </div>
+  </div>
+
+    <table class="table table-striped mt-4">
+      
+      <thead>
+        <tr>
+          <th>Total Medications Removed</th>
+          <th>Total Medications Added</th>
+          <th>Total Medications Sold by Distribution</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+            <td>{{ total_meds_removed }}</td>
+        </tr>
+      </tbody>
+      
+    </table>
+</div>
+{% endblock %}
+

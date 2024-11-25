@@ -269,7 +269,17 @@ def inventory_reports(request):
 
     return render(request, 'inv_report_timeframe.html', {'form': form})
 
-# def inventory_reports_week(request):
+def inventory_reports_week(request):
+
+    total_meds_removed = 0
+    
+    if request.method == 'POST':
+        total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+
+    else:
+        form = InventoryReportsForm()
+
+    return render(request, 'inventory_reports_week.html', {'total_meds_removed': total_meds_removed})
 
 # def inventory_reports_month(request):
 
