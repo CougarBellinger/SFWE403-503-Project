@@ -226,15 +226,17 @@ def activity_log(request):
 
 def activity_details(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
-    activity.save()
+    #activity.save()
     objectPK = activity.object_id
 
     context = {'activity' : activity}
 
-    if activity.action_type == "Medication Removed":
-        order = get_object_or_404(Order, objectPK)
-        orderItems = order.items.all()
-        context['OrderItmes'] = orderItems
+    if (activity.action_type == "Order Purchased"):
+        order = Order.objects.get(pk=objectPK)
+        total = order.get_total_price()
+        print(f"order activity if statement correct\n")
+        context.update({'order' : order, 'total' : total})
+        # context['total'] = total
 
     if request.method == 'POST':
         return redirect('activity_log')

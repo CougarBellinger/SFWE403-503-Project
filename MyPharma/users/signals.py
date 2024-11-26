@@ -96,8 +96,10 @@ def log_prescription_filled(instance_id, user):
 
 def log_order_purchased(instance_id, user):
     print(f"log_order_purchased triggered")
+    
     instance = Order.objects.get(pk=instance_id)
     items = instance.items.all()
+
     total = "{:.2f}".format(instance.get_total_price())
 
     order = Activity.objects.create(
