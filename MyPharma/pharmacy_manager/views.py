@@ -5,7 +5,7 @@ import csv
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.db.models import OrderBy, Q
+from django.db.models import OrderBy, Q, Sum
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -271,24 +271,38 @@ def financial_reports(request):
 
 def financial_reports_week(request):
     timeframe = 'Last 7 days'
-    total_orders = Activity.objects.filter(action_type= 'Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
-    # total_meds_added = Activity.objects.filter(action_type= 'Medication Added', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
-    # total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=7)))
+
+    total_orders = orders.count()
+
+    total_price = 0
+    total_items = 0
+    total_meds = 0
+    total_generic = 0
+    for order in orders:
+        orderObj = get_object_or_404(Order, pk=order.object_id)
+        total_price += orderObj.get_total_price()
+        total_items += orderObj.Sum("items")
+
+    context = {
+        'total_orders' : total_orders,
+        'timeframe' : timeframe,
+        'total_price' : total_price,
+        'total_generic' : total_generic
+    }
     
-    return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+    return render(request, 'financial_reports.html', context) # need to add total_meds_added and total_meds_sold
 
 def financial_reports_month(request):
     timeframe = 'Last 30 days'
-    total_orders = Activity.objects.filter(action_type= 'Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
-    # total_meds_added = Activity.objects.filter(action_type= 'Medication Added', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
-    # total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    total_orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    
 
     return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
 
 def financial_reports_year(request):
     timeframe = 'Last 12 months'
-    total_orders = Activity.objects.filter(action_type= 'Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
-    # total_meds_added = Activity.objects.filter(action_type= 'Medication Added', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
-    # total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    total_orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    
 
     return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold:
