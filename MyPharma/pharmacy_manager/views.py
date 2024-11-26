@@ -14,7 +14,7 @@ from django.contrib.auth.hashers import make_password
 from users.forms import *
 from users.models import *
 from users.decorators import *
-from users.signals import log_medications_deleted
+from users.signals import log_medications_deleted, log_medications_ordered, log_medications_sold
 
 from .forms import *
 
@@ -46,6 +46,9 @@ def sell_medication_view(request):
             if medication.tablet_count >= amount_to_sell:
                 medication.tablet_count -= amount_to_sell
                 medication.save()
+
+                log_medications_sold(instance_id=medication.pk, user=request.user, amountSold=amount_to_sell)
+
                 messages.success(request, f"Successfully sold {amount_to_sell} of {medication.name}.")
             else:
                 messages.error(request, f"Not enough stock to sell {amount_to_sell} of {medication.name}. Current stock: {medication.tablet_count}")
@@ -209,10 +212,12 @@ def remove_medications(request, pk):
 
 def order_medications(request, pk):
     medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    previousAmount = medication.tablet_count
     if request.method == 'POST':
         form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
             medication.save()
+            log_medications_ordered(instance_id=medication.pk, user=request.user, prevCount=previousAmount)
             return redirect('low_medications_management')
     else:
         form = OrderMedicationForm(instance=medication)
@@ -226,11 +231,20 @@ def activity_log(request):
 
 def activity_details(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
-    activity.save()
-    if request.method == 'POST':
-        return redirect('activity_log')  # Redirect to expired medication management after deletion
+    #activity.save()
+    objectPK = activity.object_id
 
-    return render(request, 'activity_details.html', {'activity': activity})
+    context = {'activity' : activity}
+
+    if (activity.action_type == "Order Purchased"):
+        order = Order.objects.get(pk=objectPK)
+        total = order.get_total_price()
+        context.update({'order' : order, 'total' : total})
+
+    if request.method == 'POST':
+        return redirect('activity_log')
+
+    return render(request, 'activity_details.html', context)
 
 def sign_prescriptions(request):
     if request.method == 'POST':
@@ -306,3 +320,48 @@ def financial_reports_year(request):
     
 
     return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold:
+
+def inventory_reports(request):
+    if request.method == 'POST':
+        form = InventoryReportsForm(request.POST)
+
+        if form.is_valid():
+            timeframe = form.cleaned_data['timeframe']
+
+            if timeframe == 'Last 7 days':
+                return redirect('inventory_reports_week') 
+
+            if timeframe == 'Last 30 days':
+                return redirect('inventory_reports_month')
+                    
+            if timeframe == 'Last 12 months':
+                return redirect('inventory_reports_year')
+
+    else:
+        form = InventoryReportsForm()
+
+    return render(request, 'inv_report_timeframe.html', {'form': form})
+
+def inventory_reports_week(request):
+    timeframe = 'Last 7 days'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+
+def inventory_reports_month(request):
+    timeframe = 'Last 30 days'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+
+def inventory_reports_year(request):
+    timeframe = 'Last 12 months'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold

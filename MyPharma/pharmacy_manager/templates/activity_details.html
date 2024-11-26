@@ -50,6 +50,59 @@
 
                             </table>
 
+                        {% elif activity.action_type == "Order Purchased" %}
+
+                            <table class="table table-striped mt-4">
+                                <tbody>
+                                    <tr>
+                                        <th>Order Number</th>
+                                        <td>{{ order.pk }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th> Order Total </th>
+                                        <td> ${{ total }} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th> Date </th>
+                                        <td> {{ activity.action_time }} </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table table-striped mt-4">
+                                <thead class="thead-dark"> 
+                                    <th> Items in Order </th> 
+                                    <th></th>
+                                    <th></th>
+                                </thead>
+
+                                <thead> 
+                                    <tr>
+                                        <th> Item name </th> 
+                                        <th> Quantity </th>
+                                        <th> Price </th>
+                                    </tr>   
+                                </thead>
+
+                                {% for item in order.items.all %}
+                                    <tr>
+                                        <td> 
+                                            {% if item.medication %}
+                                                {{ item.medication.name }}
+                                            {% else %}
+                                                {{ item.generic_item.name }}
+                                            {% endif %}
+                                        </td>
+
+                                        <td> {{ item.quantity }} </td>
+
+                                        <td> ${{ item.price }} </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+
                         {% endif %}
 
                         <form method="post">

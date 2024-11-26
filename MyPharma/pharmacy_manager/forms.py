@@ -28,3 +28,7 @@ class SignatureForm(forms.Form):
 class FinancialStatsReportsForm(forms.Form):
     timeframe_choices = [('Last 7 days', 'Last 7 days'), ('Last 30 days', 'Last 30 days'), ('Last 12 months', 'Last 12 months')]
     timeframe = forms.ChoiceField(choices=timeframe_choices, widget= forms.Select(), label='Time frame')
+    
+class InventoryReportsForm(forms.Form):
+    timeframe_choices = [('Last 7 days', 'Last 7 days'), ('Last 30 days', 'Last 30 days'), ('Last 12 months', 'Last 12 months')]
+    timeframe = forms.ChoiceField(choices=timeframe_choices, widget= forms.Select(), label='Time frame')
