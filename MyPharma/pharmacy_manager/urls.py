@@ -13,5 +13,5 @@ urlpatterns = [
     path('order_medications/<int:pk>/', order_medications, name='order_medications'),
     path('activity_details/<int:pk>/', activity_details, name='activity_details'),
     path('sign_prescriptions/', sign_prescriptions, name='sign_prescriptions'),
-    path('financial_stats_reports/', financial_stats_reports, name='financial_stats_reports')
+    path('financial_reports/', financial_reports, name='financial_reports')
 ]
