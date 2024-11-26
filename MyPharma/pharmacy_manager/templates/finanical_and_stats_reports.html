@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+    {% if timeframe == 'Last 7 days' %}
+      <h2>Financial Report of Last 7 Days</h2>
+    {% endif %}
+    {% if timeframe == 'Last 30 days' %}
+      <h2>Financial Report of Last 30 Days</h2>
+    {% endif %}
+    {% if timeframe == 'Last 12 months' %}
+      <h2>Financial Report of Last 12 months</h2>
+    {% endif %}
+    </div>
+  </div>
+
+    <table class="table table-striped mt-4">
+      
+      <thead>
+        <tr>
+        <!-- make column titles better -->
+          <th>Total Orders</th> 
+          <th>Total Items per Order</th>
+          <th>Sum of All Order Totals</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+            <!-- change variables -->
+            <td>{{ total_meds_removed }}</td> 
+            <td>{{ total_meds_added }}</td>
+            <td>{{ total_meds_sold }}</td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <div class="mt-4">
+      <a href="{% url 'inventory_reports' %}" class="btn btn-secondary">Back</a> <!-- change url -->
+    </div>
+
+</div>
+{% endblock %}
+
