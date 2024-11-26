@@ -267,7 +267,7 @@ def financial_reports(request):
     else:
         form = FinancialStatsReportsForm()
 
-    return render(request, 'financial_report_timeframe.html', {'form': form})
+    return render(request, 'financial_reports_timeframe.html', {'form': form})
 
 def financial_reports_week(request):
     timeframe = 'Last 7 days'
