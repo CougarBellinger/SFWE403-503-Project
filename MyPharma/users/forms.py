@@ -77,3 +77,4 @@ class SignatureForm(forms.Form):
     
 class FilledPrescriptionsForm(forms.Form):
     patient = forms.ModelChoiceField(queryset=Patient.objects.all(), required=False)
+

@@ -261,3 +261,48 @@ def sign_prescriptions(request):
         form = SignatureForm()
 
     return render(request, 'sign_prescriptions.html', {'form': form})
+
+def inventory_reports(request):
+    if request.method == 'POST':
+        form = InventoryReportsForm(request.POST)
+
+        if form.is_valid():
+            timeframe = form.cleaned_data['timeframe']
+
+            if timeframe == 'Last 7 days':
+                return redirect('inventory_reports_week') 
+
+            if timeframe == 'Last 30 days':
+                return redirect('inventory_reports_month')
+                    
+            if timeframe == 'Last 12 months':
+                return redirect('inventory_reports_year')
+
+    else:
+        form = InventoryReportsForm()
+
+    return render(request, 'inv_report_timeframe.html', {'form': form})
+
+def inventory_reports_week(request):
+    timeframe = 'Last 7 days'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+
+def inventory_reports_month(request):
+    timeframe = 'Last 30 days'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+
+def inventory_reports_year(request):
+    timeframe = 'Last 12 months'
+    total_meds_removed = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    total_meds_added = Activity.objects.filter(action_type= 'Medication Ordered', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+
+    return render(request, 'inventory_reports.html', {'total_meds_removed': total_meds_removed, 'total_meds_added': total_meds_added,'total_meds_sold': total_meds_sold, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
