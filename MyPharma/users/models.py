@@ -14,12 +14,14 @@ import uuid
 
 
 # Values for activity log
-LOGIN, LOGOUT, MED_REMOVED, FILLED, PURCHASED = "User Login", "User Logout", "Medication Removed", "Prescription Filled", "Order Purchased"
+LOGIN, LOGOUT, MED_REMOVED, MED_ORDERED, MED_SOLD, FILLED, PURCHASED = "User Login", "User Logout", "Medication Removed", "Medication Ordered", "Medication Sold", "Prescription Filled", "Order Purchased"
 
 ACTION_TYPES = [
     (LOGIN, LOGIN),
     (LOGOUT, LOGOUT),
     (MED_REMOVED, MED_REMOVED),
+    (MED_ORDERED, MED_ORDERED),
+    (MED_SOLD, MED_SOLD),
     (FILLED, FILLED),
     (PURCHASED, PURCHASED)
 ]
