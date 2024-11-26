@@ -271,11 +271,11 @@ def financial_reports(request):
 
 def financial_reports_week(request):
     timeframe = 'Last 7 days'
-    total_orders = Activity.objects.filter(action_type= 'Medication Removed', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
+    total_orders = Activity.objects.filter(action_type= 'Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
     # total_meds_added = Activity.objects.filter(action_type= 'Medication Added', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
     # total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=7))).count()
     
-    return render(request, 'financial_reports.html', {'total_meds_removed': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+    return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
 
 def financial_reports_month(request):
     timeframe = 'Last 30 days'
@@ -291,4 +291,4 @@ def financial_reports_year(request):
     # total_meds_added = Activity.objects.filter(action_type= 'Medication Added', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
     # total_meds_sold = Activity.objects.filter(action_type= 'Medication Sold', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
 
-    return render(request, 'financial_reports.html', {'total_meds_removed': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+    return render(request, 'financial_reports.html', {'total_meds_removed': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold:
