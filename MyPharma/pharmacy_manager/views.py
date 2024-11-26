@@ -293,10 +293,17 @@ def financial_reports_week(request):
     total_items = 0
     total_meds = 0
     total_generic = 0
+
     for order in orders:
-        orderObj = get_object_or_404(Order, pk=order.object_id)
+        orderObj = Order.objects.get(pk=order.object_id)
+
         total_price += orderObj.get_total_price()
-        total_items += orderObj.Sum("items")
+
+        for item in orderObj.items.all():
+            if item.medication_id is None: ++total_generic
+            else: ++total_meds
+            
+            ++total_items
 
     context = {
         'total_orders' : total_orders,
