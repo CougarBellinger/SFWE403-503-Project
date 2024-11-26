@@ -289,7 +289,7 @@ def financial_reports_week(request):
 
     total_orders = orders.count()
 
-    total_price = 0
+    total_revenue = 0
     total_items = 0
     total_meds = 0
     total_generic = 0
@@ -297,19 +297,24 @@ def financial_reports_week(request):
     for order in orders:
         orderObj = Order.objects.get(pk=order.object_id)
 
-        total_price += orderObj.get_total_price()
+        total_revenue += orderObj.get_total_price()
 
         for item in orderObj.items.all():
-            if item.medication_id is None: ++total_generic
-            else: ++total_meds
+            if item.medication_id is None: total_generic+=1
+            else: total_meds+=1
             
-            ++total_items
+            total_items+=1
+
+    ratio_generic = round((total_generic / total_items) * 100, 2)
+    ratio_meds = round((total_meds / total_items) * 100, 2)
 
     context = {
         'total_orders' : total_orders,
         'timeframe' : timeframe,
-        'total_price' : total_price,
-        'total_generic' : total_generic
+        'total_items' : total_items,
+        'total_revenue' : total_revenue,
+        'ratio_meds' : ratio_meds,
+        'ratio_generic' : ratio_generic
     }
     
     return render(request, 'financial_reports.html', context) # need to add total_meds_added and total_meds_sold
