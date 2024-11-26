@@ -14,7 +14,7 @@ from django.contrib.auth.hashers import make_password
 from users.forms import *
 from users.models import *
 from users.decorators import *
-from users.signals import log_medications_deleted
+from users.signals import log_medications_deleted, log_medications_ordered, log_medications_sold
 
 from .forms import *
 
@@ -46,6 +46,9 @@ def sell_medication_view(request):
             if medication.tablet_count >= amount_to_sell:
                 medication.tablet_count -= amount_to_sell
                 medication.save()
+
+                log_medications_sold(instance_id=medication.pk, user=request.user, amountSold=amount_to_sell)
+
                 messages.success(request, f"Successfully sold {amount_to_sell} of {medication.name}.")
             else:
                 messages.error(request, f"Not enough stock to sell {amount_to_sell} of {medication.name}. Current stock: {medication.tablet_count}")
@@ -209,10 +212,12 @@ def remove_medications(request, pk):
 
 def order_medications(request, pk):
     medication = get_object_or_404(Medications, pk=pk)  # Get the medication object by its primary key (pk)
+    previousAmount = medication.tablet_count
     if request.method == 'POST':
         form = OrderMedicationForm(request.POST, instance=medication)
         if form.is_valid():
             medication.save()
+            log_medications_ordered(instance_id=medication.pk, user=request.user, prevCount=previousAmount)
             return redirect('low_medications_management')
     else:
         form = OrderMedicationForm(instance=medication)
@@ -226,11 +231,20 @@ def activity_log(request):
 
 def activity_details(request, pk):
     activity = get_object_or_404(Activity, pk=pk)
-    activity.save()
-    if request.method == 'POST':
-        return redirect('activity_log')  # Redirect to expired medication management after deletion
+    #activity.save()
+    objectPK = activity.object_id
 
-    return render(request, 'activity_details.html', {'activity': activity})
+    context = {'activity' : activity}
+
+    if (activity.action_type == "Order Purchased"):
+        order = Order.objects.get(pk=objectPK)
+        total = order.get_total_price()
+        context.update({'order' : order, 'total' : total})
+
+    if request.method == 'POST':
+        return redirect('activity_log')
+
+    return render(request, 'activity_details.html', context)
 
 def sign_prescriptions(request):
     if request.method == 'POST':

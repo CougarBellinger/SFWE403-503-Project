@@ -29,7 +29,9 @@
                             {{ item.generic_item.name }}
                         {% endif %}
                     </td>
+                    
                     <td>{{ item.quantity }}</td>
+
                     <td>
                         <input type="number" name="price_{{ item.id }}" step="0.01" value="{{ item.price }}" required>
                     </td>

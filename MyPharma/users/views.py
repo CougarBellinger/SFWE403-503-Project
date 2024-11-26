@@ -30,7 +30,7 @@ from pharmacy_manager.views import *
 from .models import Medications, Order, OrderItem
 from .forms import *
 from .models import *
-from .signals import log_prescription_filled
+from .signals import log_prescription_filled, log_order_purchased
 
 logger = logging.getLogger(__name__)
 
@@ -418,6 +418,7 @@ def changePassword_view(request):
     else:
         form = ChangePasswordForm(request.user)
     return render(request, 'users/password_change.html', {'form': form})
+
 def myprofile_view(request):
     currentUser = request.user
     return render(request, 'users/my_profile.html', {'user': currentUser})
@@ -494,11 +495,15 @@ def cash(request, order_id):
                 error = 'Insufficient amount given.'
 
     return render(request, 'users/cash.html', {'form': form, 'total': total, 'change': change, 'error': error, 'order': order})
+
 @login_required
-def payment_confirmation_page(request, order_id):
+def payment_confirmation_page(request, order_id): # put activity log function call here 
     order = get_object_or_404(Order, id=order_id)
     order.status = 'complete'
     order.save()
+
+    log_order_purchased(instance_id=order.pk, user=request.user)
+
     return render(request, 'users/payment_confirmation.html', {'order_id': order_id})
 
 
@@ -543,6 +548,7 @@ def signature_confirmation(request):
         return redirect('home_view')
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'users/signature_confirmation.html', {'order_id': order_id})
+
 @login_required
 def medications_view(request):
     medications = Medications.objects.all()
@@ -587,6 +593,7 @@ def create_order(request):
 
     medications = Medications.objects.all()
     return render(request, 'users/create_order.html', {'medications': medications})
+
 @login_required
 def view_orders(request):
     if request.user.user_type in [CustomUser.Cashier, CustomUser.Pharmacist, CustomUser.PharmacyTechnician, CustomUser.PharmacyManager]:
