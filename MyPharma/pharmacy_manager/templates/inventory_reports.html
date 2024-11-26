@@ -7,6 +7,12 @@
     {% if timeframe == 'Last 7 days' %}
       <h2>Inventory Report of Last 7 Days</h2>
     {% endif %}
+    {% if timeframe == 'Last 30 days' %}
+      <h2>Inventory Report of Last 30 Days</h2>
+    {% endif %}
+    {% if timeframe == 'Last 12 months' %}
+      <h2>Inventory Report of Last 12 months</h2>
+    {% endif %}
     </div>
   </div>
 
@@ -29,6 +35,11 @@
       </tbody>
 
     </table>
+
+    <div class="mt-4">
+      <a href="{% url 'inventory_reports' %}" class="btn btn-secondary">Back</a>
+    </div>
+
 </div>
 {% endblock %}
 
