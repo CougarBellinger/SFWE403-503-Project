@@ -5,7 +5,7 @@ import csv
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.db.models import OrderBy, Q
+from django.db.models import OrderBy, Q, Sum
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -261,6 +261,78 @@ def sign_prescriptions(request):
         form = SignatureForm()
 
     return render(request, 'sign_prescriptions.html', {'form': form})
+
+def financial_reports(request):
+    if request.method == 'POST':
+        form = FinancialStatsReportsForm(request.POST)
+
+        if form.is_valid():
+            timeframe = form.cleaned_data['timeframe']
+
+            if timeframe == 'Last 7 days':
+                return redirect('financial_reports_week') 
+
+            if timeframe == 'Last 30 days':
+                return redirect('financial_reports_month')
+                    
+            if timeframe == 'Last 12 months':
+                return redirect('financial_reports_year')
+
+    else:
+        form = FinancialStatsReportsForm()
+
+    return render(request, 'financial_reports_timeframe.html', {'form': form})
+
+def financial_reports_week(request):
+    timeframe = 'Last 7 days'
+    orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=7)))
+    
+    total_orders = orders.count()
+
+    total_revenue = 0
+    total_items = 0
+    total_meds = 0
+    total_generic = 0
+
+    for order in orders:
+        orderObj = Order.objects.get(pk=order.object_id)
+
+        total_revenue += orderObj.get_total_price()
+
+        for item in orderObj.items.all():
+            if item.medication_id is None: total_generic+=1
+            else: total_meds+=1
+            
+            total_items+=1
+
+    ratio_generic = round((total_generic / total_items) * 100, 2)
+    ratio_meds = round((total_meds / total_items) * 100, 2)
+
+    context = {
+        'orders' : orders,
+        'total_orders' : total_orders,
+        'timeframe' : timeframe,
+        'total_items' : total_items,
+        'total_revenue' : total_revenue,
+        'ratio_meds' : ratio_meds,
+        'ratio_generic' : ratio_generic
+    }
+    
+    return render(request, 'financial_reports.html', context) # need to add total_meds_added and total_meds_sold
+
+def financial_reports_month(request):
+    timeframe = 'Last 30 days'
+    total_orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=30))).count()
+    
+
+    return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold
+
+def financial_reports_year(request):
+    timeframe = 'Last 12 months'
+    total_orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=365))).count()
+    
+
+    return render(request, 'financial_reports.html', {'total_orders': total_orders, 'timeframe': timeframe}) # need to add total_meds_added and total_meds_sold:
 
 def inventory_reports(request):
     if request.method == 'POST':
