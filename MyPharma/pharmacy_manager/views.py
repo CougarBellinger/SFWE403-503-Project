@@ -286,7 +286,7 @@ def financial_reports(request):
 def financial_reports_week(request):
     timeframe = 'Last 7 days'
     orders = Activity.objects.filter(action_type='Order Purchased', action_time__gte=(timezone.now().date() - timedelta(days=7)))
-
+    
     total_orders = orders.count()
 
     total_revenue = 0
@@ -309,6 +309,7 @@ def financial_reports_week(request):
     ratio_meds = round((total_meds / total_items) * 100, 2)
 
     context = {
+        'orders' : orders,
         'total_orders' : total_orders,
         'timeframe' : timeframe,
         'total_items' : total_items,

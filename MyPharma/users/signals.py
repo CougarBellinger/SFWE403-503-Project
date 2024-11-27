@@ -147,7 +147,7 @@ def log_order_purchased(instance_id, user):
     print(f"log_order_purchased triggered")
     
     instance = Order.objects.get(pk=instance_id)
-    items = instance.items.all()
+    items = instance.items.all().count()
 
     total = "{:.2f}".format(instance.get_total_price())
 
@@ -157,7 +157,11 @@ def log_order_purchased(instance_id, user):
         action_type = PURCHASED,
         object_id = instance_id,
         remarks = (f"{user.username} fufilled order #{instance_id} on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"),
-        data = serializers.serialize("json", items)
+        #serializers.serialize("json", items)
+        data = {
+            "total" : total,
+            "items" : items
+        }
     )
 
     print("activity instantiated before save")
