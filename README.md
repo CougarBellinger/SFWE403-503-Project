@@ -7,7 +7,7 @@
 - Sujan Ghimire
 
 ## Project Setup
-- [Setup Guide]([https://d2l.arizona.edu/d2l/le/content/1469189/viewContent/16877698/View](https://github.com/CougarBellinger/SFWE403-503-Project/blob/main/developer_guide))
+- [Setup_Guide](https://github.com/CougarBellinger/SFWE403-503-Project/blob/main/developer_guide)
 
 ## Useful References
 - [Requirements](https://d2l.arizona.edu/d2l/le/content/1469189/viewContent/16877698/View)
