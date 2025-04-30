@@ -6,6 +6,10 @@
 - Matthew Redondo
 - Sujan Ghimire
 
+## About
+This repository hosts the source code for a Pharmacy Management System website built for the SFWE-402/SFWE-502 course. The purpose of the system was to integrate project management practices in an agile development environment. It is built using the django fromework front-end and a PostgresSQL backend. During development, we tracked our sprints and project status through Jira.
+
+
 ## Project Setup
 - [Setup_Guide](https://github.com/CougarBellinger/SFWE403-503-Project/blob/main/developer_guide)
 
