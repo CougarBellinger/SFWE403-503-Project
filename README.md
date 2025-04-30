@@ -9,6 +9,8 @@
 ## About
 This repository hosts the source code for a Pharmacy Management System website built for the SFWE-402/SFWE-502 course. The purpose of the system was to integrate project management practices in an agile development environment. It is built using the django fromework front-end and a PostgresSQL backend. During development, we tracked our sprints and project status through Jira.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VeW1luj5RHg?si=4fWHjRdUVBqUfoOW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
 ## Project Setup
 - [Setup_Guide](https://github.com/CougarBellinger/SFWE403-503-Project/blob/main/developer_guide)
